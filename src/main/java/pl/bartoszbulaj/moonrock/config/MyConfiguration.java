@@ -33,7 +33,8 @@ public class MyConfiguration {
 	}
 
 	@Bean
-	public JavaMailSender javaMailSender() {
+	public JavaMailSender javaMailSender() throws IOException {
+
 		String host = "smtp.gmail.com";
 		String port = "587";
 		JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
@@ -51,6 +52,7 @@ public class MyConfiguration {
 		javaMailSender.setJavaMailProperties(getMailProperties());
 
 		return javaMailSender;
+
 	}
 
 	private Properties getMailProperties() {
@@ -62,12 +64,12 @@ public class MyConfiguration {
 	}
 
 	private String getMailUsername() throws IOException {
-		File file = new ClassPathResource("/mailusername.txt").getFile();
+		File file = new ClassPathResource("/emailUsername.txt").getFile();
 		return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
 	}
 
 	private String getMailPassword() throws IOException {
-		File file = new ClassPathResource("/mailpassword.txt").getFile();
+		File file = new ClassPathResource("/emailPassword.txt").getFile();
 		return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
 	}
 

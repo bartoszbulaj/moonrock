@@ -3,6 +3,9 @@ HELP.md
 .mvn/wrapper/maven-wrapper.jar
 mvnw.cmd
 mvnw
+emailAddressReceiver.txt
+emailUsername.txt
+emailPassword.txt
 
 ### STS ###
 .apt_generated
@@ -12,9 +15,7 @@ mvnw
 .settings
 .springBeans
 .sts4-cache
-emailUsername.txt
-emailPassword.txt
-emailAddressReceiver.txt
+
 
 ### IntelliJ IDEA ###
 .idea

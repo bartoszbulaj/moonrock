@@ -35,19 +35,19 @@ public class HistoryAnalyzerImpl implements HistoryAnalyzer {
 	private boolean isSignalToBuy(List<InstrumentHistoryDto> instrumentHistoryDtoList) {
 		int listSize = instrumentHistoryDtoList.size();
 		LOG.info("Searching for buy signal...");
-		return !isCandleGreen(instrumentHistoryDtoList.get(listSize - 1))
-				&& !isCandleGreen(instrumentHistoryDtoList.get(listSize - 2))
+		return !isCandleGreen(instrumentHistoryDtoList.get(listSize - 4))
 				&& !isCandleGreen(instrumentHistoryDtoList.get(listSize - 3))
-				&& isCandleGreen(instrumentHistoryDtoList.get(listSize));
+				&& !isCandleGreen(instrumentHistoryDtoList.get(listSize - 2))
+				&& isCandleGreen(instrumentHistoryDtoList.get(listSize - 1));
 	}
 
 	private boolean isSignalToSell(List<InstrumentHistoryDto> instrumentHistoryDtoList) {
 		int listSize = instrumentHistoryDtoList.size();
 		LOG.info("Searching for sell signal...");
-		return isCandleGreen(instrumentHistoryDtoList.get(listSize - 1))
-				&& isCandleGreen(instrumentHistoryDtoList.get(listSize - 2))
+		return isCandleGreen(instrumentHistoryDtoList.get(listSize - 4))
 				&& isCandleGreen(instrumentHistoryDtoList.get(listSize - 3))
-				&& !isCandleGreen(instrumentHistoryDtoList.get(listSize));
+				&& isCandleGreen(instrumentHistoryDtoList.get(listSize - 2))
+				&& !isCandleGreen(instrumentHistoryDtoList.get(listSize - 1));
 	}
 
 	private boolean isCandleGreen(InstrumentHistoryDto instrumentHistoryDto) {
