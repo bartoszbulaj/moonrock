@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <div class="row justify-content-between bg-dark sticky-top border border-light rounded" th:fragment="top">
+        <div class="col-6 text-left">
+            <p><a href="/" class="btn btn-outline-secondary mt-2"><img src="/favicon-32x32.png" alt="Icon" class="mt-0"></a></p>
+        </div>
+        <div class="col-3 text-right">
+            <p>
+                <span sec:authorize="!isAuthenticated()">
+                    <a href="/login" class="btn btn-outline-secondary mt-3">Zaloguj</a>
+                </span>
+                <span sec:authorize="isAuthenticated()">
+                    <a href="/logout" class="btn btn-outline-secondary mt-3">Wyloguj</a>
+                </span>
+                <span sec:authorize="hasRole('ADMIN')">
+                    <a href="/registration" class="btn btn-outline-secondary mt-3">Zarejestruj użytkownika</a>
+                </span>
+            </p>
+        </div>
+    </div>
+    <div class="col-2" th:fragment="left">
+        <a href="/" class="btn btn-outline-dark mt-2 float-right">Podgląd</a>
+        <a href="/user/panel" class="btn btn-outline-dark mt-2 float-right">Panel użytkownika</a>
+    </div>
+</html>

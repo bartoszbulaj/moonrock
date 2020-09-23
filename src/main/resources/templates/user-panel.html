@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Moonrock</title>
+    <link rel="stylesheet" href="/bootstrap.min.css">
+    <script src="/app.js"></script>
+</head>
+<body>
+<div class="container-fluid">
+    <div th:replace="/fragments/menus :: top"></div>
+    <div th:replace="/fragments/prices-bars :: top-bar"></div>
+    <div class="row">
+        <div th:replace="/fragments/menus :: left"></div>
+        <div class="col-1"></div>
+        <div class="col-6 mt-4 h4">
+            <div th:if="${walletDTO == null}">Brak adresu portfela</div>
+            <div th:unless="${walletDTO == null}">Adres portfela:
+                <br>
+                <span th:text="${walletDTO.addr}"></span>
+            </div>
+            <br>
+            <div th:if="${walletDTO == null}">Stan portfela nieznany</div>
+            <div th:unless="${walletDTO == null}">Stan portfela:
+                <br>
+                <span th:text="${walletDTO.amount}"></span> satoshi
+            </div>
+            <br>
+            <div th:if="${apiKeyDTO == null}">Klucz publiczny nie został dodany</div>
+            <div th:unless="${apiKeyDTO == null}">Klucz publiczny:
+                <br>
+                <span th:text="${apiKeyDTO.apiPublicKey}"></span>
+            </div>
+            <br>
+            <div th:if="${positionDTOList == null}">Brak aktualnych pozycji</div>
+        </div>
+        <div class="col-1"></div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div th:unless="${positionDTOList == null}">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                    <!--    <th>Lp.</th>    -->
+                        <th>Symbol</th>
+                        <th>Size</th>
+                        <th>Value</th>
+                        <th>Entry Price</th>
+                        <th>Mark Price</th>
+                        <th>Liq. Price</th>
+                        <th>Margin</th>
+                        <th>Unrealised Pnl</th>
+                        <th>UnrealisedPnl(ROE%)</th>
+                        <th>Realised PNL</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="positionDTO: ${positionDTOList}">
+                    <!--    <td th:text="${positionDTOStat.index + 1}"></td>  -->
+                        <td th:text="${positionDTO.symbol}"></td>
+                        <td th:text="${positionDTO.currentQty}"></td>
+                        <td th:text="${positionDTO.riskValue}"></td>
+                        <td th:text="${positionDTO.avgEntryPrice}"></td>
+                        <td th:text="${positionDTO.markPrice}"></td>
+                        <td th:text="${positionDTO.liquidationPrice}"></td>
+                        <td th:text="${positionDTO.maintMargin}"></td>
+                        <td th:text="${positionDTO.unrealisedGrossPnl}"></td>
+                        <!-- //todo update unrealisedPnlPcnt to real % after modify PositionDTO class-->
+                        <td th:text="${positionDTO.unrealisedPnlPcnt}"></td>
+                        <td th:text="${positionDTO.realisedPNL}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    connect();
+</script>
+</html>
