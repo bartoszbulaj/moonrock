@@ -76,7 +76,7 @@ public class InstrumentServiceImpl implements InstrumentService {
 		String signalDirection = historyAnalyzer.checkForSignal(instrumentHistoryDtoList);
 		if (signalDirection != "") {
 			try {
-				emailClient.sendEmail(instrumentHistoryDtoList.get(0).getSymbol(), signalDirection);
+				emailClient.sendEmail(instrumentHistoryDtoList.get(0), signalDirection);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
