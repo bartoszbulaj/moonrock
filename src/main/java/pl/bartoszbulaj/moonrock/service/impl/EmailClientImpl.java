@@ -14,7 +14,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import pl.bartoszbulaj.moonrock.dto.InstrumentHistoryDto;
 import pl.bartoszbulaj.moonrock.service.EmailClient;
 
 @Service
@@ -29,12 +28,8 @@ public class EmailClientImpl implements EmailClient {
 	}
 
 	@Override
-	public void sendEmail(InstrumentHistoryDto instrumentHistoryDto, String signalDirection) throws IOException {
-		String mailSubject = String.format("Signal on %s for %s", instrumentHistoryDto.getSymbol(), signalDirection);
-		String mailText = "Open: " + instrumentHistoryDto.getOpen() + "\n"//
-				+ "High: " + instrumentHistoryDto.getHigh() + "\n" //
-				+ "Low: " + instrumentHistoryDto.getLow() + "\n" //
-				+ "Close: " + instrumentHistoryDto.getClose();
+	public void sendEmail(String mailText) throws IOException {
+		String mailSubject = "Here is your new signal.";
 
 		SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
 		simpleMailMessage.setTo(getEmailAddressReceiver());
@@ -42,6 +37,12 @@ public class EmailClientImpl implements EmailClient {
 		simpleMailMessage.setText(mailText);
 		javaMailSender.send(simpleMailMessage);
 		LOG.info("[Mail sender] Mail sent to receiver.");
+	}
+
+	@Override
+	public String createEmailText(String instrumentSymbol, String signalDirection) {
+		return String.format("Signal on %s for %s. \n", instrumentSymbol, signalDirection);
+
 	}
 
 	private String getEmailAddressReceiver() throws IOException {

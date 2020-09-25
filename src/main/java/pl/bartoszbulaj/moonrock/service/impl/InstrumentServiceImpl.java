@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -29,6 +30,8 @@ import pl.bartoszbulaj.moonrock.service.InstrumentService;
 @Service
 @Transactional
 public class InstrumentServiceImpl implements InstrumentService {
+
+	private static List<String> activeInstruments = Arrays.asList("XBTUSD", "BCHUSD", "ETHUSD", "LTCUSD", "XRPUSD");
 
 	private static final Logger LOG = LogManager.getLogger(InstrumentServiceImpl.class);
 	private InstrumentHistoryRepository instrumentHistoryRepository;
@@ -63,30 +66,31 @@ public class InstrumentServiceImpl implements InstrumentService {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 		return instrumentHistoryDtoList;
 	}
 
 	@Override
 	public void analyzeInstrumentHistory() {
-		LOG.info("Analyzing instrument history in progress...");
-		List<InstrumentHistoryDto> instrumentHistoryDtoList = instrumentHistoryMapper
-				.mapToInstrumentHistoryDtoList(instrumentHistoryRepository.findAll());
+		String emailText = "";
+		for (String instrument : activeInstruments) {
+			List<InstrumentHistoryDto> instrumentHistoryDtoList = instrumentHistoryMapper
+					.mapToInstrumentHistoryDtoList(instrumentHistoryRepository.findAllBySymbol(instrument));
 
-		String signalDirection = historyAnalyzer.checkForSignal(instrumentHistoryDtoList);
-		if (signalDirection != "") {
-			try {
-				emailClient.sendEmail(instrumentHistoryDtoList.get(0), signalDirection);
-			} catch (IOException e) {
-				e.printStackTrace();
+			String signalDirection = historyAnalyzer.checkForSignal(instrumentHistoryDtoList);
+			if (signalDirection != "") {
+				emailText += emailClient.createEmailText(instrument, signalDirection);
 			}
 		}
+		if (emailText != "")
+			sendEmailWIthSignal(emailText);
 	}
 
 	@Override
 	public List<InstrumentHistoryEntity> saveInstrumentHistory() {
-		// TODO get All active instruments from Bitmex
-		List<InstrumentHistoryDto> instrumentHistoryDtoList = getInstrumentHistory("1h", "xbt", "5", "false");
+		List<InstrumentHistoryDto> instrumentHistoryDtoList = new ArrayList<>();
+		for (String instrument : activeInstruments) {
+			instrumentHistoryDtoList.addAll(getInstrumentHistory("1h", instrument, "5", "false"));
+		}
 		LOG.info("Hello! instrument history is saved");
 		return instrumentHistoryRepository
 				.saveAll(instrumentHistoryMapper.mapToInstrumentHistoryEntityList(instrumentHistoryDtoList));
@@ -96,6 +100,14 @@ public class InstrumentServiceImpl implements InstrumentService {
 	public void deleteInstrumentHistory() {
 		LOG.info("Hello! instrument history is deleted");
 		instrumentHistoryRepository.deleteAll();
+	}
+
+	private void sendEmailWIthSignal(String emailText) {
+		try {
+			emailClient.sendEmail(emailText);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private StringBuilder createUrlString(String candleSize, String symbol, String count, String reverse) {

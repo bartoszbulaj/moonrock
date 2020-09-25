@@ -22,6 +22,7 @@ public class HistoryAnalyzerImpl implements HistoryAnalyzer {
 			return "";
 		String signal = "";
 		if (instrumentHistoryDtoList.size() > 0) {
+			LOG.info("Searching for signal...");
 			if (isSignalToBuy(instrumentHistoryDtoList)) {
 				signal += "Buy";
 				LOG.info("[Signal] {} signal to {} {}", instrumentHistoryDtoList.get(0).getCandleSize(), signal,
@@ -41,7 +42,6 @@ public class HistoryAnalyzerImpl implements HistoryAnalyzer {
 
 	private boolean isSignalToBuy(List<InstrumentHistoryDto> instrumentHistoryDtoList) {
 		int listSize = instrumentHistoryDtoList.size();
-		LOG.info("Searching for buy signal...");
 		return !isCandleGreen(instrumentHistoryDtoList.get(listSize - 4))
 				&& !isCandleGreen(instrumentHistoryDtoList.get(listSize - 3))
 				&& !isCandleGreen(instrumentHistoryDtoList.get(listSize - 2))
@@ -50,7 +50,6 @@ public class HistoryAnalyzerImpl implements HistoryAnalyzer {
 
 	private boolean isSignalToSell(List<InstrumentHistoryDto> instrumentHistoryDtoList) {
 		int listSize = instrumentHistoryDtoList.size();
-		LOG.info("Searching for sell signal...");
 		return isCandleGreen(instrumentHistoryDtoList.get(listSize - 4))
 				&& isCandleGreen(instrumentHistoryDtoList.get(listSize - 3))
 				&& isCandleGreen(instrumentHistoryDtoList.get(listSize - 2))
@@ -58,7 +57,7 @@ public class HistoryAnalyzerImpl implements HistoryAnalyzer {
 	}
 
 	private boolean isCandleGreen(InstrumentHistoryDto instrumentHistoryDto) {
-		return (instrumentHistoryDto.getClose() > instrumentHistoryDto.getOpen());
+		return (instrumentHistoryDto.getOpen() <= instrumentHistoryDto.getClose());
 	}
 
 }

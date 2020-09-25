@@ -22,17 +22,16 @@ public class SchedulerServiceImpl implements SchedulerService {
 	}
 
 	@Override
-	@Scheduled(cron = "15 0 * * * *")
+	@Scheduled(cron = "5 0 * * * *")
 	public void saveHistory() {
 		instrumentService.saveInstrumentHistory();
 
 	}
 
 	@Override
-	@Scheduled(cron = "0 1 * * * *")
+	@Scheduled(cron = "10 0 * * * *")
 	public void analyzeHistory() {
 		instrumentService.analyzeInstrumentHistory();
-
 	}
 
 }
