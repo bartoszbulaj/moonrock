@@ -22,7 +22,7 @@ public class HistoryAnalyzerImpl implements HistoryAnalyzer {
 			return "";
 		String signal = "";
 		if (instrumentHistoryDtoList.size() > 0) {
-			LOG.info("Searching for signal...");
+			LOG.info("Searching for {} signal.", instrumentHistoryDtoList.get(0).getSymbol());
 			if (isSignalToBuy(instrumentHistoryDtoList)) {
 				signal += "Buy";
 				LOG.info("[Signal] {} signal to {} {}", instrumentHistoryDtoList.get(0).getCandleSize(), signal,

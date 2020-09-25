@@ -33,7 +33,7 @@ public class HistoryAnalyzerTest {
 	@Test
 	public void shouldReturnSignalForSell() {
 		// given
-		instrumentHistoryDto1 = new InstrumentHistoryDto(1L, "", "XBT", 10D, 12D, 8D, 5D, 1D, 1D, 1D, 1D, 1D, 1D, 1D,
+		instrumentHistoryDto1 = new InstrumentHistoryDto(1L, "", "XBT", 90D, 12D, 8D, 100D, 1D, 1D, 1D, 1D, 1D, 1D, 1D,
 				"1h");
 		instrumentHistoryDto2 = new InstrumentHistoryDto(2L, "", "XBT", 100D, 120D, 50D, 110D, 1D, 1D, 1D, 1D, 1D, 1D,
 				1D, "1h");

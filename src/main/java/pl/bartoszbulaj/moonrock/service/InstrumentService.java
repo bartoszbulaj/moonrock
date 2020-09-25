@@ -9,7 +9,7 @@ public interface InstrumentService {
 
 	List<InstrumentHistoryDto> getInstrumentHistory(String candleSize, String symbol, String count, String reverse);
 
-	void analyzeInstrumentHistory();
+	void analyzeInstrumentHistoryAndSendEmailWithSignals();
 
 	void deleteInstrumentHistory();
 

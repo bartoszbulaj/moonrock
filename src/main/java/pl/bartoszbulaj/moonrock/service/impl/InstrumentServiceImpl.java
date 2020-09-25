@@ -70,7 +70,7 @@ public class InstrumentServiceImpl implements InstrumentService {
 	}
 
 	@Override
-	public void analyzeInstrumentHistory() {
+	public void analyzeInstrumentHistoryAndSendEmailWithSignals() {
 		String emailText = "";
 		for (String instrument : activeInstruments) {
 			List<InstrumentHistoryDto> instrumentHistoryDtoList = instrumentHistoryMapper
