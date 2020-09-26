@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,7 +31,8 @@ public class EmailClientImpl implements EmailClient {
 
 	@Override
 	public void sendEmail(String mailText) throws IOException {
-		String mailSubject = "Here is your new signal.";
+		String mailSubject = "New Signal. "
+				+ LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).toString();
 
 		SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
 		simpleMailMessage.setTo(getEmailAddressReceiver());
