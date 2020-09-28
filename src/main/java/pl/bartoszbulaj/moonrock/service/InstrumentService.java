@@ -9,12 +9,14 @@ public interface InstrumentService {
 
 	List<InstrumentHistoryDto> getInstrumentHistory(String candleSize, String intrument, String count, String reverse);
 
-	void analyzeInstrumentHistoryAndSendEmailWithSignals();
+	boolean analyzeInstrumentHistoryAndSendEmailWithSignals();
 
 	void deleteInstrumentHistory();
 
 	List<InstrumentHistoryEntity> saveInstrumentHistory();
 
 	List<InstrumentHistoryDto> getInstrumentHistory(String instrument);
+
+	boolean sendEmailWIthSignal(String emailText);
 
 }

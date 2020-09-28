@@ -19,7 +19,7 @@ public class InstrumentServiceValidatorImpl implements InstrumentServiceValidato
 		if (instrumentSymbol == null) {
 			return false;
 		} else {
-			return InstrumentServiceImpl.activeInstruments.contains(instrumentSymbol);
+			return InstrumentServiceImpl.activeInstruments.contains(instrumentSymbol.toUpperCase());
 		}
 	}
 

@@ -55,12 +55,12 @@ public class InstrumentServiceImpl implements InstrumentService {
 	@Override
 	public List<InstrumentHistoryDto> getInstrumentHistory(String candleSize, String instrument, String count,
 			String reverse) {
-		if (validator.isAllArgumentsValid(candleSize, instrument, count, reverse)) {
+		if (!validator.isAllArgumentsValid(candleSize, instrument, count, reverse)) {
 			return new ArrayList<>();
 		}
 
 		try {
-			StringBuilder urlString = createUrlString(candleSize, instrument, count, reverse);
+			StringBuilder urlString = createUrlString(candleSize, instrument.toUpperCase(), count, reverse);
 			URL instrumentHistoryUrl = new URL(urlString.toString());
 			HttpURLConnection connection = (HttpURLConnection) instrumentHistoryUrl.openConnection();
 			connection.setRequestMethod("GET");
@@ -76,11 +76,11 @@ public class InstrumentServiceImpl implements InstrumentService {
 
 	@Override
 	public List<InstrumentHistoryDto> getInstrumentHistory(String instrument) {
-		if (validator.isInstrumentSymbolValid(instrument)) {
+		if (!validator.isInstrumentSymbolValid(instrument)) {
 			return new ArrayList<>();
 		}
 		try {
-			StringBuilder urlString = createUrlString("1h", instrument, "5", "false");
+			StringBuilder urlString = createUrlString("1h", instrument.toUpperCase(), "5", "false");
 			URL instrumentHistoryUrl = new URL(urlString.toString());
 			HttpURLConnection connection = (HttpURLConnection) instrumentHistoryUrl.openConnection();
 			connection.setRequestMethod("GET");
@@ -95,11 +95,10 @@ public class InstrumentServiceImpl implements InstrumentService {
 	}
 
 	@Override
-	public void analyzeInstrumentHistoryAndSendEmailWithSignals() {
+	public boolean analyzeInstrumentHistoryAndSendEmailWithSignals() {
 		String emailText = "";
 		for (String instrument : activeInstruments) {
-			List<InstrumentHistoryDto> instrumentHistoryDtoList = instrumentHistoryMapper
-					.mapToInstrumentHistoryDtoList(instrumentHistoryRepository.findAllBySymbol(instrument));
+			List<InstrumentHistoryDto> instrumentHistoryDtoList = loadInstrumentHistoryFromRepository(instrument);
 
 			String signalDirection = historyAnalyzer.checkForSignal(instrumentHistoryDtoList);
 			if (signalDirection != "") {
@@ -109,8 +108,10 @@ public class InstrumentServiceImpl implements InstrumentService {
 
 		if (emailText != "") {
 			sendEmailWIthSignal(emailText);
+			return true;
 		} else {
 			LOG.info("[No Signal.]");
+			return false;
 		}
 	}
 
@@ -131,12 +132,23 @@ public class InstrumentServiceImpl implements InstrumentService {
 		instrumentHistoryRepository.deleteAll();
 	}
 
-	private void sendEmailWIthSignal(String emailText) {
+	@Override
+	public boolean sendEmailWIthSignal(String emailText) {
+		if (emailText == null || emailText == "") {
+			return false;
+		}
 		try {
 			emailClient.sendEmail(emailText);
+			return true;
 		} catch (IOException e) {
 			e.printStackTrace();
+			return false;
 		}
+	}
+
+	private List<InstrumentHistoryDto> loadInstrumentHistoryFromRepository(String instrument) {
+		return instrumentHistoryMapper
+				.mapToInstrumentHistoryDtoList(instrumentHistoryRepository.findAllBySymbol(instrument));
 	}
 
 	private StringBuilder createUrlString(String candleSize, String symbol, String count, String reverse) {
