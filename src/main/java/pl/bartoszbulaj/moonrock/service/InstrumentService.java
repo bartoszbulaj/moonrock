@@ -7,12 +7,14 @@ import pl.bartoszbulaj.moonrock.entity.InstrumentHistoryEntity;
 
 public interface InstrumentService {
 
-	List<InstrumentHistoryDto> getInstrumentHistory(String candleSize, String symbol, String count, String reverse);
+	List<InstrumentHistoryDto> getInstrumentHistory(String candleSize, String intrument, String count, String reverse);
 
 	void analyzeInstrumentHistoryAndSendEmailWithSignals();
 
 	void deleteInstrumentHistory();
 
 	List<InstrumentHistoryEntity> saveInstrumentHistory();
+
+	List<InstrumentHistoryDto> getInstrumentHistory(String instrument);
 
 }

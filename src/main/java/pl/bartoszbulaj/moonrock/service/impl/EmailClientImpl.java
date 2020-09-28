@@ -32,7 +32,7 @@ public class EmailClientImpl implements EmailClient {
 	@Override
 	public void sendEmail(String mailText) throws IOException {
 		String mailSubject = "New Signal. "
-				+ LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).toString();
+				+ LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm dd.MM")).toString();
 
 		SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
 		simpleMailMessage.setTo(getEmailAddressReceiver());

@@ -26,47 +26,72 @@ import pl.bartoszbulaj.moonrock.repository.InstrumentHistoryRepository;
 import pl.bartoszbulaj.moonrock.service.EmailClient;
 import pl.bartoszbulaj.moonrock.service.HistoryAnalyzer;
 import pl.bartoszbulaj.moonrock.service.InstrumentService;
+import pl.bartoszbulaj.moonrock.validator.InstrumentServiceValidator;
 
 @Service
 @Transactional
 public class InstrumentServiceImpl implements InstrumentService {
 
-	private static List<String> activeInstruments = Arrays.asList("XBTUSD", "BCHUSD", "ETHUSD", "LTCUSD", "XRPUSD");
+	public static List<String> activeInstruments = Arrays.asList("XBTUSD", "BCHUSD", "ETHUSD", "LTCUSD", "XRPUSD");
 
 	private static final Logger LOG = LogManager.getLogger(InstrumentServiceImpl.class);
 	private InstrumentHistoryRepository instrumentHistoryRepository;
 	private InstrumentHistoryMapper instrumentHistoryMapper;
 	private HistoryAnalyzer historyAnalyzer;
 	private EmailClient emailClient;
+	private InstrumentServiceValidator validator;
 
 	@Autowired
 	public InstrumentServiceImpl(InstrumentHistoryRepository instrumentHistoryRepository,
 			BitmexClientConfig bitmexClientConfig, InstrumentHistoryMapper instrumentHistoryMapper,
-			HistoryAnalyzer analyzer, EmailClient emailClient) {
+			HistoryAnalyzer analyzer, EmailClient emailClient, InstrumentServiceValidator validator) {
 		this.instrumentHistoryRepository = instrumentHistoryRepository;
 		this.instrumentHistoryMapper = instrumentHistoryMapper;
 		this.historyAnalyzer = analyzer;
 		this.emailClient = emailClient;
+		this.validator = validator;
 	}
 
 	@Override
-	public List<InstrumentHistoryDto> getInstrumentHistory(String candleSize, String symbol, String count,
+	public List<InstrumentHistoryDto> getInstrumentHistory(String candleSize, String instrument, String count,
 			String reverse) {
-		List<InstrumentHistoryDto> instrumentHistoryDtoList = new ArrayList<>();
+		if (validator.isAllArgumentsValid(candleSize, instrument, count, reverse)) {
+			return new ArrayList<>();
+		}
 
 		try {
-			StringBuilder urlString = createUrlString(candleSize, symbol, count, reverse);
+			StringBuilder urlString = createUrlString(candleSize, instrument, count, reverse);
 			URL instrumentHistoryUrl = new URL(urlString.toString());
 			HttpURLConnection connection = (HttpURLConnection) instrumentHistoryUrl.openConnection();
 			connection.setRequestMethod("GET");
 			String jsonString = getRequestResultString(connection);
 			connection.disconnect();
 
-			instrumentHistoryDtoList = instrumentHistoryMapper.mapToInstrumentHistoryDtoList(jsonString, candleSize);
+			return instrumentHistoryMapper.mapToInstrumentHistoryDtoList(jsonString, candleSize);
 		} catch (IOException e) {
 			e.printStackTrace();
+			return new ArrayList<>();
 		}
-		return instrumentHistoryDtoList;
+	}
+
+	@Override
+	public List<InstrumentHistoryDto> getInstrumentHistory(String instrument) {
+		if (validator.isInstrumentSymbolValid(instrument)) {
+			return new ArrayList<>();
+		}
+		try {
+			StringBuilder urlString = createUrlString("1h", instrument, "5", "false");
+			URL instrumentHistoryUrl = new URL(urlString.toString());
+			HttpURLConnection connection = (HttpURLConnection) instrumentHistoryUrl.openConnection();
+			connection.setRequestMethod("GET");
+			String jsonString = getRequestResultString(connection);
+			connection.disconnect();
+
+			return instrumentHistoryMapper.mapToInstrumentHistoryDtoList(jsonString, instrument);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return new ArrayList<>();
+		}
 	}
 
 	@Override
@@ -81,24 +106,28 @@ public class InstrumentServiceImpl implements InstrumentService {
 				emailText += emailClient.createEmailText(instrument, signalDirection);
 			}
 		}
-		if (emailText != "")
+
+		if (emailText != "") {
 			sendEmailWIthSignal(emailText);
+		} else {
+			LOG.info("[No Signal.]");
+		}
 	}
 
 	@Override
 	public List<InstrumentHistoryEntity> saveInstrumentHistory() {
 		List<InstrumentHistoryDto> instrumentHistoryDtoList = new ArrayList<>();
 		for (String instrument : activeInstruments) {
-			instrumentHistoryDtoList.addAll(getInstrumentHistory("1h", instrument, "5", "false"));
+			instrumentHistoryDtoList.addAll(getInstrumentHistory(instrument));
 		}
-		LOG.info("Hello! instrument history is saved");
+		LOG.info("[History] is saved");
 		return instrumentHistoryRepository
 				.saveAll(instrumentHistoryMapper.mapToInstrumentHistoryEntityList(instrumentHistoryDtoList));
 	}
 
 	@Override
 	public void deleteInstrumentHistory() {
-		LOG.info("Hello! instrument history is deleted");
+		LOG.info("[History] is deleted");
 		instrumentHistoryRepository.deleteAll();
 	}
 
