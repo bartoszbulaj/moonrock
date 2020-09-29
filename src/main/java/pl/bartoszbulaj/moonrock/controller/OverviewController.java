@@ -10,23 +10,23 @@ import pl.bartoszbulaj.moonrock.entity.OverviewWebsocket;
 @RequestMapping("/")
 public class OverviewController {
 
-    public static boolean consolePrinter = false;
-    @GetMapping
-    public String showOverview() {
-        return "index.html";
-    }
+	@GetMapping
+	public String showOverview() {
+		return "index.html";
+	}
 
-    @GetMapping("/go")
-    public String sendMessage(){
-        new OverviewWebsocket().setOnConsolePrinter();
-        String message = "{\"op\": \"subscribe\", \"args\": [\"orderBookL2_25:XBTUSD\"]}";
-        new OverviewWebsocket().sendMessage(message);
-        return "redirect:/";
-    }
-    @GetMapping("/stop")
-    public String stopMessage() {
-        new OverviewWebsocket().setOffConsolePrinter();
-        return "redirect:/";
-    }
+	@GetMapping("/go")
+	public String sendMessage() {
+		new OverviewWebsocket().setOnConsolePrinter();
+		String message = "{\"op\": \"subscribe\", \"args\": [\"orderBookL2_25:XBTUSD\"]}";
+		new OverviewWebsocket().sendMessage(message);
+		return "redirect:/";
+	}
+
+	@GetMapping("/stop")
+	public String stopMessage() {
+		new OverviewWebsocket().setOffConsolePrinter();
+		return "redirect:/";
+	}
 
 }

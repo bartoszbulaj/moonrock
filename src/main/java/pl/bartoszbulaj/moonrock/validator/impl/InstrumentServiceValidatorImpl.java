@@ -2,6 +2,7 @@ package pl.bartoszbulaj.moonrock.validator.impl;
 
 import org.springframework.stereotype.Component;
 
+import io.micrometer.core.instrument.util.StringUtils;
 import pl.bartoszbulaj.moonrock.service.impl.InstrumentServiceImpl;
 import pl.bartoszbulaj.moonrock.validator.InstrumentServiceValidator;
 
@@ -10,41 +11,39 @@ public class InstrumentServiceValidatorImpl implements InstrumentServiceValidato
 
 	@Override
 	public boolean isAllArgumentsValid(String candleSize, String instrumentSymbol, String count, String reverse) {
-		return isInstrumentSymbolValid(instrumentSymbol) && isCandleSizeValid(candleSize) && isReverseValid(reverse)
-				&& isCountValid(count);
+		return isInstrumentSymbolValid(instrumentSymbol) && isCandleSizeValid(candleSize)
+				&& isReverseStringValid(reverse) && isCountValid(count);
 	}
 
 	@Override
 	public boolean isInstrumentSymbolValid(String instrumentSymbol) {
-		if (instrumentSymbol == null) {
+		if (StringUtils.isBlank(instrumentSymbol)) {
 			return false;
 		} else {
-			return InstrumentServiceImpl.activeInstruments.contains(instrumentSymbol.toUpperCase());
+			return InstrumentServiceImpl.getActiveInstruments().contains(instrumentSymbol.toUpperCase());
 		}
 	}
 
 	private boolean isCandleSizeValid(String candleSize) {
-		// TODO implement for 5m
-		if (candleSize == null) {
+		if (StringUtils.isBlank(candleSize)) {
 			return false;
 		} else {
-			return candleSize == "1h";
+			return candleSize.equalsIgnoreCase("1h") || candleSize.equalsIgnoreCase("5m");
 		}
 	}
 
-	private boolean isReverseValid(String reverse) {
-		if (reverse == null) {
+	private boolean isReverseStringValid(String reverse) {
+		if (StringUtils.isBlank(reverse)) {
 			return false;
-		} else {
-			return (reverse == "true" || reverse == "false") ? true : false;
 		}
+		return (reverse.equalsIgnoreCase("true") || reverse.equalsIgnoreCase("false"));
 	}
 
 	private boolean isCountValid(String count) {
-		if (count == null) {
+		if (StringUtils.isBlank(count)) {
 			return false;
 		} else {
-			return count == "5";
+			return count.equalsIgnoreCase("5");
 		}
 	}
 

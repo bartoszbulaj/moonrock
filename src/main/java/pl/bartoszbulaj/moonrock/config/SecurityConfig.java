@@ -27,10 +27,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.and()//
 				.authorizeRequests()//
 				.antMatchers("/h2-console/*").hasRole("ADMIN")//
-				// TODO below line should be like: .antMatchers("/").hasRole("ADMIN")
 				.antMatchers("/").permitAll()//
-				// TODO uncomment below
-				// .anyRequest().authenticated()
 				.and()//
 				.formLogin().permitAll()//
 				.loginPage("/login")//

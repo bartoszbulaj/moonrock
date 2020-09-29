@@ -19,8 +19,7 @@ public class PositionMapperImpl implements PositionMapper {
 
 	@Override
 	public PositionDto mapToPositionDto(PositionEntity positionEntity) {
-		PositionDto positionDto = modelMapper.map(positionEntity, PositionDto.class);
-		return positionDto;
+		return modelMapper.map(positionEntity, PositionDto.class);
 	}
 
 	@Override

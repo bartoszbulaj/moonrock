@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.micrometer.core.instrument.util.StringUtils;
 import pl.bartoszbulaj.moonrock.config.BitmexClientConfig;
 import pl.bartoszbulaj.moonrock.dto.InstrumentHistoryDto;
 import pl.bartoszbulaj.moonrock.entity.InstrumentHistoryEntity;
@@ -32,7 +33,7 @@ import pl.bartoszbulaj.moonrock.validator.InstrumentServiceValidator;
 @Transactional
 public class InstrumentServiceImpl implements InstrumentService {
 
-	public static List<String> activeInstruments = Arrays.asList("XBTUSD", "BCHUSD", "ETHUSD", "LTCUSD", "XRPUSD");
+	private static List<String> activeInstruments = Arrays.asList("XBTUSD", "BCHUSD", "ETHUSD", "LTCUSD", "XRPUSD");
 
 	private static final Logger LOG = LogManager.getLogger(InstrumentServiceImpl.class);
 	private InstrumentHistoryRepository instrumentHistoryRepository;
@@ -96,18 +97,18 @@ public class InstrumentServiceImpl implements InstrumentService {
 
 	@Override
 	public boolean analyzeInstrumentHistoryAndSendEmailWithSignals() {
-		String emailText = "";
+		StringBuilder emailText = new StringBuilder();
 		for (String instrument : activeInstruments) {
 			List<InstrumentHistoryDto> instrumentHistoryDtoList = loadInstrumentHistoryFromRepository(instrument);
 
 			String signalDirection = historyAnalyzer.checkForSignal(instrumentHistoryDtoList);
-			if (signalDirection != "") {
-				emailText += emailClient.createEmailText(instrument, signalDirection);
+			if (!signalDirection.isEmpty()) {
+				emailText.append(emailClient.createEmailText(instrument, signalDirection));
 			}
 		}
 
-		if (emailText != "") {
-			sendEmailWIthSignal(emailText);
+		if (!emailText.toString().isEmpty()) {
+			sendEmailWIthSignal(emailText.toString());
 			return true;
 		} else {
 			LOG.info("[No Signal.]");
@@ -134,7 +135,7 @@ public class InstrumentServiceImpl implements InstrumentService {
 
 	@Override
 	public boolean sendEmailWIthSignal(String emailText) {
-		if (emailText == null || emailText == "") {
+		if (StringUtils.isBlank(emailText)) {
 			return false;
 		}
 		try {
@@ -144,6 +145,14 @@ public class InstrumentServiceImpl implements InstrumentService {
 			e.printStackTrace();
 			return false;
 		}
+	}
+
+	public static List<String> getActiveInstruments() {
+		return activeInstruments;
+	}
+
+	public static void setActiveInstruments(List<String> activeInstruments) {
+		InstrumentServiceImpl.activeInstruments = activeInstruments;
 	}
 
 	private List<InstrumentHistoryDto> loadInstrumentHistoryFromRepository(String instrument) {
@@ -166,7 +175,7 @@ public class InstrumentServiceImpl implements InstrumentService {
 	private String getRequestResultString(HttpURLConnection connection) throws IOException {
 		BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 		String inputLine;
-		StringBuffer content = new StringBuffer();
+		StringBuilder content = new StringBuilder();
 		while ((inputLine = in.readLine()) != null) {
 			content.append(inputLine);
 		}
@@ -176,9 +185,7 @@ public class InstrumentServiceImpl implements InstrumentService {
 
 	private String getTimestampStringFormattedToUTC5HoursAgo() {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		String timestampString = LocalDateTime.now(ZoneOffset.UTC).minusHours(5).format(formatter).toString()
-				.replace(" ", "T");
-		return timestampString;
+		return LocalDateTime.now(ZoneOffset.UTC).minusHours(5).format(formatter).replace(" ", "T");
 	}
 
 }

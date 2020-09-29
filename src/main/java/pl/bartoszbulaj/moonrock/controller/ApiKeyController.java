@@ -7,8 +7,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,12 +24,6 @@ public class ApiKeyController {
 	@Autowired
 	public ApiKeyController(ApiKeyServiceImpl apiKeyService) {
 		this.apiKeyService = apiKeyService;
-	}
-
-	@PostMapping
-	public void saveApiKey(@RequestBody ApiKeyEntity apiKey, Principal principal) {
-		apiKeyService.saveApiKey(new ApiKeyEntity(principal.getName(), apiKey.getApiPublicKey(),
-				apiKeyService.encryptSecretKey(apiKey.getApiSecretKey(), principal.getName())));
 	}
 
 	@GetMapping

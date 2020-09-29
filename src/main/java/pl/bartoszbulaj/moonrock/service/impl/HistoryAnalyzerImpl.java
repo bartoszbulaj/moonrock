@@ -18,10 +18,11 @@ public class HistoryAnalyzerImpl implements HistoryAnalyzer {
 
 	@Override
 	public String checkForSignal(List<InstrumentHistoryDto> instrumentHistoryDtoList) {
-		if (instrumentHistoryDtoList == null)
+		if (instrumentHistoryDtoList == null) {
 			return "";
+		}
 		String signal = "";
-		if (instrumentHistoryDtoList.size() > 0) {
+		if (!instrumentHistoryDtoList.isEmpty()) {
 			LOG.info("[Analyzer] Searching for {} signal.", instrumentHistoryDtoList.get(0).getSymbol());
 			if (isSignalToBuy(instrumentHistoryDtoList)) {
 				signal += "Buy";
@@ -34,7 +35,6 @@ public class HistoryAnalyzerImpl implements HistoryAnalyzer {
 						instrumentHistoryDtoList.get(0).getSymbol());
 			}
 		}
-
 		return signal;
 	}
 

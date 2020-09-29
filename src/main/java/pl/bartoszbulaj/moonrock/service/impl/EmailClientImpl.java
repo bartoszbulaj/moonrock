@@ -31,8 +31,7 @@ public class EmailClientImpl implements EmailClient {
 
 	@Override
 	public void sendEmail(String mailText) throws IOException {
-		String mailSubject = "New Signal. "
-				+ LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm dd.MM")).toString();
+		String mailSubject = "New Signal. " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm dd.MM"));
 
 		SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
 		simpleMailMessage.setTo(getEmailAddressReceiver());
@@ -44,7 +43,7 @@ public class EmailClientImpl implements EmailClient {
 
 	@Override
 	public String createEmailText(String instrumentSymbol, String signalDirection) {
-		return String.format("Signal on %s for %s. \n", instrumentSymbol, signalDirection);
+		return String.format("Signal on %s for %s. %n", instrumentSymbol, signalDirection);
 
 	}
 

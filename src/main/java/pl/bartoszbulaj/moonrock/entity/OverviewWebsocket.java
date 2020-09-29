@@ -21,13 +21,14 @@ import pl.bartoszbulaj.moonrock.config.BitmexClientConfig;
 public class OverviewWebsocket {
 
 	private Session session;
-	private static boolean consolePrinter = false;
+	private boolean consolePrinter;
 
 	public OverviewWebsocket() {
-		String URL = BitmexClientConfig.getWebsocketMainNetUrl();
+		String urlString = BitmexClientConfig.getWebsocketMainNetUrl();
+		consolePrinter = false;
 		try {
 			WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-			container.connectToServer(this, new URI(URL));
+			container.connectToServer(this, new URI(urlString));
 		} catch (Exception ex) {
 			log.error(ex.getMessage());
 		}

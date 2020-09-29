@@ -1,6 +1,5 @@
 package pl.bartoszbulaj.moonrock.controller;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +28,7 @@ public class InstrumentController {
 	public ResponseEntity<List<InstrumentHistoryDto>> getInstrumentHistory(
 			@RequestParam(defaultValue = "1h") String candleSize,
 			@RequestParam(defaultValue = "xbt:perpetual") String symbol, @RequestParam(defaultValue = "5") String count,
-			@RequestParam(defaultValue = "false") String reverse) throws IOException {
+			@RequestParam(defaultValue = "false") String reverse) {
 		List<InstrumentHistoryDto> instrumentHistoryDtoList = instrumentService.getInstrumentHistory(candleSize, symbol,
 				count, reverse);
 		if (instrumentHistoryDtoList != null) {

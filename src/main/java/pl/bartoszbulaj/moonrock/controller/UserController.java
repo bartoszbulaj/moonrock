@@ -32,13 +32,13 @@ public class UserController {
 
 	@GetMapping("/wallet")
 	@ResponseBody
-	private String getWallet() throws IOException {
+	public String getWallet() {
 		return "here should be wallet data";
 	}
 
 	@GetMapping("/position")
 	@ResponseBody
-	private String getOpenPositions() throws IOException {
+	public String getOpenPositions() throws IOException {
 		return "here should be positions data";
 	}
 

@@ -10,6 +10,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -120,18 +121,19 @@ public class UserServiceImpl implements UserService {
 			String httpRequestResult = getStringResultFromHttpRequest(
 					setConnectionHeaders(apiKeyDto, requestMethod, bitmexUrlEndPoint, connection));
 			connection.disconnect();
-			List<PositionEntity> positionList = Arrays.asList(objectMapper.readValue(httpRequestResult, PositionEntity[].class));
+			List<PositionEntity> positionList = Arrays
+					.asList(objectMapper.readValue(httpRequestResult, PositionEntity[].class));
 
 			return positionMapper.mapToPositionDtoList(positionList);
 		} else {
-			return null;
+			return new ArrayList<>();
 		}
 	}
 
 	public String getStringResultFromHttpRequest(HttpURLConnection connection) throws IOException {
 		BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 		String inputLine;
-		StringBuffer content = new StringBuffer();
+		StringBuilder content = new StringBuilder();
 		while ((inputLine = in.readLine()) != null) {
 			content.append(inputLine);
 		}

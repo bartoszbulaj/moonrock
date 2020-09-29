@@ -11,8 +11,7 @@ public class WalletMapperImpl implements WalletMapper {
 
 	@Override
 	public WalletDto walletToDto(WalletEntity wallet) {
-		WalletDto walletDto = new WalletDto(wallet.getAmount(), wallet.getAddr());
-		return walletDto;
+		return new WalletDto(wallet.getAmount(), wallet.getAddr());
 	}
 
 }

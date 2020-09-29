@@ -42,6 +42,5 @@ public class WalletEntity {
 	private String timestamp;
 	private String addr;
 	private String script;
-	// private String withdrawalLock;
 
 }

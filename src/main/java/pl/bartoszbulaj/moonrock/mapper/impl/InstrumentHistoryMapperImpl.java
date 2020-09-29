@@ -42,9 +42,7 @@ public class InstrumentHistoryMapperImpl implements InstrumentHistoryMapper {
 
 	@Override
 	public InstrumentHistoryEntity mapToInstrumentHistoryEntity(InstrumentHistoryDto instrumentHistoryDto) {
-		InstrumentHistoryEntity instrumentHistoryEntity = modelMapper.map(instrumentHistoryDto,
-				InstrumentHistoryEntity.class);
-		return instrumentHistoryEntity;
+		return modelMapper.map(instrumentHistoryDto, InstrumentHistoryEntity.class);
 	}
 
 	@Override
@@ -55,9 +53,7 @@ public class InstrumentHistoryMapperImpl implements InstrumentHistoryMapper {
 
 	@Override
 	public InstrumentHistoryDto mapToInstrumentHistoryDto(InstrumentHistoryEntity instrumentHistoryEntity) {
-		InstrumentHistoryDto instrumentHistoryDto = modelMapper.map(instrumentHistoryEntity,
-				InstrumentHistoryDto.class);
-		return instrumentHistoryDto;
+		return modelMapper.map(instrumentHistoryEntity, InstrumentHistoryDto.class);
 	}
 
 }

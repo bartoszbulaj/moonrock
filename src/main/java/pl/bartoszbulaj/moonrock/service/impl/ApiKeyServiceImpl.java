@@ -48,9 +48,8 @@ public class ApiKeyServiceImpl implements ApiKeyService {
 		if (apiKey != null) {
 			BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
 			textEncryptor.setPassword(owner);
-			ApiKeyDto apiKeyDTO = new ApiKeyDto(apiKey.getId(), apiKey.getOwner(), apiKey.getApiPublicKey(),
+			return new ApiKeyDto(apiKey.getId(), apiKey.getOwner(), apiKey.getApiPublicKey(),
 					textEncryptor.decrypt(apiKey.getApiSecretKey()));
-			return apiKeyDTO;
 		} else {
 			return null;
 		}
