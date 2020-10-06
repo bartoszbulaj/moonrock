@@ -15,7 +15,6 @@ import pl.bartoszbulaj.moonrock.dto.ApiKeyDto;
 import pl.bartoszbulaj.moonrock.dto.WalletDto;
 import pl.bartoszbulaj.moonrock.service.ApiKeyService;
 import pl.bartoszbulaj.moonrock.service.UserService;
-import pl.bartoszbulaj.moonrock.service.impl.ApiKeyServiceImpl;
 
 @Controller
 @RequestMapping("/user")
@@ -25,7 +24,7 @@ public class UserController {
 	private ApiKeyService apiKeyService;
 
 	@Autowired
-	public UserController(UserService userService, ApiKeyServiceImpl apiKeyService) {
+	public UserController(UserService userService, ApiKeyService apiKeyService) {
 		this.userService = userService;
 		this.apiKeyService = apiKeyService;
 	}
@@ -44,14 +43,18 @@ public class UserController {
 
 	@GetMapping("/panel")
 	public String showUserPanel(Model model, Principal principal) throws IOException {
-		ApiKeyDto apiKeyDto = null;
-		WalletDto walletDto = null;
-		if (principal != null) {
-			apiKeyDto = apiKeyService.getOneByOwner(principal.getName());
-			walletDto = userService.getWallet(principal.getName());
+		try {
+			String owner = principal.getName();
+			ApiKeyDto apiKeyDto = apiKeyService.getOneByOwner(owner);
+			WalletDto walletDto = userService.getWallet(principal.getName());
+
+			model.addAttribute("apiKeyDto", apiKeyDto);
+			model.addAttribute("walletDto", walletDto);
+			return "user-panel.html";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "user-panel.html";
 		}
-		model.addAttribute("apiKeyDto", apiKeyDto);
-		model.addAttribute("walletDto", walletDto);
-		return "user-panel.html";
+
 	}
 }

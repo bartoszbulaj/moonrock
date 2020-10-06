@@ -2,8 +2,6 @@ package pl.bartoszbulaj.moonrock.service.impl;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
@@ -32,10 +30,10 @@ public class CryptographicServiceImpl implements CryptographicService {
 	private static final int IV_LENGTH_BYTE = 12;
 	private static final int SALT_LENGTH_BYTE = 16;
 	private static final int ITERATIONS = 65536;
-	private static final Charset UTF_8 = StandardCharsets.UTF_8;
 
 	@Override
 	public String encryptPassword(byte[] password) throws Exception {
+
 		byte[] salt = getRandomBytesArray(SALT_LENGTH_BYTE);
 		byte[] iv = getRandomBytesArray(IV_LENGTH_BYTE);
 
@@ -50,7 +48,7 @@ public class CryptographicServiceImpl implements CryptographicService {
 	}
 
 	@Override
-	public String decryptPassword(byte[] encryptedPassword) throws Exception {
+	public byte[] decryptPassword(byte[] encryptedPassword) throws Exception {
 		ByteBuffer byteBuffer = ByteBuffer.wrap(Base64.getDecoder().decode(encryptedPassword));
 
 		byte[] iv = new byte[IV_LENGTH_BYTE];
@@ -63,7 +61,7 @@ public class CryptographicServiceImpl implements CryptographicService {
 		Cipher cipher = Cipher.getInstance(ENCRYPT_ALGO);
 		cipher.init(Cipher.DECRYPT_MODE, getAESSuperSecretKey(salt), new GCMParameterSpec(TAG_LENGTH_BIT, iv));
 
-		return new String(cipher.doFinal(passwordBytes), UTF_8);
+		return cipher.doFinal(passwordBytes);
 	}
 
 	private byte[] getRandomBytesArray(int numberOfBytes) {

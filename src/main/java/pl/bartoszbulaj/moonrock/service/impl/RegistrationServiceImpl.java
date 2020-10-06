@@ -19,6 +19,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		this.userRepository = userRepository;
 	}
 
+	@Override
 	public void registerUser(String username, String password) {
 		userRepository.save(new UserEntity(username, "{noop}" + password, true, "ROLE_USER"));
 	}

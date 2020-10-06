@@ -1,67 +1,52 @@
 package pl.bartoszbulaj.moonrock.service.impl;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.micrometer.core.instrument.util.StringUtils;
 import pl.bartoszbulaj.moonrock.dto.ApiKeyDto;
 import pl.bartoszbulaj.moonrock.entity.ApiKeyEntity;
+import pl.bartoszbulaj.moonrock.mapper.ApiKeyMapper;
 import pl.bartoszbulaj.moonrock.repository.ApiKeyRepository;
 import pl.bartoszbulaj.moonrock.service.ApiKeyService;
+import pl.bartoszbulaj.moonrock.service.CryptographicService;
 
 @Service
 @Transactional
 public class ApiKeyServiceImpl implements ApiKeyService {
 
 	private ApiKeyRepository apiKeyRepository;
+	private ApiKeyMapper apiKeyMapper;
+	private CryptographicService cryptographicService;
 
 	@Autowired
-	public ApiKeyServiceImpl(ApiKeyRepository apiKeyRepository) {
+	public ApiKeyServiceImpl(ApiKeyRepository apiKeyRepository, ApiKeyMapper apiKeyMapper,
+			CryptographicService cryptographicService) {
 		this.apiKeyRepository = apiKeyRepository;
+		this.apiKeyMapper = apiKeyMapper;
+		this.cryptographicService = cryptographicService;
 	}
 
-	public Optional<ApiKeyDto> getOneById(Long id, String owner) {
-		ApiKeyEntity apiKey = apiKeyRepository.getOne(id);
-		if (apiKey.getOwner().equals(owner)) {
-			BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
-			textEncryptor.setPassword(owner);
-			ApiKeyDto apiKeyDTO = new ApiKeyDto(apiKey.getId(), apiKey.getOwner(), apiKey.getApiPublicKey(),
-					textEncryptor.decrypt(apiKey.getApiSecretKey()));
-			return Optional.of(apiKeyDTO);
-		} else {
-			return Optional.empty();
-		}
-	}
-
-	public String encryptSecretKey(String secretKey, String owner) {
-		BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
-		textEncryptor.setPassword(owner);
-		return textEncryptor.encrypt(secretKey);
-	}
-
+	@Override
 	public ApiKeyDto getOneByOwner(String owner) {
-		ApiKeyEntity apiKey = apiKeyRepository.getFirstByOwnerEquals(owner);
-		if (apiKey != null) {
-			BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
-			textEncryptor.setPassword(owner);
-			return new ApiKeyDto(apiKey.getId(), apiKey.getOwner(), apiKey.getApiPublicKey(),
-					textEncryptor.decrypt(apiKey.getApiSecretKey()));
-		} else {
+		return apiKeyMapper.mapToApiKeyDto(apiKeyRepository.getFirstByOwnerEquals(owner));
+	}
+
+	@Override
+	public ApiKeyEntity saveApiKey(String owner, String apiPublicKey, byte[] apiSecretKey) {
+		if (StringUtils.isBlank(owner) || StringUtils.isBlank(apiPublicKey) || apiSecretKey.length == 0) {
+			throw new IllegalArgumentException("Illegal arguments");
+		}
+		try {
+			ApiKeyEntity apiKeyEntity = new ApiKeyEntity(owner, apiPublicKey,
+					cryptographicService.encryptPassword(apiSecretKey));
+			return apiKeyRepository.save(apiKeyEntity);
+		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
+
 	}
 
-	@Override
-	public List<ApiKeyEntity> getAllApiKeys() {
-		return apiKeyRepository.findAll();
-	}
-
-	@Override
-	public void saveApiKey(ApiKeyEntity apiKey) {
-		apiKeyRepository.save(apiKey);
-	}
 }

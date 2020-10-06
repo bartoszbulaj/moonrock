@@ -4,5 +4,5 @@ public interface CryptographicService {
 
 	String encryptPassword(byte[] password) throws Exception;
 
-	String decryptPassword(byte[] encryptedPassword) throws Exception;
+	byte[] decryptPassword(byte[] encryptedPassword) throws Exception;
 }
