@@ -2,11 +2,13 @@ package pl.bartoszbulaj.moonrock.mapper.impl;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import pl.bartoszbulaj.moonrock.dto.ApiKeyDto;
 import pl.bartoszbulaj.moonrock.entity.ApiKeyEntity;
 import pl.bartoszbulaj.moonrock.mapper.ApiKeyMapper;
 
+@Component
 public class ApiKeyMapperImpl implements ApiKeyMapper {
 
 	private ModelMapper modelMapper;

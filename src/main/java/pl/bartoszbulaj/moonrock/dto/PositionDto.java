@@ -1,7 +1,5 @@
 package pl.bartoszbulaj.moonrock.dto;
 
-import javax.persistence.Id;
-
 import org.springframework.stereotype.Component;
 
 import lombok.AllArgsConstructor;
@@ -18,7 +16,6 @@ import lombok.ToString;
 @ToString
 public class PositionDto {
 
-	@Id
 	private String symbol;
 	private String currentQty;
 	private String riskValue;

@@ -33,21 +33,16 @@ public class MyConfiguration {
 	}
 
 	@Bean
-	public JavaMailSender javaMailSender() throws IOException {
+	public JavaMailSender javaMailSender() {
 
 		String host = "smtp.gmail.com";
 		String port = "587";
 		JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
 
-		try {
-			javaMailSender.setHost(host);
-			javaMailSender.setPort(Integer.valueOf(port));
-			javaMailSender.setUsername(getMailUsername());
-			javaMailSender.setPassword(getMailPassword());
-		} catch (IOException e) {
-			LOG.warn("There is no files with username and password to create mail properties.");
-			e.printStackTrace();
-		}
+		javaMailSender.setHost(host);
+		javaMailSender.setPort(Integer.valueOf(port));
+		javaMailSender.setUsername(getMailUsername());
+		javaMailSender.setPassword(getMailPassword());
 
 		javaMailSender.setJavaMailProperties(getMailProperties());
 
@@ -63,14 +58,26 @@ public class MyConfiguration {
 		return properties;
 	}
 
-	private String getMailUsername() throws IOException {
-		File file = new ClassPathResource("/emailUsername.txt").getFile();
-		return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+	private String getMailUsername() {
+		try {
+			File file = new ClassPathResource("/emailUsername.txt").getFile();
+			return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+		} catch (IOException e) {
+			LOG.error("Cant find emailUsername.txt");
+			e.printStackTrace();
+			return "";
+		}
 	}
 
-	private String getMailPassword() throws IOException {
-		File file = new ClassPathResource("/emailPassword.txt").getFile();
-		return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+	private String getMailPassword() {
+		try {
+			File file = new ClassPathResource("/emailPassword.txt").getFile();
+			return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+		} catch (IOException e) {
+			LOG.error("Cant find emailPassword.txt");
+			e.printStackTrace();
+			return "";
+		}
 	}
 
 }

@@ -9,7 +9,7 @@ public class BitmexClientConfig {
 	private static final String BITMEX_TEST_NET_BASE_URL = "https://testnet.bitmex.com/api/v1";
 
 	private static final String WEBSOCKET_MAIN_NET = "wss://www.bitmex.com/realtime";
-	private static final String BITMEX_API_URL = "https://www.bitmex.com/api/v1/";
+	private static final String BITMEX_API_URL = "https://www.bitmex.com/api/v1";
 
 	private BitmexClientConfig() {
 	}

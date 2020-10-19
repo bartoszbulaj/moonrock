@@ -44,8 +44,7 @@ public class UserController {
 	@GetMapping("/panel")
 	public String showUserPanel(Model model, Principal principal) throws IOException {
 		try {
-			String owner = principal.getName();
-			ApiKeyDto apiKeyDto = apiKeyService.getOneByOwner(owner);
+			ApiKeyDto apiKeyDto = apiKeyService.getOneByOwner(principal.getName());
 			WalletDto walletDto = userService.getWallet(principal.getName());
 
 			model.addAttribute("apiKeyDto", apiKeyDto);

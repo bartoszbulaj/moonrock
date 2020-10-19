@@ -47,9 +47,15 @@ public class EmailClientImpl implements EmailClient {
 
 	}
 
-	private String getEmailAddressReceiver() throws IOException {
-		File file = new ClassPathResource("/emailAddressReceiver.txt").getFile();
-		return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+	private String getEmailAddressReceiver() {
+		try {
+			File file = new ClassPathResource("/emailAddressReceiver.txt").getFile();
+			return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+		} catch (IOException e) {
+			LOG.error("Cant find emailAddressReceiver.txt");
+			e.printStackTrace();
+			return "";
+		}
 	}
 
 }
