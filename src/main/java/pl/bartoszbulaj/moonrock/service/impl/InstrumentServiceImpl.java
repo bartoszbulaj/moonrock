@@ -163,7 +163,7 @@ public class InstrumentServiceImpl implements InstrumentService {
 	private StringBuilder createUrlString(String candleSize, String symbol, String count, String reverse) {
 		StringBuilder urlString = new StringBuilder();
 		urlString.append(BitmexClientConfig.getBitmexApiUrl());
-		urlString.append("trade/bucketed");
+		urlString.append("/trade/bucketed");
 		urlString.append("?binSize=").append(candleSize);
 		urlString.append("&symbol=").append(symbol);
 		urlString.append("&count=").append(count);
