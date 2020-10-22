@@ -3,7 +3,7 @@ package pl.bartoszbulaj.moonrock.validator.impl;
 import org.springframework.stereotype.Component;
 
 import io.micrometer.core.instrument.util.StringUtils;
-import pl.bartoszbulaj.moonrock.service.impl.InstrumentServiceImpl;
+import pl.bartoszbulaj.moonrock.config.BitmexClientConfig;
 import pl.bartoszbulaj.moonrock.validator.InstrumentServiceValidator;
 
 @Component
@@ -20,7 +20,7 @@ public class InstrumentServiceValidatorImpl implements InstrumentServiceValidato
 		if (StringUtils.isBlank(instrumentSymbol)) {
 			return false;
 		} else {
-			return InstrumentServiceImpl.getActiveInstruments().contains(instrumentSymbol.toUpperCase());
+			return BitmexClientConfig.getActiveInstruments().contains(instrumentSymbol.toUpperCase());
 		}
 	}
 
