@@ -12,26 +12,48 @@ import pl.bartoszbulaj.moonrock.service.SchedulerService;
 @Transactional
 public class SchedulerServiceImpl implements SchedulerService {
 
-	@Autowired
+	private boolean historyAnalyzer;
 	private InstrumentService instrumentService;
+
+	@Autowired
+	public SchedulerServiceImpl(InstrumentService instrumentService) {
+		this.instrumentService = instrumentService;
+		this.setHistoryAnalyzerDisabled();
+	}
 
 	@Override
 	@Scheduled(cron = "5 0 * * * *")
 	public void deleteHistory() {
-		instrumentService.deleteInstrumentHistory();
+		if (historyAnalyzer) {
+			instrumentService.deleteInstrumentHistory();
+		}
 	}
 
 	@Override
 	@Scheduled(cron = "35 0 * * * *")
 	public void saveHistory() {
-		instrumentService.saveInstrumentHistory();
-
+		if (historyAnalyzer) {
+			instrumentService.saveInstrumentHistory();
+		}
 	}
 
 	@Override
 	@Scheduled(cron = "45 0 * * * *")
 	public void analyzeHistory() {
-		instrumentService.analyzeInstrumentHistoryAndSendEmailWithSignals();
+		if (historyAnalyzer) {
+			instrumentService.analyzeInstrumentHistoryAndSendEmailWithSignals();
+		}
 	}
 
+	public boolean isHistoryAnalyzerEnabled() {
+		return historyAnalyzer;
+	}
+
+	public void setHistoryAnalyzerDisabled() {
+		this.historyAnalyzer = false;
+	}
+
+	public void setHistoryAnalyzerEnabled() {
+		this.historyAnalyzer = true;
+	}
 }
