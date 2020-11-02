@@ -6,6 +6,8 @@ mvnw
 emailAddressReceiver.txt
 emailUsername.txt
 emailPassword.txt
+apiKeyPublic.txt
+apiKeySecret.txt
 
 ### STS ###
 .apt_generated

@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import io.micrometer.core.instrument.util.StringUtils;
 import pl.bartoszbulaj.moonrock.dto.ApiKeyDto;
 import pl.bartoszbulaj.moonrock.entity.ApiKeyEntity;
+import pl.bartoszbulaj.moonrock.exception.BusinessException;
 import pl.bartoszbulaj.moonrock.mapper.ApiKeyMapper;
 import pl.bartoszbulaj.moonrock.repository.ApiKeyRepository;
 import pl.bartoszbulaj.moonrock.service.ApiKeyService;
@@ -30,7 +31,9 @@ public class ApiKeyServiceImpl implements ApiKeyService {
 
 	@Override
 	public ApiKeyDto getOneByOwner(String owner) {
-		return apiKeyMapper.mapToApiKeyDto(apiKeyRepository.getFirstByOwnerEquals(owner));
+		ApiKeyEntity apiKey = apiKeyRepository.getFirstByOwnerEquals(owner)
+				.orElseThrow(() -> new BusinessException("Cannot find apiKey with given owner: \"" + owner + "\""));
+		return apiKeyMapper.mapToApiKeyDto(apiKey);
 	}
 
 	@Override
