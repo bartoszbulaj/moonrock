@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class MyConfiguration {
 
 	private static final Logger LOG = LogManager.getLogger(MyConfiguration.class);
+	private static boolean emailCredentialLoadingStatus = false;
 
 	@Bean
 	public ModelMapper modelMapper() {
@@ -59,25 +60,31 @@ public class MyConfiguration {
 	}
 
 	private String getMailUsername() {
-		try {
-			File file = new ClassPathResource("/emailUsername.txt").getFile();
-			return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
-		} catch (IOException e) {
-			LOG.error("Cant find emailUsername.txt");
-			e.printStackTrace();
-			return "";
+		if (emailCredentialLoadingStatus) {
+			try {
+				File file = new ClassPathResource("/emailUsername.txt").getFile();
+				return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+			} catch (IOException e) {
+				LOG.error("Cant find emailUsername.txt");
+				e.printStackTrace();
+				return "";
+			}
 		}
+		return "";
 	}
 
 	private String getMailPassword() {
-		try {
-			File file = new ClassPathResource("/emailPassword.txt").getFile();
-			return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
-		} catch (IOException e) {
-			LOG.error("Cant find emailPassword.txt");
-			e.printStackTrace();
-			return "";
+		if (emailCredentialLoadingStatus) {
+			try {
+				File file = new ClassPathResource("/emailPassword.txt").getFile();
+				return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+			} catch (IOException e) {
+				LOG.error("Cant find emailPassword.txt");
+				e.printStackTrace();
+				return "";
+			}
 		}
+		return "";
 	}
 
 }

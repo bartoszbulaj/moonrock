@@ -1,12 +1,13 @@
 package pl.bartoszbulaj.moonrock.service;
 
 import java.util.List;
+import java.util.Set;
 
 import pl.bartoszbulaj.moonrock.websocket.InstrumentWebsocket;
 
 public interface WebsocketManagerService {
 
-	void addWebsocket(String instrumentSymbol);
+	void addAllWebsockets(List<String> instrumentList);
 
 	void startCommunicaton();
 
@@ -14,5 +15,7 @@ public interface WebsocketManagerService {
 
 	void connectAllWebsockets();
 
-	List<InstrumentWebsocket> getInstrumentWebsocketList();
+	Set<InstrumentWebsocket> getInstrumentWebsocketSet();
+
+	void showStatus();
 }

@@ -133,17 +133,6 @@ public class InstrumentServiceTest {
 	}
 
 	@Test
-	public void shouldReturnTrueWhenArgumentIsNotEmpty() {
-		// given
-		String emailText = "email text in Junit test";
-		boolean expected = true;
-		// when
-		boolean result = instrumentService.sendEmailWIthSignal(emailText);
-		// then
-		assertEquals(expected, result);
-	}
-
-	@Test
 	public void shouldReturnFalseWhenArgumentIsEmpty() {
 		// given
 		String emailText = "";

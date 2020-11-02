@@ -1,11 +1,8 @@
 package pl.bartoszbulaj.moonrock.service.impl;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-
-import javax.websocket.DeploymentException;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,45 +14,54 @@ import pl.bartoszbulaj.moonrock.websocket.InstrumentWebsocket;
 @Transactional
 public class WebsocketManagerServiceImpl implements WebsocketManagerService {
 
-	private List<InstrumentWebsocket> websocketList;
+	private Set<InstrumentWebsocket> websocketSet;
 
 	public WebsocketManagerServiceImpl() {
-		this.websocketList = new ArrayList<>();
+		this.websocketSet = new HashSet<>();
 	}
 
 	@Override
-	public void addWebsocket(String instrumentSymbol) {
-		String subscribeString = "{\"op\": \"subscribe\", \"args\": [\"trade:" + instrumentSymbol + "\"]}";
-		websocketList.add(new InstrumentWebsocket(instrumentSymbol, subscribeString));
+	public void addAllWebsockets(List<String> instrumentList) {
+		this.websocketSet.clear();
+		for (String instrumentSymbol : instrumentList) {
+			String subscribeString = "{\"op\": \"subscribe\", \"args\": [\"trade:" + instrumentSymbol + "\"]}";
+			this.websocketSet.add(new InstrumentWebsocket(instrumentSymbol, subscribeString));
+		}
 	}
 
 	@Override
 	public void connectAllWebsockets() {
-		for (InstrumentWebsocket instrumentWebsocket : websocketList) {
-			try {
+		for (InstrumentWebsocket instrumentWebsocket : this.websocketSet) {
+			if (instrumentWebsocket.getSession() == null) {
 				instrumentWebsocket.connect();
-			} catch (DeploymentException | IOException | URISyntaxException e) {
-				e.printStackTrace();
 			}
 		}
 	}
 
 	@Override
 	public void startCommunicaton() {
-		for (InstrumentWebsocket instrumentWebsocket : websocketList) {
+		for (InstrumentWebsocket instrumentWebsocket : this.websocketSet) {
 			instrumentWebsocket.sendMessage();
 		}
 	}
 
 	@Override
 	public void stopCommunication() {
-		for (InstrumentWebsocket instrumentWebsocket : websocketList) {
+		for (InstrumentWebsocket instrumentWebsocket : this.websocketSet) {
 			instrumentWebsocket.closeConnection();
 		}
 	}
 
 	@Override
-	public List<InstrumentWebsocket> getInstrumentWebsocketList() {
-		return websocketList;
+	public Set<InstrumentWebsocket> getInstrumentWebsocketSet() {
+		return this.websocketSet;
 	}
+
+	@Override
+	public void showStatus() {
+		for (InstrumentWebsocket instrumentWebsocket : this.websocketSet) {
+			instrumentWebsocket.showStatus();
+		}
+	}
+
 }

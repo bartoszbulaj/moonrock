@@ -14,6 +14,8 @@ import pl.bartoszbulaj.moonrock.service.WebsocketManagerService;
 @RequestMapping("/")
 public class OverviewController {
 
+	private static final String REDIRECT_TO_MAIN_PAGE = "redirect:/";
+
 	@Autowired
 	private WebsocketManagerService websocketManagerService;
 
@@ -25,24 +27,28 @@ public class OverviewController {
 	@GetMapping("/init")
 	public String initWS() {
 		List<String> instrumentList = BitmexClientConfig.getActiveInstruments();
-//		for (String instrumentSymbol : instrumentList) {
-//			websocketManagerService.addWebsocket(instrumentSymbol);
-//		}
-		websocketManagerService.addWebsocket("XBTUSD");
+		websocketManagerService.addAllWebsockets(instrumentList);
 		websocketManagerService.connectAllWebsockets();
-		return "redirect:/";
+
+		return REDIRECT_TO_MAIN_PAGE;
 	}
 
 	@GetMapping("/start")
 	public String sendMessage() {
 		websocketManagerService.startCommunicaton();
-		return "redirect:/";
+		return REDIRECT_TO_MAIN_PAGE;
 	}
 
 	@GetMapping("/stop")
 	public String stopMessage() {
 		websocketManagerService.stopCommunication();
-		return "redirect:/";
+		return REDIRECT_TO_MAIN_PAGE;
+	}
+
+	@GetMapping("/status")
+	public String websocketStatus() {
+		websocketManagerService.showStatus();
+		return REDIRECT_TO_MAIN_PAGE;
 	}
 
 }

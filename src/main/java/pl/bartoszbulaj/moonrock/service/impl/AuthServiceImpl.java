@@ -11,7 +11,6 @@ public class AuthServiceImpl implements AuthService {
 
 	@Override
 	public boolean authenticateUser() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
