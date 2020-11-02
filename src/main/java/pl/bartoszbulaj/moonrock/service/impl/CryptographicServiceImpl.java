@@ -2,18 +2,14 @@ package pl.bartoszbulaj.moonrock.service.impl;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
+import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.Base64;
 
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.GCMParameterSpec;
@@ -37,9 +33,7 @@ public class CryptographicServiceImpl implements CryptographicService {
 	private static final int ITERATIONS = 65536;
 
 	@Override
-	public String encryptPassword(byte[] password) throws NoSuchAlgorithmException, NoSuchPaddingException,
-			InvalidKeyException, InvalidAlgorithmParameterException, InvalidKeySpecException, IOException,
-			IllegalBlockSizeException, BadPaddingException {
+	public String encryptPassword(byte[] password) throws GeneralSecurityException, IOException {
 
 		byte[] salt = getRandomBytesArray(SALT_LENGTH_BYTE);
 		byte[] iv = getRandomBytesArray(IV_LENGTH_BYTE);
@@ -55,9 +49,7 @@ public class CryptographicServiceImpl implements CryptographicService {
 	}
 
 	@Override
-	public byte[] decryptPassword(byte[] encryptedPassword) throws NoSuchAlgorithmException, NoSuchPaddingException,
-			InvalidKeyException, InvalidAlgorithmParameterException, InvalidKeySpecException, IOException,
-			IllegalBlockSizeException, BadPaddingException {
+	public byte[] decryptPassword(byte[] encryptedPassword) throws GeneralSecurityException, IOException {
 		ByteBuffer byteBuffer = ByteBuffer.wrap(Base64.getDecoder().decode(encryptedPassword));
 
 		byte[] iv = new byte[IV_LENGTH_BYTE];
