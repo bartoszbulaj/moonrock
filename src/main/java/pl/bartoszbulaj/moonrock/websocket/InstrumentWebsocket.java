@@ -65,6 +65,17 @@ public class InstrumentWebsocket {
 	@OnMessage
 	public void onMessage(String message, Session session) {
 		updateLimitRemaining(message);
+		log.info(message);
+	}
+
+	public void sendPing() {
+		if (this.session != null && this.session.isOpen()) {
+			try {
+				this.session.getBasicRemote().sendText("ping");
+			} catch (IllegalArgumentException | IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private synchronized void updateLimitRemaining(String message) {
@@ -112,7 +123,7 @@ public class InstrumentWebsocket {
 
 	private void reconnect() throws DeploymentException, IOException, URISyntaxException {
 		this.webSocketContainer = ContainerProvider.getWebSocketContainer();
-		this.webSocketContainer.connectToServer(this, new URI(URL));
+		this.session = this.webSocketContainer.connectToServer(this, new URI(URL));
 	}
 
 	private void getBasicRemoteAndSendText() {

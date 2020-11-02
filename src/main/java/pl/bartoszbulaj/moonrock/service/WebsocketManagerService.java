@@ -18,4 +18,6 @@ public interface WebsocketManagerService {
 	Set<InstrumentWebsocket> getInstrumentWebsocketSet();
 
 	void showStatus();
+
+	void pingServer();
 }
