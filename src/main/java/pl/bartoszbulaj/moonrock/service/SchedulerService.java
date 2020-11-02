@@ -7,4 +7,11 @@ public interface SchedulerService {
 	void saveHistory();
 
 	void analyzeHistory();
+
+	boolean isHistoryAnalyzerEnabled();
+
+	void setHistoryAnalyzerDisabled();
+
+	void setHistoryAnalyzerEnabled();
+
 }

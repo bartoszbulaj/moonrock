@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -32,8 +31,6 @@ import pl.bartoszbulaj.moonrock.validator.InstrumentServiceValidator;
 @Service
 @Transactional
 public class InstrumentServiceImpl implements InstrumentService {
-
-	private static List<String> activeInstruments = Arrays.asList("XBTUSD", "BCHUSD", "ETHUSD", "LTCUSD", "XRPUSD");
 
 	private static final Logger LOG = LogManager.getLogger(InstrumentServiceImpl.class);
 	private InstrumentHistoryRepository instrumentHistoryRepository;
@@ -98,7 +95,7 @@ public class InstrumentServiceImpl implements InstrumentService {
 	@Override
 	public boolean analyzeInstrumentHistoryAndSendEmailWithSignals() {
 		StringBuilder emailText = new StringBuilder();
-		for (String instrument : activeInstruments) {
+		for (String instrument : BitmexClientConfig.getActiveInstruments()) {
 			List<InstrumentHistoryDto> instrumentHistoryDtoList = loadInstrumentHistoryFromRepository(instrument);
 
 			String signalDirection = historyAnalyzer.checkForSignal(instrumentHistoryDtoList);
@@ -119,7 +116,7 @@ public class InstrumentServiceImpl implements InstrumentService {
 	@Override
 	public List<InstrumentHistoryEntity> saveInstrumentHistory() {
 		List<InstrumentHistoryDto> instrumentHistoryDtoList = new ArrayList<>();
-		for (String instrument : activeInstruments) {
+		for (String instrument : BitmexClientConfig.getActiveInstruments()) {
 			instrumentHistoryDtoList.addAll(getInstrumentHistory(instrument));
 		}
 		LOG.info("[History] is saved");
@@ -145,14 +142,6 @@ public class InstrumentServiceImpl implements InstrumentService {
 			e.printStackTrace();
 			return false;
 		}
-	}
-
-	public static List<String> getActiveInstruments() {
-		return activeInstruments;
-	}
-
-	public static void setActiveInstruments(List<String> activeInstruments) {
-		InstrumentServiceImpl.activeInstruments = activeInstruments;
 	}
 
 	private List<InstrumentHistoryDto> loadInstrumentHistoryFromRepository(String instrument) {
