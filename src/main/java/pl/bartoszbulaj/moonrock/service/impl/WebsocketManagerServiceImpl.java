@@ -64,4 +64,12 @@ public class WebsocketManagerServiceImpl implements WebsocketManagerService {
 		}
 	}
 
+	@Override
+	public void pingServer() {
+		for (InstrumentWebsocket instrumentWebsocket : this.websocketSet) {
+			instrumentWebsocket.sendPing();
+		}
+
+	}
+
 }
