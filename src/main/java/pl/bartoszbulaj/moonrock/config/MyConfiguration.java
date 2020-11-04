@@ -2,8 +2,6 @@ package pl.bartoszbulaj.moonrock.config;
 
 import java.util.Properties;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -13,13 +11,13 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.extern.slf4j.Slf4j;
+import pl.bartoszbulaj.moonrock.exception.BusinessException;
 import pl.bartoszbulaj.moonrock.service.EmailSenderService;
 
 @Configuration
+@Slf4j
 public class MyConfiguration {
-
-	private static final Logger LOG = LogManager.getLogger(MyConfiguration.class);
-	// private static boolean emailCredentialLoadingStatus = false;
 
 	@Autowired
 	private EmailSenderService emailSenderService;
@@ -34,7 +32,7 @@ public class MyConfiguration {
 		return new ObjectMapper();
 	}
 
-	@Bean
+	@Bean(name = "javaMailSender")
 	public JavaMailSender javaMailSender() {
 
 		String host = "smtp.gmail.com";
@@ -43,15 +41,15 @@ public class MyConfiguration {
 
 		javaMailSender.setHost(host);
 		javaMailSender.setPort(Integer.valueOf(port));
-		if (emailSenderService.isEmailSender()) {
+		try {
 			javaMailSender.setUsername(getEmailAddressFromDb());
 			javaMailSender.setPassword(getEmailPasswordFromDb());
+		} catch (BusinessException e) {
+			log.warn("!!! Cannot find any emailSender !!!");
 		}
-		javaMailSender.setJavaMailProperties(getMailProperties());
-		// TODO create controller where is checking for any EmailSender.
-		// when POST new EmailSender then update JavaMailSender
-		return javaMailSender;
 
+		javaMailSender.setJavaMailProperties(getMailProperties());
+		return javaMailSender;
 	}
 
 	private Properties getMailProperties() {
@@ -69,33 +67,5 @@ public class MyConfiguration {
 	private String getEmailPasswordFromDb() {
 		return emailSenderService.getEmailSender().getEmailPassword();
 	}
-
-//	private String getMailUsername() {
-//		if (emailCredentialLoadingStatus) {
-//			try {
-//				File file = new ClassPathResource("/emailUsername.txt").getFile();
-//				return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
-//			} catch (IOException e) {
-//				LOG.error("Cant find emailUsername.txt");
-//				e.printStackTrace();
-//				return "";
-//			}
-//		}
-//		return "";
-//	}
-//
-//	private String getMailPassword() {
-//		if (emailCredentialLoadingStatus) {
-//			try {
-//				File file = new ClassPathResource("/emailPassword.txt").getFile();
-//				return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
-//			} catch (IOException e) {
-//				LOG.error("Cant find emailPassword.txt");
-//				e.printStackTrace();
-//				return "";
-//			}
-//		}
-//		return "";
-//	}
 
 }

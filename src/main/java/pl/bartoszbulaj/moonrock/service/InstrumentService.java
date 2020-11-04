@@ -19,4 +19,6 @@ public interface InstrumentService {
 
 	boolean sendEmailWIthSignal(String emailText);
 
+	void sendTestEmail();
+
 }

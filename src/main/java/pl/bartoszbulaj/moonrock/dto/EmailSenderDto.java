@@ -16,6 +16,12 @@ import lombok.ToString;
 @ToString
 public class EmailSenderDto {
 
+	public EmailSenderDto(String owner, String address, String password) {
+		this.owner = owner;
+		this.emailAddress = address;
+		this.emailPassword = password;
+	}
+
 	private Long id;
 	private String owner;
 	private String emailAddress;

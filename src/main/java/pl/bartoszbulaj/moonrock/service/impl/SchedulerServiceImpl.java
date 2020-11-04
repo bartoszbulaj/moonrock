@@ -5,6 +5,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import pl.bartoszbulaj.moonrock.service.EmailSenderService;
 import pl.bartoszbulaj.moonrock.service.InstrumentService;
 import pl.bartoszbulaj.moonrock.service.SchedulerService;
 
@@ -14,11 +15,18 @@ public class SchedulerServiceImpl implements SchedulerService {
 
 	private boolean historyAnalyzerStatus;
 	private InstrumentService instrumentService;
+	private EmailSenderService emailSenderService;
 
 	@Autowired
-	public SchedulerServiceImpl(InstrumentService instrumentService) {
+	public SchedulerServiceImpl(InstrumentService instrumentService, EmailSenderService emailSenderService) {
 		this.instrumentService = instrumentService;
-		this.setHistoryAnalyzerDisabled();
+		this.emailSenderService = emailSenderService;
+
+		if (this.emailSenderService.isAnyEmailSender()) {
+			setHistoryAnalyzerEnabled();
+		} else {
+			setHistoryAnalyzerDisabled();
+		}
 	}
 
 	@Override

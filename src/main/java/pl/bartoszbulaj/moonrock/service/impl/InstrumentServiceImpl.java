@@ -177,4 +177,11 @@ public class InstrumentServiceImpl implements InstrumentService {
 		return LocalDateTime.now(ZoneOffset.UTC).minusHours(5).format(formatter).replace(" ", "T");
 	}
 
+	@Override
+	public void sendTestEmail() {
+		StringBuilder emailText = new StringBuilder();
+		emailText.append(emailClient.createEmailText("Test instrument", "Test signal"));
+		sendEmailWIthSignal(emailText.toString());
+	}
+
 }
