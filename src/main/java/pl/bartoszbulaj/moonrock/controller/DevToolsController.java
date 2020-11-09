@@ -3,18 +3,18 @@ package pl.bartoszbulaj.moonrock.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import pl.bartoszbulaj.moonrock.config.BitmexClientConfig;
 import pl.bartoszbulaj.moonrock.service.WebsocketManagerService;
 
-@Controller
+@RestController
 @RequestMapping("/")
-public class OverviewController {
-
-	private static final String REDIRECT_TO_MAIN_PAGE = "redirect:/";
+public class DevToolsController {
 
 	@Autowired
 	private WebsocketManagerService websocketManagerService;
@@ -25,30 +25,29 @@ public class OverviewController {
 	}
 
 	@GetMapping("/init")
-	public String initWS() {
+	public ResponseEntity<String> initWS() {
 		List<String> instrumentList = BitmexClientConfig.getActiveInstruments();
 		websocketManagerService.addAllWebsockets(instrumentList);
 		websocketManagerService.connectAllWebsockets();
-
-		return REDIRECT_TO_MAIN_PAGE;
+		return new ResponseEntity<>("Websockets created and connected", HttpStatus.OK);
 	}
 
 	@GetMapping("/start")
-	public String sendMessage() {
+	public ResponseEntity<String> sendMessage() {
 		websocketManagerService.startCommunicaton();
-		return REDIRECT_TO_MAIN_PAGE;
+		return new ResponseEntity<>("Websockets started communication", HttpStatus.OK);
 	}
 
 	@GetMapping("/stop")
-	public String stopMessage() {
+	public ResponseEntity<String> stopMessage() {
 		websocketManagerService.stopCommunication();
-		return REDIRECT_TO_MAIN_PAGE;
+		return new ResponseEntity<>("Websockets stoped communication", HttpStatus.OK);
 	}
 
 	@GetMapping("/status")
-	public String websocketStatus() {
+	public ResponseEntity<String> websocketStatus() {
 		websocketManagerService.showStatus();
-		return REDIRECT_TO_MAIN_PAGE;
+		return new ResponseEntity<>("Websocket status showed", HttpStatus.OK);
 	}
 
 }
