@@ -23,8 +23,10 @@ public class PositionDto {
 	private String markPrice;
 	private String liquidationPrice;
 	private String maintMargin;
+	private String realisedPNL;
+	private String isOpen;
+	private String lastPrice;
+	private String leverage;
 	private String unrealisedGrossPnl;
 	private String unrealisedPnlPcnt;
-	private String realisedPNL;
-
 }

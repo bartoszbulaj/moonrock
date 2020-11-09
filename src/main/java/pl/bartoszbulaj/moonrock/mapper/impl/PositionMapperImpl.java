@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import pl.bartoszbulaj.moonrock.dto.PositionDto;
@@ -35,6 +36,7 @@ public class PositionMapperImpl implements PositionMapper {
 
 	@Override
 	public List<PositionDto> mapToPositionDtoList(String jsonString) throws IOException {
+		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		return objectMapper.readValue(jsonString, new TypeReference<List<PositionDto>>() {
 		});
 	}

@@ -2,6 +2,8 @@ package pl.bartoszbulaj.moonrock.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -20,9 +22,12 @@ import lombok.ToString;
 @ToString
 public class PositionEntity {
 
-	@Column(columnDefinition = "TEXT")
-	private String account; // 123456
+	// @Column(columnDefinition = "TEXT")
+	// private String account; // 123456
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	@Column(columnDefinition = "TEXT")
 	private String symbol; // example "ETHXBT"
 
 	@Column(columnDefinition = "TEXT")
