@@ -4,9 +4,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import pl.bartoszbulaj.moonrock.service.SchedulerService;
 import pl.bartoszbulaj.moonrock.service.WebsocketManagerService;
 import pl.bartoszbulaj.moonrock.websocket.InstrumentWebsocket;
 
@@ -15,8 +18,11 @@ import pl.bartoszbulaj.moonrock.websocket.InstrumentWebsocket;
 public class WebsocketManagerServiceImpl implements WebsocketManagerService {
 
 	private Set<InstrumentWebsocket> websocketSet;
+	private ApplicationContext context;
 
-	public WebsocketManagerServiceImpl() {
+	@Autowired
+	public WebsocketManagerServiceImpl(ApplicationContext context) {
+		this.context = context;
 		this.websocketSet = new HashSet<>();
 	}
 
@@ -34,6 +40,9 @@ public class WebsocketManagerServiceImpl implements WebsocketManagerService {
 		for (InstrumentWebsocket instrumentWebsocket : this.websocketSet) {
 			if (instrumentWebsocket.getSession() == null) {
 				instrumentWebsocket.connect();
+
+				SchedulerService scheduler = context.getBean(SchedulerService.class);
+				scheduler.enableHeartbeat();
 			}
 		}
 	}
@@ -49,6 +58,9 @@ public class WebsocketManagerServiceImpl implements WebsocketManagerService {
 	public void stopCommunication() {
 		for (InstrumentWebsocket instrumentWebsocket : this.websocketSet) {
 			instrumentWebsocket.closeConnection();
+
+			SchedulerService scheduler = context.getBean(SchedulerService.class);
+			scheduler.disableHeartbeat();
 		}
 	}
 

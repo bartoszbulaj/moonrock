@@ -14,4 +14,11 @@ public interface SchedulerService {
 
 	void setHistoryAnalyzerEnabled();
 
+	boolean isHeartbeatEnabled();
+
+	void enableHeartbeat();
+
+	void disableHeartbeat();
+
+	void sendHeartbeat();
 }
