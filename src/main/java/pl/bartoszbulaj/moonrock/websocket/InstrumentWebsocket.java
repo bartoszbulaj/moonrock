@@ -97,7 +97,6 @@ public class InstrumentWebsocket {
 		log.info("CLOSE CODE: " + reason.getCloseCode());
 
 		if (reason.getCloseCode().equals(CloseCodes.CLOSED_ABNORMALLY)) {
-			log.info("trying reconnect...");
 			sendMessage();
 		}
 	}
@@ -108,20 +107,22 @@ public class InstrumentWebsocket {
 		}
 		if (this.session.isOpen()) {
 			getBasicRemoteAndSendText();
+			log.info("Websocket subscribed.");
 		} else {
 			try {
 				reconnect();
 				log.info("Reconnected InstrumentWebsocket " + this.getInstrumentSymbol());
 				getBasicRemoteAndSendText();
+				log.info("Websocket subscribed.");
 			} catch (DeploymentException | IOException | URISyntaxException e) {
 				log.info("Cant reconnect, cant send message." + e.getCause() + " " + e.getMessage());
 				e.printStackTrace();
 			}
 		}
-		log.info("Websocket subscribed.");
 	}
 
 	private void reconnect() throws DeploymentException, IOException, URISyntaxException {
+		log.info("trying reconnect...");
 		this.webSocketContainer = ContainerProvider.getWebSocketContainer();
 		this.session = this.webSocketContainer.connectToServer(this, new URI(URL));
 	}
