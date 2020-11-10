@@ -13,20 +13,20 @@ import pl.bartoszbulaj.moonrock.entity.EmailSenderEntity;
 import pl.bartoszbulaj.moonrock.exception.BusinessException;
 import pl.bartoszbulaj.moonrock.mapper.EmailSenderMapper;
 import pl.bartoszbulaj.moonrock.repository.EmailSenderRepository;
-import pl.bartoszbulaj.moonrock.service.EmailSenderService;
+import pl.bartoszbulaj.moonrock.service.ConfigurationService;
 import pl.bartoszbulaj.moonrock.service.SchedulerService;
 
 @Service
 @Transactional
 
-public class EmailSenderServiceImpl implements EmailSenderService {
+public class ConfigurationServiceImpl implements ConfigurationService {
 
 	private EmailSenderRepository emailSenderRepository;
 	private EmailSenderMapper emailSenderMapper;
 	private ApplicationContext context;
 
 	@Autowired
-	public EmailSenderServiceImpl(EmailSenderRepository emailSenderRepository, EmailSenderMapper emailSenderMapper,
+	public ConfigurationServiceImpl(EmailSenderRepository emailSenderRepository, EmailSenderMapper emailSenderMapper,
 			ApplicationContext context) {
 		this.emailSenderRepository = emailSenderRepository;
 		this.emailSenderMapper = emailSenderMapper;
@@ -34,7 +34,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
 	}
 
 	@Override
-	public EmailSenderDto getEmailSender() {
+	public EmailSenderDto getEmailSenderCredentials() {
 		List<EmailSenderEntity> emailSenderEntityList = emailSenderRepository.findAll();
 		if (emailSenderEntityList.isEmpty()) {
 			throw new BusinessException("Cannot find any emailSender");
@@ -43,7 +43,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
 	}
 
 	@Override
-	public EmailSenderDto saveEmailSender(EmailSenderDto emailSenderDto) {
+	public EmailSenderDto saveEmailSenderCredentials(EmailSenderDto emailSenderDto) {
 		if (emailSenderDto == null) {
 			throw new IllegalArgumentException("emailSenderDto is null");
 		}

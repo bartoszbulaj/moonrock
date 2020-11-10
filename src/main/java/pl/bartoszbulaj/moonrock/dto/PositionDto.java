@@ -24,7 +24,7 @@ public class PositionDto {
 	private String liquidationPrice;
 	private String maintMargin;
 	private String realisedPNL;
-	private String isOpen;
+	private Boolean isOpen;
 	private String lastPrice;
 	private String leverage;
 	private String unrealisedGrossPnl;

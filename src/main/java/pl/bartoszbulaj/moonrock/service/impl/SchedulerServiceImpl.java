@@ -5,7 +5,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import pl.bartoszbulaj.moonrock.service.EmailSenderService;
+import pl.bartoszbulaj.moonrock.service.ConfigurationService;
 import pl.bartoszbulaj.moonrock.service.InstrumentService;
 import pl.bartoszbulaj.moonrock.service.SchedulerService;
 import pl.bartoszbulaj.moonrock.service.WebsocketManagerService;
@@ -17,11 +17,11 @@ public class SchedulerServiceImpl implements SchedulerService {
 	private boolean historyAnalyzerStatus;
 	private boolean heartbeatStatus;
 	private InstrumentService instrumentService;
-	private EmailSenderService emailSenderService;
+	private ConfigurationService emailSenderService;
 	private WebsocketManagerService websocketManagerService;
 
 	@Autowired
-	public SchedulerServiceImpl(InstrumentService instrumentService, EmailSenderService emailSenderService,
+	public SchedulerServiceImpl(InstrumentService instrumentService, ConfigurationService emailSenderService,
 			WebsocketManagerService websocketManagerService) {
 		this.instrumentService = instrumentService;
 		this.emailSenderService = emailSenderService;

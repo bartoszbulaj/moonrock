@@ -2,11 +2,11 @@ package pl.bartoszbulaj.moonrock.service;
 
 import pl.bartoszbulaj.moonrock.dto.EmailSenderDto;
 
-public interface EmailSenderService {
+public interface ConfigurationService {
 
-	EmailSenderDto getEmailSender();
+	EmailSenderDto getEmailSenderCredentials();
 
-	EmailSenderDto saveEmailSender(EmailSenderDto emailSenderDto);
+	EmailSenderDto saveEmailSenderCredentials(EmailSenderDto emailSenderDto);
 
 	boolean isAnyEmailSender();
 }

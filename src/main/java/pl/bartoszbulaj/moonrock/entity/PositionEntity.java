@@ -46,8 +46,8 @@ public class PositionEntity {
 	private String riskLimit; // 5000000000
 	@Column(columnDefinition = "TEXT")
 	private String leverage; // 50
-	@Column(columnDefinition = "TEXT")
-	private String crossMargin; // true
+	@Column(columnDefinition = "BOOLEAN")
+	private Boolean crossMargin; // true
 	@Column(columnDefinition = "TEXT")
 	private String deleveragePercentile; // 1
 	@Column(columnDefinition = "TEXT")
@@ -110,8 +110,8 @@ public class PositionEntity {
 	private String grossOpenPremium; // 0
 	@Column(columnDefinition = "TEXT")
 	private String grossExecCost; // 0
-	@Column(columnDefinition = "TEXT")
-	private String isOpen; // true
+	@Column(columnDefinition = "BOOLEAN")
+	private Boolean isOpen; // true
 	@Column(columnDefinition = "TEXT")
 	private String markPrice; // 0.02005
 	@Column(columnDefinition = "TEXT")
