@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import pl.bartoszbulaj.moonrock.dto.OrderDto;
-import pl.bartoszbulaj.moonrock.dto.PositionDto;
 import pl.bartoszbulaj.moonrock.mapper.OrderMapper;
 
 @Component
@@ -27,7 +26,7 @@ public class OrderMapperImpl implements OrderMapper {
 	@Override
 	public List<OrderDto> mapToOrderDtoList(String jsonString) throws IOException {
 		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		return objectMapper.readValue(jsonString, new TypeReference<List<PositionDto>>() {
+		return objectMapper.readValue(jsonString, new TypeReference<List<OrderDto>>() {
 		});
 	}
 

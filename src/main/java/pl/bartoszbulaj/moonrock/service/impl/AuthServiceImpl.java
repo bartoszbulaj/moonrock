@@ -3,9 +3,9 @@ package pl.bartoszbulaj.moonrock.service.impl;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
-import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -42,22 +42,49 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
-	public URL createConnectionUrl(String urlEndPoint) throws MalformedURLException {
-		if (StringUtils.isBlank(urlEndPoint)) {
+	public String createConnectionUrlString(String bitmexEndPoint, Map<String, String> filters)
+			throws MalformedURLException {
+		if (StringUtils.isBlank(bitmexEndPoint)) {
 			throw new IllegalArgumentException("urlEndPoint is blank");
 		}
-		return new URL(BitmexClientConfig.getBitmexApiUrl() + urlEndPoint);
+		if (filters != null && filters.size() > 0) {
+			StringBuilder urlString = new StringBuilder();
+			urlString.append(BitmexClientConfig.getBitmexApiUrl());
+			urlString.append(bitmexEndPoint);
+			urlString.append("?filter={");
+
+			filters.entrySet().stream().forEach(filter -> {
+				urlString.append("\"");
+				urlString.append(filter.getKey());
+				urlString.append("\"");
+				urlString.append(":");
+				urlString.append("\"");
+				urlString.append(filter.getValue());
+				urlString.append("\"");
+				urlString.append("&");
+			});
+
+			if (urlString.charAt(urlString.length() - 1) == '&') {
+				urlString.deleteCharAt(urlString.length() - 1);
+			}
+			urlString.append("}");
+			return urlString.toString();
+		}
+		if (filters == null) {
+			return BitmexClientConfig.getBitmexApiUrl() + bitmexEndPoint;
+		}
+		return "";
 	}
 
 	@Override
-	public HttpURLConnection addAuthRequestHeaders(String owner, String requestMethod, String urlEndPoint,
+	public HttpURLConnection addAuthRequestHeaders(String owner, String requestMethod, String bitmexEndPoint,
 			HttpURLConnection connection) throws ProtocolException {
 		ApiKeyDto apiKeyDto = apiKeyService.getOneByOwner(owner);
 		connection.setRequestMethod(requestMethod);
 		connection.setRequestProperty("api-expires", getTimeToRequestExpiration());
 		connection.setRequestProperty("api-key", apiKeyDto.getApiPublicKey());
 		connection.setRequestProperty("api-signature", getRequestSignature(apiKeyDto.getApiSecretKey().getBytes(UTF_8),
-				getTimeToRequestExpiration(), urlEndPoint, requestMethod));
+				getTimeToRequestExpiration(), bitmexEndPoint, requestMethod));
 		return connection;
 	}
 

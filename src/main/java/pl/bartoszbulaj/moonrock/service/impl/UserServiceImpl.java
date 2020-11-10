@@ -2,6 +2,7 @@ package pl.bartoszbulaj.moonrock.service.impl;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.URL;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,11 +41,11 @@ public class UserServiceImpl implements UserService {
 			throw new IllegalArgumentException("Wrong argument");
 		} else {
 			String requestMethod = "GET";
-			String urlEndPoint = "/user/wallet";
+			String bitmexEndPoint = "/user/wallet";
 
-			HttpURLConnection connection = (HttpURLConnection) authService.createConnectionUrl(urlEndPoint)
-					.openConnection();
-			authService.addAuthRequestHeaders(owner, requestMethod, urlEndPoint, connection);
+			String connectionUrlString = authService.createConnectionUrlString(bitmexEndPoint, null);
+			HttpURLConnection connection = (HttpURLConnection) new URL(connectionUrlString).openConnection();
+			authService.addAuthRequestHeaders(owner, requestMethod, bitmexEndPoint, connection);
 			String resultString = connectionService.getHttpRequestResult(connection);
 			connection.disconnect();
 

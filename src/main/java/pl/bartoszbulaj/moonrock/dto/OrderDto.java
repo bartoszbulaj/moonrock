@@ -33,10 +33,10 @@ public class OrderDto {
 	// "execInst": "string",
 	// "contingencyType": "string",
 	// "exDestination": "string",
-	// "ordStatus": "string",
-	// "triggered": "string",
+	private String ordStatus;
+	private String triggered;
 	// "workingIndicator": true,
-	// "ordRejReason": "string",
+	private String ordRejReason;
 	// "simpleLeavesQty": 0,
 	// "leavesQty": 0,
 	// "simpleCumQty": 0,
@@ -44,6 +44,6 @@ public class OrderDto {
 	// "avgPx": 0,
 	// "multiLegReportingType": "string",
 	// "text": "string",
-	private String transactTime; // "2019-06-24T06:11:25.680Z"
+	private String transactTime;
 	private String timestamp;
 }

@@ -80,13 +80,13 @@ public class UserController {
 	}
 
 	@GetMapping("/order")
-	@ResponseBody
-	public ResponseEntity<List<OrderDto>> getAllOrders(@RequestParam String owner) {
+	@ResponseBody // TODO add optional @RequestParam String open=false/true
+	public ResponseEntity<List<OrderDto>> getOrders(@RequestParam String owner) {
 		if (StringUtils.isBlank(owner)) {
 			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
 		}
 		try {
-			List<OrderDto> orders = orderService.getAllOrders(owner);
+			List<OrderDto> orders = orderService.getOpenOrders(owner);
 			return new ResponseEntity<>(orders, HttpStatus.OK);
 		} catch (BusinessException | IOException e) {
 			e.printStackTrace();

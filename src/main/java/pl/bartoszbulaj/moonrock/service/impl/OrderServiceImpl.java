@@ -2,8 +2,12 @@ package pl.bartoszbulaj.moonrock.service.impl;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,10 +23,21 @@ import pl.bartoszbulaj.moonrock.service.OrderService;
 @Transactional
 public class OrderServiceImpl implements OrderService {
 
+	private static final String BITMEX_END_POINT = "/order";
+
 	private ApiKeyService apiKeyService;
 	private AuthService authService;
 	private ConnectionService connectionService;
 	private OrderMapper orderMapper;
+
+	@Autowired
+	public OrderServiceImpl(ApiKeyService apiKeyService, AuthService authService, ConnectionService connectionService,
+			OrderMapper orderMapper) {
+		this.apiKeyService = apiKeyService;
+		this.authService = authService;
+		this.connectionService = connectionService;
+		this.orderMapper = orderMapper;
+	}
 
 	@Override
 	public List<OrderDto> getAllOrders(String owner) throws IOException {
@@ -30,11 +45,10 @@ public class OrderServiceImpl implements OrderService {
 			throw new IllegalArgumentException("Cant find owner");
 		} else {
 			String requestMethod = "GET";
-			String urlEndPoint = "/order";
 
-			HttpURLConnection connection = (HttpURLConnection) authService.createConnectionUrl(urlEndPoint)
-					.openConnection();
-			authService.addAuthRequestHeaders(owner, requestMethod, urlEndPoint, connection);
+			String urlString = authService.createConnectionUrlString(BITMEX_END_POINT, null);
+			HttpURLConnection connection = (HttpURLConnection) new URL(urlString).openConnection();
+			authService.addAuthRequestHeaders(owner, requestMethod, urlString, connection);
 			String resultString = connectionService.getHttpRequestResult(connection);
 			connection.disconnect();
 
@@ -42,4 +56,22 @@ public class OrderServiceImpl implements OrderService {
 		}
 	}
 
+	@Override
+	public List<OrderDto> getOpenOrders(String owner) throws IOException {
+		if (StringUtils.isBlank(owner) || apiKeyService.getOneByOwner(owner) == null) {
+			throw new IllegalArgumentException("Cant find owner");
+		} else {
+			String requestMethod = "GET";
+			Map<String, String> filters = new HashMap<>();
+			filters.put("open", "true");
+			// TODO line belofe not works with filters map
+			String urlString = authService.createConnectionUrlString(BITMEX_END_POINT, null);
+			HttpURLConnection connection = (HttpURLConnection) new URL(urlString).openConnection();
+			authService.addAuthRequestHeaders(owner, requestMethod, BITMEX_END_POINT, connection);
+			String resultString = connectionService.getHttpRequestResult(connection);
+			connection.disconnect();
+
+			return orderMapper.mapToOrderDtoList(resultString);
+		}
+	}
 }

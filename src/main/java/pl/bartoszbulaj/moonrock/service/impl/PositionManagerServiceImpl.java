@@ -2,11 +2,13 @@ package pl.bartoszbulaj.moonrock.service.impl;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
 
 import io.micrometer.core.instrument.util.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 import pl.bartoszbulaj.moonrock.dto.PositionDto;
 import pl.bartoszbulaj.moonrock.exception.BusinessException;
 import pl.bartoszbulaj.moonrock.mapper.PositionMapper;
@@ -16,6 +18,7 @@ import pl.bartoszbulaj.moonrock.service.ConnectionService;
 import pl.bartoszbulaj.moonrock.service.PositionManagerService;
 
 @Component
+@Slf4j
 public class PositionManagerServiceImpl implements PositionManagerService {
 
 	private ApiKeyService apiKeyService;
@@ -37,11 +40,11 @@ public class PositionManagerServiceImpl implements PositionManagerService {
 			throw new IllegalArgumentException("Cant find owner");
 		} else {
 			String requestMethod = "GET";
-			String urlEndPoint = "/position";
+			String bitmexEndPoint = "/position";
 
-			HttpURLConnection connection = (HttpURLConnection) authService.createConnectionUrl(urlEndPoint)
-					.openConnection();
-			authService.addAuthRequestHeaders(owner, requestMethod, urlEndPoint, connection);
+			String urlString = authService.createConnectionUrlString(bitmexEndPoint, null);
+			HttpURLConnection connection = (HttpURLConnection) new URL(urlString).openConnection();
+			authService.addAuthRequestHeaders(owner, requestMethod, bitmexEndPoint, connection);
 			String resultString = connectionService.getHttpRequestResult(connection);
 			connection.disconnect();
 
