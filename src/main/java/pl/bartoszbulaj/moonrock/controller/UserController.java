@@ -20,7 +20,9 @@ import io.micrometer.core.instrument.util.StringUtils;
 import pl.bartoszbulaj.moonrock.dto.ApiKeyDto;
 import pl.bartoszbulaj.moonrock.dto.PositionDto;
 import pl.bartoszbulaj.moonrock.dto.WalletDto;
+import pl.bartoszbulaj.moonrock.exception.BusinessException;
 import pl.bartoszbulaj.moonrock.service.ApiKeyService;
+import pl.bartoszbulaj.moonrock.service.PositionManagerService;
 import pl.bartoszbulaj.moonrock.service.UserService;
 import pl.bartoszbulaj.moonrock.validator.ApiKeyValidator;
 
@@ -32,12 +34,15 @@ public class UserController {
 	private UserService userService;
 	private ApiKeyService apiKeyService;
 	private ApiKeyValidator apiKeyValidator;
+	private PositionManagerService positionManagerService;
 
 	@Autowired
-	public UserController(UserService userService, ApiKeyService apiKeyService, ApiKeyValidator apiKeyValidator) {
+	public UserController(UserService userService, ApiKeyService apiKeyService, ApiKeyValidator apiKeyValidator,
+			PositionManagerService positionManagerService) {
 		this.userService = userService;
 		this.apiKeyService = apiKeyService;
 		this.apiKeyValidator = apiKeyValidator;
+		this.positionManagerService = positionManagerService;
 	}
 
 	@GetMapping("/wallet")
@@ -61,12 +66,16 @@ public class UserController {
 		if (StringUtils.isBlank(owner)) {
 			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
 		}
-		List<PositionDto> positions = userService.getPositions(owner);
-		return new ResponseEntity<>(positions, HttpStatus.OK);
-
+		try {
+			List<PositionDto> positions = positionManagerService.getPositions(owner);
+			return new ResponseEntity<>(positions, HttpStatus.OK);
+		} catch (BusinessException e) {
+			e.printStackTrace();
+			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+		}
 	}
 
-	// TODO refactor to ResponseEntity -> JSON? other data?
+	// TODO delete or refactor to ResponseEntity -> JSON? other data?
 	@GetMapping("/panel")
 	public String showUserPanel(Model model, @RequestParam String owner) throws IOException {
 		if (StringUtils.isBlank(owner)) {

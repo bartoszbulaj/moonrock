@@ -13,14 +13,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 import pl.bartoszbulaj.moonrock.exception.BusinessException;
-import pl.bartoszbulaj.moonrock.service.EmailSenderService;
+import pl.bartoszbulaj.moonrock.service.ConfigurationService;
 
 @Configuration
 @Slf4j
-public class MyConfiguration {
+public class AppConfiguration {
 
 	@Autowired
-	private EmailSenderService emailSenderService;
+	private ConfigurationService emailSenderService;
 
 	@Bean
 	public ModelMapper modelMapper() {
@@ -61,11 +61,11 @@ public class MyConfiguration {
 	}
 
 	private String getEmailAddressFromDb() {
-		return emailSenderService.getEmailSender().getEmailAddress();
+		return emailSenderService.getEmailSenderCredentials().getEmailAddress();
 	}
 
 	private String getEmailPasswordFromDb() {
-		return emailSenderService.getEmailSender().getEmailPassword();
+		return emailSenderService.getEmailSenderCredentials().getEmailPassword();
 	}
 
 }
