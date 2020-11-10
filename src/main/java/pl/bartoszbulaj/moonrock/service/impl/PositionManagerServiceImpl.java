@@ -63,7 +63,6 @@ public class PositionManagerServiceImpl implements PositionManagerService {
 	@Override
 	public void updateTrailingStop(PositionDto positionDto) {
 		// TODO Auto-generated method stub
-
 	}
 
 }
