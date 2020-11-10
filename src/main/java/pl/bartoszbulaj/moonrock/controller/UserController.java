@@ -18,10 +18,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import io.micrometer.core.instrument.util.StringUtils;
 import pl.bartoszbulaj.moonrock.dto.ApiKeyDto;
+import pl.bartoszbulaj.moonrock.dto.OrderDto;
 import pl.bartoszbulaj.moonrock.dto.PositionDto;
 import pl.bartoszbulaj.moonrock.dto.WalletDto;
 import pl.bartoszbulaj.moonrock.exception.BusinessException;
 import pl.bartoszbulaj.moonrock.service.ApiKeyService;
+import pl.bartoszbulaj.moonrock.service.OrderService;
 import pl.bartoszbulaj.moonrock.service.PositionManagerService;
 import pl.bartoszbulaj.moonrock.service.UserService;
 import pl.bartoszbulaj.moonrock.validator.ApiKeyValidator;
@@ -35,14 +37,16 @@ public class UserController {
 	private ApiKeyService apiKeyService;
 	private ApiKeyValidator apiKeyValidator;
 	private PositionManagerService positionManagerService;
+	private OrderService orderService;
 
 	@Autowired
 	public UserController(UserService userService, ApiKeyService apiKeyService, ApiKeyValidator apiKeyValidator,
-			PositionManagerService positionManagerService) {
+			PositionManagerService positionManagerService, OrderService orderService) {
 		this.userService = userService;
 		this.apiKeyService = apiKeyService;
 		this.apiKeyValidator = apiKeyValidator;
 		this.positionManagerService = positionManagerService;
+		this.orderService = orderService;
 	}
 
 	@GetMapping("/wallet")
@@ -62,7 +66,7 @@ public class UserController {
 
 	@GetMapping("/position")
 	@ResponseBody
-	public ResponseEntity<List<PositionDto>> getOpenPositions(@RequestParam String owner) throws IOException {
+	public ResponseEntity<List<PositionDto>> getPositions(@RequestParam String owner) throws IOException {
 		if (StringUtils.isBlank(owner)) {
 			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
 		}
@@ -73,6 +77,22 @@ public class UserController {
 			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
 		}
+	}
+
+	@GetMapping("/order")
+	@ResponseBody
+	public ResponseEntity<List<OrderDto>> getAllOrders(@RequestParam String owner) {
+		if (StringUtils.isBlank(owner)) {
+			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+		}
+		try {
+			List<OrderDto> orders = orderService.getAllOrders(owner);
+			return new ResponseEntity<>(orders, HttpStatus.OK);
+		} catch (BusinessException | IOException e) {
+			e.printStackTrace();
+			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+		}
+
 	}
 
 	// TODO delete or refactor to ResponseEntity -> JSON? other data?

@@ -54,7 +54,7 @@ public class PositionManagerServiceImpl implements PositionManagerService {
 		if (positionDto == null) {
 			throw new IllegalArgumentException();
 		}
-		if (!positionDto.getIsOpen()) {
+		if (!positionDto.getIsOpen().booleanValue()) {
 			throw new BusinessException("Position is closed");
 		}
 		// TODO create close market order and execute

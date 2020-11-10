@@ -1,9 +1,6 @@
-package pl.bartoszbulaj.moonrock.entity;
+package pl.bartoszbulaj.moonrock.dto;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import org.springframework.stereotype.Component;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,17 +8,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@Entity
+@Component
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @ToString
-public class OrderEntity {
+public class OrderDto {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
 	private String orderID;
 	private String symbol;
 	private String side;
@@ -52,5 +46,4 @@ public class OrderEntity {
 	// "text": "string",
 	private String transactTime; // "2019-06-24T06:11:25.680Z"
 	private String timestamp;
-
 }
