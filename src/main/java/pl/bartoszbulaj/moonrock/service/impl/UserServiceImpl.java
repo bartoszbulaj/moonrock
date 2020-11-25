@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
 			String requestMethod = "GET";
 			String bitmexEndPoint = "/user/wallet";
 
-			String connectionUrlString = authService.createConnectionUrlString(bitmexEndPoint, null);
+			String connectionUrlString = authService.createConnectionUrlStringWithFilters(bitmexEndPoint, null);
 			HttpURLConnection connection = (HttpURLConnection) new URL(connectionUrlString).openConnection();
 			authService.addAuthRequestHeaders(owner, requestMethod, bitmexEndPoint, connection);
 			String resultString = connectionService.getHttpRequestResult(connection);

@@ -9,7 +9,10 @@ public interface PositionManagerService {
 
 	List<PositionDto> getPositions(String owner) throws IOException;
 
-	void closeWithMarket(PositionDto positionDto);
+	String closePositionWithMarketOrder(PositionDto positionDto, String owner) throws IOException;
 
 	void updateTrailingStop(PositionDto positionDto);
+
+	void removePositionFromPositionsList(String owner, PositionDto positionDto);
+
 }

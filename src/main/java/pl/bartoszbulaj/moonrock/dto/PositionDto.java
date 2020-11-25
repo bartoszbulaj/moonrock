@@ -29,4 +29,5 @@ public class PositionDto {
 	private String leverage;
 	private String unrealisedGrossPnl;
 	private String unrealisedPnlPcnt;
+	private String unrealisedRoePcnt;
 }

@@ -9,9 +9,14 @@ public interface AuthService {
 
 	boolean authenticateUser();
 
-	String createConnectionUrlString(String bitmexEndPoint, Map<String, String> filters) throws MalformedURLException;
+	String createConnectionUrlStringWithFilters(String bitmexEndPoint, Map<String, String> filters)
+			throws MalformedURLException;
 
 	HttpURLConnection addAuthRequestHeaders(String owner, String requestMethod, String bitmexEndPoint,
 			HttpURLConnection connection) throws ProtocolException;
+
+	String removeUrlPrefix(String bitmexEndpoint);
+
+	String createUrlWithParams(String bitmexEndPoint, Map<String, String> paramsMap);
 
 }

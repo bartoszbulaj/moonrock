@@ -80,8 +80,8 @@ public class UserController {
 	}
 
 	@GetMapping("/order")
-	@ResponseBody // TODO add optional @RequestParam String open=false/true
-	public ResponseEntity<List<OrderDto>> getOrders(@RequestParam String owner) {
+	@ResponseBody
+	public ResponseEntity<List<OrderDto>> getOpenOrders(@RequestParam String owner) {
 		if (StringUtils.isBlank(owner)) {
 			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
 		}

@@ -2,7 +2,10 @@ package pl.bartoszbulaj.moonrock.service.impl;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +28,26 @@ public class InstrumentServiceTest {
 	private InstrumentService instrumentService;
 	@Autowired
 	private InstrumentHistoryRepository instrumentHistoryRepository;
+
+	@Test
+	public void testt() {
+
+		Map<String, Integer> mapa = new HashMap<>();
+		List<String> list = Arrays.asList("as", "ds", "gf", "as", "jk", "km", "oi", "oi", "as");
+
+		for (String s : list) {
+			if (mapa.containsKey(s)) {
+				Integer value = mapa.get(s);
+				mapa.replace(s, value + 1);
+			} else {
+				mapa.put(s, 1);
+			}
+
+			mapa.entrySet().stream().sorted((w, wa) -> w.getValue().compareTo(wa.getValue()))
+					.forEach(System.out::println);
+		}
+
+	}
 
 	@Test
 	public void shouldDeleteAllHistory() throws Exception {

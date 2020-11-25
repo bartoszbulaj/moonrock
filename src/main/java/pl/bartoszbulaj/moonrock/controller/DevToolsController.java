@@ -1,15 +1,21 @@
 package pl.bartoszbulaj.moonrock.controller;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.micrometer.core.instrument.util.StringUtils;
 import pl.bartoszbulaj.moonrock.config.BitmexClientConfig;
+import pl.bartoszbulaj.moonrock.dto.PositionDto;
+import pl.bartoszbulaj.moonrock.service.PositionManagerService;
 import pl.bartoszbulaj.moonrock.service.WebsocketManagerService;
 
 @RestController
@@ -18,6 +24,9 @@ public class DevToolsController {
 
 	@Autowired
 	private WebsocketManagerService websocketManagerService;
+
+	@Autowired
+	private PositionManagerService positionManager;
 
 	@GetMapping
 	public String showOverview() {
@@ -48,6 +57,24 @@ public class DevToolsController {
 	public ResponseEntity<String> websocketStatus() {
 		websocketManagerService.showStatus();
 		return new ResponseEntity<>("Websocket status showed", HttpStatus.OK);
+	}
+
+	@GetMapping("/market-close")
+	public ResponseEntity<String> closePositionWithMarket(@RequestParam String owner, @RequestParam String symbol)
+			throws IOException {
+		if (StringUtils.isBlank(symbol) || !BitmexClientConfig.getActiveInstruments().contains(symbol.toUpperCase())) {
+			throw new IllegalArgumentException();
+		}
+
+		List<PositionDto> positionListFiltered = positionManager.getPositions(owner).stream()
+				.filter(p -> p.getSymbol().equalsIgnoreCase(symbol)).collect(Collectors.toList());
+		if (!positionListFiltered.isEmpty()) {
+			String result = positionManager.closePositionWithMarketOrder(positionListFiltered.get(0), owner);
+			return new ResponseEntity<>(result, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>("There is no open position with given symbol: " + symbol,
+					HttpStatus.BAD_REQUEST);
+		}
 	}
 
 }

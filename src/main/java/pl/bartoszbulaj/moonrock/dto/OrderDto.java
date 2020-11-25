@@ -16,6 +16,12 @@ import lombok.ToString;
 @ToString
 public class OrderDto {
 
+	public OrderDto(String symbol, String ordType, String orderQty) {
+		this.symbol = symbol;
+		this.ordType = ordType;
+		this.orderQty = orderQty;
+	}
+
 	private String orderID;
 	private String symbol;
 	private String side;
@@ -30,7 +36,7 @@ public class OrderDto {
 	// "settlCurrency": "string",
 	private String ordType;
 	// "timeInForce": "string",
-	// "execInst": "string",
+	private String execInst;
 	// "contingencyType": "string",
 	// "exDestination": "string",
 	private String ordStatus;

@@ -3,7 +3,10 @@ package pl.bartoszbulaj.moonrock.service.impl;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -15,23 +18,31 @@ import pl.bartoszbulaj.moonrock.mapper.PositionMapper;
 import pl.bartoszbulaj.moonrock.service.ApiKeyService;
 import pl.bartoszbulaj.moonrock.service.AuthService;
 import pl.bartoszbulaj.moonrock.service.ConnectionService;
+import pl.bartoszbulaj.moonrock.service.OrderService;
 import pl.bartoszbulaj.moonrock.service.PositionManagerService;
 
 @Component
 @Slf4j
 public class PositionManagerServiceImpl implements PositionManagerService {
 
+	private static final String POST_METHOD = "POST";
+	private static final String GET_METHOD = "GET";
 	private ApiKeyService apiKeyService;
 	private AuthService authService;
 	private PositionMapper positionMapper;
 	private ConnectionService connectionService;
+	private OrderService orderService;
+
+	private List<PositionDto> positionsList;
 
 	public PositionManagerServiceImpl(AuthService authService, ApiKeyService apiKeyService,
-			PositionMapper positionMapper, ConnectionService connectionService) {
+			PositionMapper positionMapper, ConnectionService connectionService, OrderService orderService) {
 		this.connectionService = connectionService;
 		this.apiKeyService = apiKeyService;
 		this.authService = authService;
 		this.positionMapper = positionMapper;
+		this.orderService = orderService;
+
 	}
 
 	@Override
@@ -39,28 +50,48 @@ public class PositionManagerServiceImpl implements PositionManagerService {
 		if (StringUtils.isBlank(owner) || apiKeyService.getOneByOwner(owner) == null) {
 			throw new IllegalArgumentException("Cant find owner");
 		} else {
-			String requestMethod = "GET";
 			String bitmexEndPoint = "/position";
+			Map<String, String> filters = new HashMap<>();
+			filters.put("isOpen", "true");
 
-			String urlString = authService.createConnectionUrlString(bitmexEndPoint, null);
+			String urlString = authService.createConnectionUrlStringWithFilters(bitmexEndPoint, filters);
 			HttpURLConnection connection = (HttpURLConnection) new URL(urlString).openConnection();
-			authService.addAuthRequestHeaders(owner, requestMethod, bitmexEndPoint, connection);
+			authService.addAuthRequestHeaders(owner, GET_METHOD, authService.removeUrlPrefix(urlString), connection);
 			String resultString = connectionService.getHttpRequestResult(connection);
 			connection.disconnect();
 
-			return positionMapper.mapToPositionDtoList(resultString);
+			this.positionsList = positionMapper.mapToPositionDtoList(resultString);
+			return this.positionsList;
 		}
 	}
 
 	@Override
-	public void closeWithMarket(PositionDto positionDto) {
+	public String closePositionWithMarketOrder(PositionDto positionDto, String owner) throws IOException {
 		if (positionDto == null) {
 			throw new IllegalArgumentException();
 		}
 		if (!positionDto.getIsOpen().booleanValue()) {
 			throw new BusinessException("Position is closed");
 		}
-		// TODO create close market order and execute
+		String bitmexEndPoint = "/order";
+
+		Map<String, String> paramsMap = new HashMap<>();
+		paramsMap.put("symbol", positionDto.getSymbol());
+		paramsMap.put("orderQty", negativeQty(positionDto.getCurrentQty()));
+		paramsMap.put("ordType", "Market");
+
+		String urlStringWithParams = authService.createUrlWithParams(bitmexEndPoint, paramsMap);
+		HttpURLConnection connection = (HttpURLConnection) new URL(urlStringWithParams).openConnection();
+		authService.addAuthRequestHeaders(owner, POST_METHOD, authService.removeUrlPrefix(urlStringWithParams),
+				connection);
+		String resultString = connectionService.getHttpRequestResult(connection);
+		connection.disconnect();
+
+		orderService.closeAllOrders(owner, positionDto.getSymbol());
+
+		removePositionFromPositionsList(owner, positionDto);
+
+		return resultString;
 	}
 
 	@Override
@@ -68,4 +99,13 @@ public class PositionManagerServiceImpl implements PositionManagerService {
 		// TODO Auto-generated method stub
 	}
 
+	@Override
+	public void removePositionFromPositionsList(String owner, PositionDto positionDto) {
+		this.positionsList = this.positionsList.stream()
+				.filter(p -> !p.getSymbol().equalsIgnoreCase(positionDto.getSymbol())).collect(Collectors.toList());
+	}
+
+	private String negativeQty(String orderQty) {
+		return orderQty.startsWith("-") ? orderQty.substring(1) : "-" + orderQty;
+	}
 }
