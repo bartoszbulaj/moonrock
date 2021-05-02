@@ -9,24 +9,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import pl.bartoszbulaj.moonrock.dto.EmailSenderDto;
-import pl.bartoszbulaj.moonrock.service.ConfigurationService;
+import pl.bartoszbulaj.moonrock.service.AppConfigurationService;
 import pl.bartoszbulaj.moonrock.validator.EmailSenderValidator;
 
 @RestController
 @RequestMapping("/config")
-public class ConfigurationController {
+public class AppConfigurationController {
 
-	private ConfigurationService emailSenderService;
+	private AppConfigurationService emailSenderService;
 	private EmailSenderValidator emailSenderValidator;
 
 	@Autowired
-	public ConfigurationController(ConfigurationService emailSenderService, EmailSenderValidator emailSenderValidator) {
+	public AppConfigurationController(AppConfigurationService emailSenderService, EmailSenderValidator emailSenderValidator) {
 		this.emailSenderService = emailSenderService;
 		this.emailSenderValidator = emailSenderValidator;
 	}
 
 	@PostMapping("/email-sender")
-	public ResponseEntity<EmailSenderDto> addEmailSender(@RequestBody EmailSenderDto emailSenderDto) {
+	public ResponseEntity<EmailSenderDto> addEmailSenderCredentials(@RequestBody EmailSenderDto emailSenderDto) {
 		if (emailSenderValidator.isEmailSenderValid(emailSenderDto)) {
 			EmailSenderDto emailSenderDtoToSave = emailSenderService.saveEmailSenderCredentials(emailSenderDto);
 			return new ResponseEntity<>(emailSenderDtoToSave, HttpStatus.CREATED);

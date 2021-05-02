@@ -13,15 +13,15 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import pl.bartoszbulaj.moonrock.dto.InstrumentHistoryDto;
-import pl.bartoszbulaj.moonrock.service.HistoryAnalyzer;
+import pl.bartoszbulaj.moonrock.service.HistoryAnalyzerService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @Transactional
-public class HistoryAnalyzerTest {
+public class HistoryAnalyzerServiceTest {
 
 	@Autowired
-	private HistoryAnalyzer historyAnalyzer;
+	private HistoryAnalyzerService historyAnalyzerService;
 
 	private List<InstrumentHistoryDto> instrumentHistoryDtoList = new ArrayList<>();
 	private InstrumentHistoryDto instrumentHistoryDto1;
@@ -49,7 +49,7 @@ public class HistoryAnalyzerTest {
 		instrumentHistoryDtoList.add(instrumentHistoryDto4);
 		instrumentHistoryDtoList.add(instrumentHistoryDto5);
 		// when
-		String result = historyAnalyzer.checkForSignal(instrumentHistoryDtoList);
+		String result = historyAnalyzerService.checkForSignal(instrumentHistoryDtoList);
 		// then
 		assertEquals("Sell", result);
 	}
@@ -73,7 +73,7 @@ public class HistoryAnalyzerTest {
 		instrumentHistoryDtoList.add(instrumentHistoryDto4);
 		instrumentHistoryDtoList.add(instrumentHistoryDto5);
 		// when
-		String result = historyAnalyzer.checkForSignal(instrumentHistoryDtoList);
+		String result = historyAnalyzerService.checkForSignal(instrumentHistoryDtoList);
 		// then
 		assertEquals("Buy", result);
 	}
@@ -97,7 +97,7 @@ public class HistoryAnalyzerTest {
 		instrumentHistoryDtoList.add(instrumentHistoryDto4);
 		instrumentHistoryDtoList.add(instrumentHistoryDto5);
 		// when
-		String result = historyAnalyzer.checkForSignal(instrumentHistoryDtoList);
+		String result = historyAnalyzerService.checkForSignal(instrumentHistoryDtoList);
 		// then
 		assertEquals("", result);
 	}
@@ -107,7 +107,7 @@ public class HistoryAnalyzerTest {
 		// given
 		List<InstrumentHistoryDto> emptyList = new ArrayList<>();
 		// when
-		String result = historyAnalyzer.checkForSignal(emptyList);
+		String result = historyAnalyzerService.checkForSignal(emptyList);
 		// then
 		assertEquals("", result);
 	}
@@ -115,7 +115,7 @@ public class HistoryAnalyzerTest {
 	@Test
 	public void shouldReturnNoSignalWhenArgumentIsNull() {
 		// when
-		String result = historyAnalyzer.checkForSignal(null);
+		String result = historyAnalyzerService.checkForSignal(null);
 		// then
 		assertEquals("", result);
 	}

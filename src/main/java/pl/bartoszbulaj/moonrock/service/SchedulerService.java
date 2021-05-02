@@ -8,12 +8,6 @@ public interface SchedulerService {
 
 	void analyzeHistory();
 
-	boolean isHistoryAnalyzerEnabled();
-
-	void setHistoryAnalyzerDisabled();
-
-	void setHistoryAnalyzerEnabled();
-
 	boolean isHeartbeatEnabled();
 
 	void enableHeartbeat();

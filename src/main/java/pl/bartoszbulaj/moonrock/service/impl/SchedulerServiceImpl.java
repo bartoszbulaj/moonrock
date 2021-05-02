@@ -5,7 +5,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import pl.bartoszbulaj.moonrock.service.ConfigurationService;
+import pl.bartoszbulaj.moonrock.service.AppConfigurationService;
 import pl.bartoszbulaj.moonrock.service.InstrumentService;
 import pl.bartoszbulaj.moonrock.service.SchedulerService;
 import pl.bartoszbulaj.moonrock.service.WebsocketManagerService;
@@ -14,24 +14,28 @@ import pl.bartoszbulaj.moonrock.service.WebsocketManagerService;
 @Transactional
 public class SchedulerServiceImpl implements SchedulerService {
 
-	private boolean historyAnalyzerStatus;
-	private boolean heartbeatStatus;
 	private InstrumentService instrumentService;
-	private ConfigurationService emailSenderService;
+	private AppConfigurationService appConfigurationService;
 	private WebsocketManagerService websocketManagerService;
 
+	private boolean heartbeatStatus;
+	private boolean historyAnalyzerStatus;
+	private boolean emailSenderStatus;
+
 	@Autowired
-	public SchedulerServiceImpl(InstrumentService instrumentService, ConfigurationService emailSenderService,
+	public SchedulerServiceImpl(InstrumentService instrumentService, AppConfigurationService appConfigurationService,
 			WebsocketManagerService websocketManagerService) {
 		this.instrumentService = instrumentService;
-		this.emailSenderService = emailSenderService;
+		this.appConfigurationService = appConfigurationService;
 		this.websocketManagerService = websocketManagerService;
 		this.heartbeatStatus = false;
 
-		if (this.emailSenderService.isAnyEmailSender()) {
-			setHistoryAnalyzerEnabled();
+		if (this.appConfigurationService.isAnyEmailSender()) {
+			emailSenderStatus = appConfigurationService.setEmailSenderEnabled(true);
+			historyAnalyzerStatus = appConfigurationService.setHistoryAnalyzerEnabled(true);
 		} else {
-			setHistoryAnalyzerDisabled();
+			emailSenderStatus = appConfigurationService.setEmailSenderEnabled(false);
+			historyAnalyzerStatus = appConfigurationService.setHistoryAnalyzerEnabled(false);
 		}
 	}
 
@@ -54,19 +58,13 @@ public class SchedulerServiceImpl implements SchedulerService {
 	@Override
 	@Scheduled(cron = "45 0 * * * *")
 	public void analyzeHistory() {
+		boolean isSignal = false;
 		if (historyAnalyzerStatus) {
-			instrumentService.analyzeInstrumentHistoryAndSendEmailWithSignals();
+			isSignal = instrumentService.analyzeInstrumentHistory();
 		}
-	}
-
-	@Override
-	public boolean isHistoryAnalyzerEnabled() {
-		return historyAnalyzerStatus;
-	}
-
-	@Override
-	public void setHistoryAnalyzerDisabled() {
-		this.historyAnalyzerStatus = false;
+		if (emailSenderStatus && isSignal) {
+			instrumentService.sendEmailWithSignals();
+		}
 	}
 
 	@Override
@@ -75,11 +73,6 @@ public class SchedulerServiceImpl implements SchedulerService {
 		if (heartbeatStatus) {
 			websocketManagerService.pingServer();
 		}
-	}
-
-	@Override
-	public void setHistoryAnalyzerEnabled() {
-		this.historyAnalyzerStatus = true;
 	}
 
 	@Override

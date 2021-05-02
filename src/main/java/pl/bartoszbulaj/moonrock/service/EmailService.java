@@ -2,7 +2,7 @@ package pl.bartoszbulaj.moonrock.service;
 
 import java.io.IOException;
 
-public interface EmailClient {
+public interface EmailService {
 
 	void sendEmail(String mailText) throws IOException;
 

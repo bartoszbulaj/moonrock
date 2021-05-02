@@ -13,14 +13,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 import pl.bartoszbulaj.moonrock.exception.BusinessException;
-import pl.bartoszbulaj.moonrock.service.ConfigurationService;
+import pl.bartoszbulaj.moonrock.service.AppConfigurationService;
 
 @Configuration
 @Slf4j
 public class AppConfiguration {
 
 	@Autowired
-	private ConfigurationService emailSenderService;
+	private AppConfigurationService emailSenderService;
+
+	private boolean historyAnalyzerEnabled;
+	private boolean emailSenderEnabled;
 
 	@Bean
 	public ModelMapper modelMapper() {
@@ -34,7 +37,6 @@ public class AppConfiguration {
 
 	@Bean(name = "javaMailSender")
 	public JavaMailSender javaMailSender() {
-
 		String host = "smtp.gmail.com";
 		String port = "587";
 		JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
@@ -68,4 +70,19 @@ public class AppConfiguration {
 		return emailSenderService.getEmailSenderCredentials().getEmailPassword();
 	}
 
+	public boolean isHistoryAnalyzerEnabled() {
+		return historyAnalyzerEnabled;
+	}
+
+	public void setHistoryAnalyzerEnabled(boolean historyAnalyzerEnabled) {
+		this.historyAnalyzerEnabled = historyAnalyzerEnabled;
+	}
+
+	public boolean isEmailSenderEnabled() {
+		return emailSenderEnabled;
+	}
+
+	public void setEmailSenderEnabled(boolean emailSenderEnabled) {
+		this.emailSenderEnabled = emailSenderEnabled;
+	}
 }

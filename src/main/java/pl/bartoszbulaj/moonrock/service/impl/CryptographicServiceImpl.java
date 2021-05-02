@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import io.micrometer.core.instrument.util.StringUtils;
 import pl.bartoszbulaj.moonrock.service.CryptographicService;
+import sun.plugin2.util.SystemUtil;
 
 @Service
 @Transactional
@@ -74,6 +75,7 @@ public class CryptographicServiceImpl implements CryptographicService {
 	private SecretKey getAESSuperSecretKey(byte[] salt)
 			throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
 		String secretKeyString = System.getenv("SUPER_SECRET_KEY");
+		//TODO to avoid IOException - create a supersecret if not exist
 		if (StringUtils.isBlank(secretKeyString)) {
 			throw new IOException("Cant find ENV VARIABLE");
 		} else {

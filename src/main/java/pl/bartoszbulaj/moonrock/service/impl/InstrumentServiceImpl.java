@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -23,8 +25,8 @@ import pl.bartoszbulaj.moonrock.dto.InstrumentHistoryDto;
 import pl.bartoszbulaj.moonrock.entity.InstrumentHistoryEntity;
 import pl.bartoszbulaj.moonrock.mapper.InstrumentHistoryMapper;
 import pl.bartoszbulaj.moonrock.repository.InstrumentHistoryRepository;
-import pl.bartoszbulaj.moonrock.service.EmailClient;
-import pl.bartoszbulaj.moonrock.service.HistoryAnalyzer;
+import pl.bartoszbulaj.moonrock.service.EmailService;
+import pl.bartoszbulaj.moonrock.service.HistoryAnalyzerService;
 import pl.bartoszbulaj.moonrock.service.InstrumentService;
 import pl.bartoszbulaj.moonrock.validator.InstrumentServiceValidator;
 
@@ -35,18 +37,18 @@ public class InstrumentServiceImpl implements InstrumentService {
 	private static final Logger LOG = LogManager.getLogger(InstrumentServiceImpl.class);
 	private InstrumentHistoryRepository instrumentHistoryRepository;
 	private InstrumentHistoryMapper instrumentHistoryMapper;
-	private HistoryAnalyzer historyAnalyzer;
-	private EmailClient emailClient;
+	private HistoryAnalyzerService historyAnalyzerService;
+	private EmailService emailService;
 	private InstrumentServiceValidator validator;
 
 	@Autowired
 	public InstrumentServiceImpl(InstrumentHistoryRepository instrumentHistoryRepository,
-			BitmexClientConfig bitmexClientConfig, InstrumentHistoryMapper instrumentHistoryMapper,
-			HistoryAnalyzer analyzer, EmailClient emailClient, InstrumentServiceValidator validator) {
+			InstrumentHistoryMapper instrumentHistoryMapper, HistoryAnalyzerService analyzer, EmailService emailService,
+			InstrumentServiceValidator validator) {
 		this.instrumentHistoryRepository = instrumentHistoryRepository;
 		this.instrumentHistoryMapper = instrumentHistoryMapper;
-		this.historyAnalyzer = analyzer;
-		this.emailClient = emailClient;
+		this.historyAnalyzerService = analyzer;
+		this.emailService = emailService;
 		this.validator = validator;
 	}
 
@@ -54,7 +56,7 @@ public class InstrumentServiceImpl implements InstrumentService {
 	public List<InstrumentHistoryDto> getInstrumentHistory(String candleSize, String instrument, String count,
 			String reverse) {
 		if (!validator.isAllArgumentsValid(candleSize, instrument, count, reverse)) {
-			return new ArrayList<>();
+			return Collections.emptyList();
 		}
 
 		try {
@@ -68,14 +70,14 @@ public class InstrumentServiceImpl implements InstrumentService {
 			return instrumentHistoryMapper.mapToInstrumentHistoryDtoList(jsonString, candleSize);
 		} catch (IOException e) {
 			e.printStackTrace();
-			return new ArrayList<>();
+			return Collections.emptyList();
 		}
 	}
 
 	@Override
 	public List<InstrumentHistoryDto> getInstrumentHistory(String instrument) {
 		if (!validator.isInstrumentSymbolValid(instrument)) {
-			return new ArrayList<>();
+			return Collections.emptyList();
 		}
 		try {
 			StringBuilder urlString = createUrlString("1h", instrument.toUpperCase(), "5", "false");
@@ -88,29 +90,36 @@ public class InstrumentServiceImpl implements InstrumentService {
 			return instrumentHistoryMapper.mapToInstrumentHistoryDtoList(jsonString, instrument);
 		} catch (IOException e) {
 			e.printStackTrace();
-			return new ArrayList<>();
+			return Collections.emptyList();
 		}
 	}
 
 	@Override
-	public boolean analyzeInstrumentHistoryAndSendEmailWithSignals() {
-		StringBuilder emailText = new StringBuilder();
+	public boolean analyzeInstrumentHistory() {
+		boolean isSignal = false;
+
 		for (String instrument : BitmexClientConfig.getActiveInstruments()) {
 			List<InstrumentHistoryDto> instrumentHistoryDtoList = loadInstrumentHistoryFromRepository(instrument);
 
-			String signalDirection = historyAnalyzer.checkForSignal(instrumentHistoryDtoList);
+			String signalDirection = historyAnalyzerService.checkForSignal(instrumentHistoryDtoList);
 			if (!signalDirection.isEmpty()) {
-				emailText.append(emailClient.createEmailText(instrument, signalDirection));
+				isSignal = true;
 			}
 		}
+		return isSignal;
+	}
 
-		if (!emailText.toString().isEmpty()) {
-			sendEmailWIthSignal(emailText.toString());
-			return true;
-		} else {
-			LOG.info("[No Signal.]");
-			return false;
+	@Override
+	public void sendEmailWithSignals() {
+		StringBuilder emailText = new StringBuilder();
+		for (String instrument : BitmexClientConfig.getActiveInstruments()) {
+			List<InstrumentHistoryDto> instrumentHistoryDtoList = loadInstrumentHistoryFromRepository(instrument);
+			String signalDirection = historyAnalyzerService.checkForSignal(instrumentHistoryDtoList);
+			if (!signalDirection.isEmpty()) {
+				emailText.append(emailService.createEmailText(instrument, signalDirection));
+			}
 		}
+		sendEmailWIthSignal(emailText.toString());
 	}
 
 	@Override
@@ -136,7 +145,7 @@ public class InstrumentServiceImpl implements InstrumentService {
 			return false;
 		}
 		try {
-			emailClient.sendEmail(emailText);
+			emailService.sendEmail(emailText);
 			return true;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -175,13 +184,6 @@ public class InstrumentServiceImpl implements InstrumentService {
 	private String getTimestampStringFormattedToUTC5HoursAgo() {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		return LocalDateTime.now(ZoneOffset.UTC).minusHours(5).format(formatter).replace(" ", "T");
-	}
-
-	@Override
-	public void sendTestEmail() {
-		StringBuilder emailText = new StringBuilder();
-		emailText.append(emailClient.createEmailText("Test instrument", "Test signal"));
-		sendEmailWIthSignal(emailText.toString());
 	}
 
 }

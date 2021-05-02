@@ -30,8 +30,13 @@ public class DevToolsController {
 
 	@GetMapping
 	public String showOverview() {
-		return "index.html";
+		return "Welcome in Moonrock Application\n\n" + "/init - create and connect websockets\n\n"
+				+ "/start - start websockets communication\n\n" + "/stop - stop websockets communitation\n\n"
+				+ "/status - show websocket status\n\n"
+				+ "/market-close?owner=admin&symbol=% - close position with given symbol";
 	}
+
+	// TODO mark endpoints @needAuth @notAuth add flag
 
 	@GetMapping("/init")
 	public ResponseEntity<String> initWS() {

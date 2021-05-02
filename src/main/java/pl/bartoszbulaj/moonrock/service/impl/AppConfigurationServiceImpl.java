@@ -8,25 +8,26 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import pl.bartoszbulaj.moonrock.config.AppConfiguration;
 import pl.bartoszbulaj.moonrock.dto.EmailSenderDto;
 import pl.bartoszbulaj.moonrock.entity.EmailSenderEntity;
 import pl.bartoszbulaj.moonrock.exception.BusinessException;
 import pl.bartoszbulaj.moonrock.mapper.EmailSenderMapper;
 import pl.bartoszbulaj.moonrock.repository.EmailSenderRepository;
-import pl.bartoszbulaj.moonrock.service.ConfigurationService;
+import pl.bartoszbulaj.moonrock.service.AppConfigurationService;
 import pl.bartoszbulaj.moonrock.service.SchedulerService;
 
 @Service
 @Transactional
 
-public class ConfigurationServiceImpl implements ConfigurationService {
+public class AppConfigurationServiceImpl implements AppConfigurationService {
 
 	private EmailSenderRepository emailSenderRepository;
 	private EmailSenderMapper emailSenderMapper;
 	private ApplicationContext context;
 
 	@Autowired
-	public ConfigurationServiceImpl(EmailSenderRepository emailSenderRepository, EmailSenderMapper emailSenderMapper,
+	public AppConfigurationServiceImpl(EmailSenderRepository emailSenderRepository, EmailSenderMapper emailSenderMapper,
 			ApplicationContext context) {
 		this.emailSenderRepository = emailSenderRepository;
 		this.emailSenderMapper = emailSenderMapper;
@@ -62,15 +63,30 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 	}
 
 	private void updateJavaMailSender(EmailSenderDto emailSenderDto) {
-		if (emailSenderDto == null) {
+		if (emailSenderDto == null) { // TODO validate emailSenderDto
 			throw new IllegalArgumentException("emailSenderDto is null");
 		}
 		JavaMailSenderImpl javaMailSender = (JavaMailSenderImpl) context.getBean("javaMailSender");
 		javaMailSender.setUsername(emailSenderDto.getEmailAddress());
 		javaMailSender.setPassword(emailSenderDto.getEmailPassword());
-		SchedulerService scheduler = context.getBean(SchedulerService.class);
-		scheduler.setHistoryAnalyzerEnabled();
 
+		setEmailSenderEnabled(true);
+	}
+	@Override
+	public boolean setHistoryAnalyzerEnabled(boolean status) {
+		AppConfiguration appConfiguration = getAppConfigurationBean();
+		appConfiguration.setHistoryAnalyzerEnabled(status);
+		return appConfiguration.isHistoryAnalyzerEnabled();
 	}
 
+	@Override
+	public boolean setEmailSenderEnabled(boolean status) {
+		AppConfiguration appConfiguration = getAppConfigurationBean();
+		appConfiguration.setEmailSenderEnabled(status);
+		return appConfiguration.isEmailSenderEnabled();
+	}
+
+	private AppConfiguration getAppConfigurationBean() {
+		return context.getBean(AppConfiguration.class);
+	}
 }

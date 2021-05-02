@@ -9,7 +9,9 @@ public interface InstrumentService {
 
 	List<InstrumentHistoryDto> getInstrumentHistory(String candleSize, String intrument, String count, String reverse);
 
-	boolean analyzeInstrumentHistoryAndSendEmailWithSignals();
+	boolean analyzeInstrumentHistory();
+
+	void sendEmailWithSignals();
 
 	void deleteInstrumentHistory();
 
@@ -18,7 +20,4 @@ public interface InstrumentService {
 	List<InstrumentHistoryDto> getInstrumentHistory(String instrument);
 
 	boolean sendEmailWIthSignal(String emailText);
-
-	void sendTestEmail();
-
 }

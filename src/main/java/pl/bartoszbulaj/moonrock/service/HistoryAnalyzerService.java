@@ -4,7 +4,7 @@ import java.util.List;
 
 import pl.bartoszbulaj.moonrock.dto.InstrumentHistoryDto;
 
-public interface HistoryAnalyzer {
+public interface HistoryAnalyzerService {
 
 	String checkForSignal(List<InstrumentHistoryDto> instrumentHistoryDtoList);
 

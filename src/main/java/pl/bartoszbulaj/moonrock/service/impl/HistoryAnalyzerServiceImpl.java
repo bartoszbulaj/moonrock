@@ -8,13 +8,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import pl.bartoszbulaj.moonrock.dto.InstrumentHistoryDto;
-import pl.bartoszbulaj.moonrock.service.HistoryAnalyzer;
+import pl.bartoszbulaj.moonrock.service.HistoryAnalyzerService;
 
 @Service
 @Transactional
-public class HistoryAnalyzerImpl implements HistoryAnalyzer {
+public class HistoryAnalyzerServiceImpl implements HistoryAnalyzerService {
 
-	private static final Logger LOG = LogManager.getLogger(HistoryAnalyzerImpl.class);
+	private static final Logger LOG = LogManager.getLogger(HistoryAnalyzerServiceImpl.class);
 
 	@Override
 	public String checkForSignal(List<InstrumentHistoryDto> instrumentHistoryDtoList) {

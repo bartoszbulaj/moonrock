@@ -16,21 +16,21 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import pl.bartoszbulaj.moonrock.service.EmailClient;
+import pl.bartoszbulaj.moonrock.service.EmailService;
 
 @Service
 @Transactional
-public class EmailClientImpl implements EmailClient {
-	private static final Logger LOG = LogManager.getLogger(EmailClientImpl.class);
+public class EmailServiceImpl implements EmailService {
+	private static final Logger LOG = LogManager.getLogger(EmailServiceImpl.class);
 	private JavaMailSender javaMailSender;
 
 	@Autowired
-	public EmailClientImpl(JavaMailSender javaMailSender) {
+	public EmailServiceImpl(JavaMailSender javaMailSender) {
 		this.javaMailSender = javaMailSender;
 	}
 
 	@Override
-	public void sendEmail(String mailText) throws IOException {
+	public void sendEmail(String mailText) {
 		String mailSubject = "New Signal. " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm dd.MM"));
 
 		SimpleMailMessage simpleMailMessage = new SimpleMailMessage();

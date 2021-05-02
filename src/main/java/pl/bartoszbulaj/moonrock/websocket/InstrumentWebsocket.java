@@ -21,7 +21,7 @@ import io.micrometer.core.instrument.util.StringUtils;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import pl.bartoszbulaj.moonrock.config.BitmexClientConfig;
-import pl.bartoszbulaj.moonrock.service.EmailClient;
+import pl.bartoszbulaj.moonrock.service.EmailService;
 
 @ClientEndpoint
 @Slf4j
@@ -38,7 +38,7 @@ public class InstrumentWebsocket {
 	private static int limitRemaining;
 
 	@Autowired
-	private EmailClient emailClient;
+	private EmailService emailService;
 
 	public InstrumentWebsocket(String instrumentSymbol, String subscribeString) {
 		this.instrumentSymbol = instrumentSymbol;

@@ -26,16 +26,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		http.csrf().disable().headers().frameOptions().disable()//
 				.and()//
 				.authorizeRequests()//
-				.antMatchers("/h2-console/*").hasRole("ADMIN")//
-				.antMatchers("/").permitAll()//
-				.and()//
-				.formLogin().permitAll()//
-				.loginPage("/login")//
-				.failureUrl("/login-error")//
-				.defaultSuccessUrl("/")//
-				.and()//
-				.logout()//
-				.logoutSuccessUrl("/login");
+				// .antMatchers("/h2-console/*").hasRole("ADMIN")//
+				.antMatchers("/").permitAll();//
+		// .and()//
+		// .formLogin().permitAll()//
+		// .loginPage("/login")//
+		// .failureUrl("/login-error")//
+		// .defaultSuccessUrl("/");//
+		// .and()//
+		// .logout()//
+		// .logoutSuccessUrl("/login");
 	}
 
 	@Override
