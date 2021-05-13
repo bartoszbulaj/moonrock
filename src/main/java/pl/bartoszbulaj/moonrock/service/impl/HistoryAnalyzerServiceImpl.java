@@ -58,4 +58,13 @@ public class HistoryAnalyzerServiceImpl implements HistoryAnalyzerService {
 		return (instrumentHistoryDto.getOpen() <= instrumentHistoryDto.getClose());
 	}
 
+	private boolean isCandleGreenHammer(InstrumentHistoryDto instrumentHistoryDto) {
+		return isCandleGreen(instrumentHistoryDto) && (instrumentHistoryDto.getOpen()
+				- instrumentHistoryDto.getClose()) < (instrumentHistoryDto.getClose() - instrumentHistoryDto.getLow());
+	}
+
+	private boolean isCandleGreenShootingStar(InstrumentHistoryDto instrumentHistoryDto) {
+		return isCandleGreen(instrumentHistoryDto) && (instrumentHistoryDto.getOpen()
+				- instrumentHistoryDto.getClose()) < (instrumentHistoryDto.getHigh() - instrumentHistoryDto.getOpen());
+	}
 }
