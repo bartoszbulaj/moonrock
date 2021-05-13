@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.micrometer.core.instrument.util.StringUtils;
+import pl.bartoszbulaj.moonrock.config.AppConfiguration;
 import pl.bartoszbulaj.moonrock.config.BitmexClientConfig;
 import pl.bartoszbulaj.moonrock.dto.PositionDto;
 import pl.bartoszbulaj.moonrock.service.PositionManagerService;
@@ -27,6 +28,9 @@ public class DevToolsController {
 
 	@Autowired
 	private PositionManagerService positionManager;
+
+	@Autowired
+	private AppConfiguration appConfiguration;
 
 	@GetMapping
 	public String showOverview() {
@@ -80,6 +84,23 @@ public class DevToolsController {
 			return new ResponseEntity<>("There is no open position with given symbol: " + symbol,
 					HttpStatus.BAD_REQUEST);
 		}
+	}
+
+	@GetMapping("/runall")
+	public ResponseEntity<String> runAllWebsockets() {
+		String initResponse = initWS().getBody();
+		String sendMessage = sendMessage().getBody();
+		appConfiguration.setHistoryAnalyzerEnabled(true);
+		return new ResponseEntity<>(initResponse + " + " + sendMessage, HttpStatus.OK);
+	}
+
+	@GetMapping("/showflags")
+	public ResponseEntity<String> showFlags() {
+		String emailSender = appConfiguration.isEmailSenderEnabled() ? "Email Sender OK" : "Email Sender WRONG";
+		String historyAnalyzer = appConfiguration.isHistoryAnalyzerEnabled()
+				? "History Analyzer Enabled"
+				: "History Analyzer Disabled";
+		return new ResponseEntity<>(emailSender + " + " + historyAnalyzer, HttpStatus.OK);
 	}
 
 }
