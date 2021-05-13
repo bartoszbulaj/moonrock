@@ -8,6 +8,8 @@ import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.Base64;
+import java.util.Map;
+import java.util.UUID;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -21,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import io.micrometer.core.instrument.util.StringUtils;
 import pl.bartoszbulaj.moonrock.service.CryptographicService;
-import sun.plugin2.util.SystemUtil;
 
 @Service
 @Transactional
@@ -32,6 +33,7 @@ public class CryptographicServiceImpl implements CryptographicService {
 	private static final int IV_LENGTH_BYTE = 12;
 	private static final int SALT_LENGTH_BYTE = 16;
 	private static final int ITERATIONS = 65536;
+	private static final String MOONROCK_SECRET_KEY = "MOONROCK_SECRET_KEY";
 
 	@Override
 	public String encryptPassword(byte[] password) throws GeneralSecurityException, IOException {
@@ -73,16 +75,22 @@ public class CryptographicServiceImpl implements CryptographicService {
 	}
 
 	private SecretKey getAESSuperSecretKey(byte[] salt)
-			throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
-		String secretKeyString = System.getenv("SUPER_SECRET_KEY");
-		//TODO to avoid IOException - create a supersecret if not exist
-		if (StringUtils.isBlank(secretKeyString)) {
+			throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
+		String moonrockSecretKey = createSuperSecretEnvironmentVariable();
+		if (StringUtils.isBlank(moonrockSecretKey)) {
 			throw new IOException("Cant find ENV VARIABLE");
 		} else {
 			SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-			KeySpec spec = new PBEKeySpec(secretKeyString.toCharArray(), salt, ITERATIONS, 256);
+			KeySpec spec = new PBEKeySpec(moonrockSecretKey.toCharArray(), salt, ITERATIONS, 256);
 			return new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
 		}
+	}
+
+	private String createSuperSecretEnvironmentVariable() {
+		ProcessBuilder processBuilder = new ProcessBuilder();
+		Map<String, String> env = processBuilder.environment();
+		env.put(MOONROCK_SECRET_KEY, UUID.randomUUID().toString());
+		return System.getenv(MOONROCK_SECRET_KEY);
 	}
 
 }
