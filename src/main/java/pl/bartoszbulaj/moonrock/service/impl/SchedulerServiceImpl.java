@@ -18,9 +18,8 @@ public class SchedulerServiceImpl implements SchedulerService {
 	private AppConfigurationService appConfigurationService;
 	private WebsocketManagerService websocketManagerService;
 
-	private boolean heartbeatStatus;
-	private boolean historyAnalyzerStatus;
-	private boolean emailSenderStatus;
+	private boolean heartbeatActive;
+	private boolean emailSenderActive;
 
 	@Autowired
 	public SchedulerServiceImpl(InstrumentService instrumentService, AppConfigurationService appConfigurationService,
@@ -28,21 +27,21 @@ public class SchedulerServiceImpl implements SchedulerService {
 		this.instrumentService = instrumentService;
 		this.appConfigurationService = appConfigurationService;
 		this.websocketManagerService = websocketManagerService;
-		this.heartbeatStatus = false;
+		this.heartbeatActive = false;
+
+		appConfigurationService.setHistoryAnalyzerEnabled(true);
 
 		if (this.appConfigurationService.isAnyEmailSender()) {
-			emailSenderStatus = appConfigurationService.setEmailSenderEnabled(true);
-			historyAnalyzerStatus = appConfigurationService.setHistoryAnalyzerEnabled(true);
+			emailSenderActive = appConfigurationService.setEmailSenderEnabled(true);
 		} else {
-			emailSenderStatus = appConfigurationService.setEmailSenderEnabled(false);
-			historyAnalyzerStatus = appConfigurationService.setHistoryAnalyzerEnabled(false);
+			emailSenderActive = appConfigurationService.setEmailSenderEnabled(false);
 		}
 	}
 
 	@Override
 	@Scheduled(cron = "5 0 * * * *")
 	public void deleteHistory() {
-		if (historyAnalyzerStatus) {
+		if (appConfigurationService.isHistoryAnalyzerEnabled()) {
 			instrumentService.deleteInstrumentHistory();
 		}
 	}
@@ -50,7 +49,7 @@ public class SchedulerServiceImpl implements SchedulerService {
 	@Override
 	@Scheduled(cron = "35 0 * * * *")
 	public void saveHistory() {
-		if (historyAnalyzerStatus) {
+		if (appConfigurationService.isHistoryAnalyzerEnabled()) {
 			instrumentService.saveInstrumentHistory();
 		}
 	}
@@ -59,10 +58,10 @@ public class SchedulerServiceImpl implements SchedulerService {
 	@Scheduled(cron = "45 0 * * * *")
 	public void analyzeHistory() {
 		boolean isSignal = false;
-		if (historyAnalyzerStatus) {
+		if (appConfigurationService.isHistoryAnalyzerEnabled()) {
 			isSignal = instrumentService.analyzeInstrumentHistory();
 		}
-		if (emailSenderStatus && isSignal) {
+		if (emailSenderActive && isSignal) {
 			instrumentService.sendEmailWithSignals();
 		}
 	}
@@ -70,23 +69,23 @@ public class SchedulerServiceImpl implements SchedulerService {
 	@Override
 	@Scheduled(cron = "5 * * * * *")
 	public void sendHeartbeat() {
-		if (heartbeatStatus) {
+		if (heartbeatActive) {
 			websocketManagerService.pingServer();
 		}
 	}
 
 	@Override
-	public boolean isHeartbeatEnabled() {
-		return this.heartbeatStatus;
+	public boolean isHeartbeatActive() {
+		return this.heartbeatActive;
 	}
 
 	@Override
 	public void enableHeartbeat() {
-		this.heartbeatStatus = true;
+		this.heartbeatActive = true;
 	}
 
 	@Override
 	public void disableHeartbeat() {
-		this.heartbeatStatus = false;
+		this.heartbeatActive = false;
 	}
 }

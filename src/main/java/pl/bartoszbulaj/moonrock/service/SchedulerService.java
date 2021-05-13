@@ -8,7 +8,7 @@ public interface SchedulerService {
 
 	void analyzeHistory();
 
-	boolean isHeartbeatEnabled();
+	boolean isHeartbeatActive();
 
 	void enableHeartbeat();
 
