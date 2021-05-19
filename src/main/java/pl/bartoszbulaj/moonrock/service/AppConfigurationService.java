@@ -10,7 +10,9 @@ public interface AppConfigurationService {
 
 	boolean isAnyEmailSender();
 
-	boolean setHistoryAnalyzerEnabled(boolean status);
-
 	boolean setEmailSenderEnabled(boolean status);
+
+	boolean isHistoryAnalyzerEnabled();
+
+	boolean setHistoryAnalyzerEnabled(boolean status);
 }

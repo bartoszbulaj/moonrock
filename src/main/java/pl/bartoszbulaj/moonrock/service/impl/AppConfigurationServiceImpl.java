@@ -15,11 +15,9 @@ import pl.bartoszbulaj.moonrock.exception.BusinessException;
 import pl.bartoszbulaj.moonrock.mapper.EmailSenderMapper;
 import pl.bartoszbulaj.moonrock.repository.EmailSenderRepository;
 import pl.bartoszbulaj.moonrock.service.AppConfigurationService;
-import pl.bartoszbulaj.moonrock.service.SchedulerService;
 
 @Service
 @Transactional
-
 public class AppConfigurationServiceImpl implements AppConfigurationService {
 
 	private EmailSenderRepository emailSenderRepository;
@@ -63,7 +61,7 @@ public class AppConfigurationServiceImpl implements AppConfigurationService {
 	}
 
 	private void updateJavaMailSender(EmailSenderDto emailSenderDto) {
-		if (emailSenderDto == null) { // TODO validate emailSenderDto
+		if (emailSenderDto == null) {
 			throw new IllegalArgumentException("emailSenderDto is null");
 		}
 		JavaMailSenderImpl javaMailSender = (JavaMailSenderImpl) context.getBean("javaMailSender");
@@ -84,6 +82,12 @@ public class AppConfigurationServiceImpl implements AppConfigurationService {
 		AppConfiguration appConfiguration = getAppConfigurationBean();
 		appConfiguration.setEmailSenderEnabled(status);
 		return appConfiguration.isEmailSenderEnabled();
+	}
+
+	@Override
+	public boolean isHistoryAnalyzerEnabled() {
+		AppConfiguration appConfiguration = getAppConfigurationBean();
+		return appConfiguration.isHistoryAnalyzerEnabled();
 	}
 
 	private AppConfiguration getAppConfigurationBean() {
