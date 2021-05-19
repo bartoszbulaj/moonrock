@@ -20,7 +20,7 @@ import pl.bartoszbulaj.moonrock.service.PositionManagerService;
 import pl.bartoszbulaj.moonrock.service.WebsocketManagerService;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/dev")
 public class DevToolsController {
 
 	@Autowired
@@ -32,7 +32,7 @@ public class DevToolsController {
 	@Autowired
 	private AppConfiguration appConfiguration;
 
-	@GetMapping
+	@GetMapping("/help")
 	public String showOverview() {
 		return "Welcome in Moonrock Application\n\n" + "/init - create and connect websockets\n\n"
 				+ "/start - start websockets communication\n\n" + "/stop - stop websockets communitation\n\n"
