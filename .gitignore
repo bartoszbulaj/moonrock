@@ -8,6 +8,7 @@ emailUsername.txt
 emailPassword.txt
 apiKeyPublic.txt
 apiKeySecret.txt
+node_modules
 
 ### STS ###
 .apt_generated

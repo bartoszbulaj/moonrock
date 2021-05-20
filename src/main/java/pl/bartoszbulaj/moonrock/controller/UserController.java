@@ -7,7 +7,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import io.micrometer.core.instrument.util.StringUtils;
 import pl.bartoszbulaj.moonrock.dto.ApiKeyDto;
@@ -28,11 +28,11 @@ import pl.bartoszbulaj.moonrock.service.PositionManagerService;
 import pl.bartoszbulaj.moonrock.service.UserService;
 import pl.bartoszbulaj.moonrock.validator.ApiKeyValidator;
 
-@Controller
+@RestController
 @RequestMapping("/user")
 public class UserController {
 
-	private static final String USER_PANEL = "user-panel.html";
+
 	private UserService userService;
 	private ApiKeyService apiKeyService;
 	private ApiKeyValidator apiKeyValidator;
@@ -99,7 +99,7 @@ public class UserController {
 	@GetMapping("/panel")
 	public String showUserPanel(Model model, @RequestParam String owner) throws IOException {
 		if (StringUtils.isBlank(owner)) {
-			return USER_PANEL;
+			return "";
 		}
 		try {
 			ApiKeyDto apiKeyDto = apiKeyService.getOneByOwner(owner);
@@ -107,10 +107,10 @@ public class UserController {
 
 			model.addAttribute("apiKeyDto", apiKeyDto);
 			model.addAttribute("walletDto", walletDto);
-			return USER_PANEL;
+			return "";
 		} catch (Exception e) {
 			e.printStackTrace();
-			return USER_PANEL;
+			return "";
 		}
 	}
 
