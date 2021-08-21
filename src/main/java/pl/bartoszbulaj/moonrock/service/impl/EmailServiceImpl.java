@@ -9,7 +9,6 @@ import java.time.format.DateTimeFormatter;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -21,10 +20,10 @@ import pl.bartoszbulaj.moonrock.service.EmailService;
 @Service
 @Transactional
 public class EmailServiceImpl implements EmailService {
-	private static final Logger LOG = LogManager.getLogger(EmailServiceImpl.class);
-	private JavaMailSender javaMailSender;
 
-	@Autowired
+	private static final Logger LOG = LogManager.getLogger(EmailServiceImpl.class);
+	private final JavaMailSender javaMailSender;
+
 	public EmailServiceImpl(JavaMailSender javaMailSender) {
 		this.javaMailSender = javaMailSender;
 	}

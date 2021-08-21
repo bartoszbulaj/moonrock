@@ -32,9 +32,11 @@ public class SchedulerServiceImpl implements SchedulerService {
 		appConfigurationService.setHistoryAnalyzerEnabled(true);
 
 		if (this.appConfigurationService.isAnyEmailSender()) {
-			emailSenderActive = appConfigurationService.setEmailSenderEnabled(true);
+			appConfigurationService.setEmailSenderEnabled(true);
+			emailSenderActive = true;
 		} else {
-			emailSenderActive = appConfigurationService.setEmailSenderEnabled(false);
+			appConfigurationService.setEmailSenderEnabled(false);
+			emailSenderActive = false;
 		}
 	}
 

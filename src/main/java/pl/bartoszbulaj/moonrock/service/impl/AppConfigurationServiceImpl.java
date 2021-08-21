@@ -2,12 +2,15 @@ package pl.bartoszbulaj.moonrock.service.impl;
 
 import java.util.List;
 
+import javax.mail.MessagingException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.extern.slf4j.Slf4j;
 import pl.bartoszbulaj.moonrock.config.AppConfiguration;
 import pl.bartoszbulaj.moonrock.dto.EmailSenderDto;
 import pl.bartoszbulaj.moonrock.entity.EmailSenderEntity;
@@ -18,6 +21,7 @@ import pl.bartoszbulaj.moonrock.service.AppConfigurationService;
 
 @Service
 @Transactional
+@Slf4j
 public class AppConfigurationServiceImpl implements AppConfigurationService {
 
 	private EmailSenderRepository emailSenderRepository;
@@ -42,7 +46,7 @@ public class AppConfigurationServiceImpl implements AppConfigurationService {
 	}
 
 	@Override
-	public EmailSenderDto saveEmailSenderCredentials(EmailSenderDto emailSenderDto) {
+	public EmailSenderDto saveEmailSenderCredentials(EmailSenderDto emailSenderDto) throws MessagingException {
 		if (emailSenderDto == null) {
 			throw new IllegalArgumentException("emailSenderDto is null");
 		}
@@ -60,28 +64,26 @@ public class AppConfigurationServiceImpl implements AppConfigurationService {
 		return !emailSenderEntityList.isEmpty();
 	}
 
-	private void updateJavaMailSender(EmailSenderDto emailSenderDto) {
+	private void updateJavaMailSender(EmailSenderDto emailSenderDto) throws MessagingException {
 		if (emailSenderDto == null) {
 			throw new IllegalArgumentException("emailSenderDto is null");
 		}
 		JavaMailSenderImpl javaMailSender = (JavaMailSenderImpl) context.getBean("javaMailSender");
 		javaMailSender.setUsername(emailSenderDto.getEmailAddress());
 		javaMailSender.setPassword(emailSenderDto.getEmailPassword());
-
+		javaMailSender.testConnection();
 		setEmailSenderEnabled(true);
 	}
 	@Override
-	public boolean setHistoryAnalyzerEnabled(boolean status) {
+	public void setHistoryAnalyzerEnabled(boolean status) {
 		AppConfiguration appConfiguration = getAppConfigurationBean();
 		appConfiguration.setHistoryAnalyzerEnabled(status);
-		return appConfiguration.isHistoryAnalyzerEnabled();
 	}
 
 	@Override
-	public boolean setEmailSenderEnabled(boolean status) {
+	public void setEmailSenderEnabled(boolean status) {
 		AppConfiguration appConfiguration = getAppConfigurationBean();
 		appConfiguration.setEmailSenderEnabled(status);
-		return appConfiguration.isEmailSenderEnabled();
 	}
 
 	@Override

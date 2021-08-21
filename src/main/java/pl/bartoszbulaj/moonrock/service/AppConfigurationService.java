@@ -1,18 +1,20 @@
 package pl.bartoszbulaj.moonrock.service;
 
+import javax.mail.MessagingException;
+
 import pl.bartoszbulaj.moonrock.dto.EmailSenderDto;
 
 public interface AppConfigurationService {
 
 	EmailSenderDto getEmailSenderCredentials();
 
-	EmailSenderDto saveEmailSenderCredentials(EmailSenderDto emailSenderDto);
+	EmailSenderDto saveEmailSenderCredentials(EmailSenderDto emailSenderDto) throws MessagingException;
 
 	boolean isAnyEmailSender();
 
-	boolean setEmailSenderEnabled(boolean status);
+	void setEmailSenderEnabled(boolean status);
 
 	boolean isHistoryAnalyzerEnabled();
 
-	boolean setHistoryAnalyzerEnabled(boolean status);
+	void setHistoryAnalyzerEnabled(boolean status);
 }

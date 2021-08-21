@@ -42,7 +42,7 @@ public class AppConfiguration {
 		JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
 
 		javaMailSender.setHost(host);
-		javaMailSender.setPort(Integer.valueOf(port));
+		javaMailSender.setPort(Integer.parseInt(port));
 		try {
 			javaMailSender.setUsername(getEmailAddressFromDb());
 			javaMailSender.setPassword(getEmailPasswordFromDb());
