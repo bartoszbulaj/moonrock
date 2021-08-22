@@ -32,14 +32,6 @@ public class DevToolsController {
 	@Autowired
 	private AppConfiguration appConfiguration;
 
-	@GetMapping("/help")
-	public String showOverview() {
-		return "Welcome in Moonrock Application\n\n" + "/init - create and connect websockets\n\n"
-				+ "/start - start websockets communication\n\n" + "/stop - stop websockets communitation\n\n"
-				+ "/status - show websocket status\n\n"
-				+ "/market-close?owner=admin&symbol=% - close position with given symbol";
-	}
-
 	// TODO mark endpoints @needAuth @notAuth add flag
 
 	@GetMapping("/init")
