@@ -31,7 +31,6 @@ import pl.bartoszbulaj.moonrock.validator.ApiKeyValidator;
 @RequestMapping("/user")
 public class UserController {
 
-
 	private UserService userService;
 	private ApiKeyService apiKeyService;
 	private ApiKeyValidator apiKeyValidator;
