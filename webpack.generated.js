@@ -13,12 +13,7 @@ const ExtraWatchWebpackPlugin = require('extra-watch-webpack-plugin');
 // Flow plugins
 const StatsPlugin = require('@vaadin/stats-plugin');
 const ThemeLiveReloadPlugin = require('@vaadin/theme-live-reload-plugin');
-const {
-  ApplicationThemePlugin,
-  processThemeResources,
-  extractThemeName,
-  findParentThemes
-} = require('@vaadin/application-theme-plugin');
+const { ApplicationThemePlugin, processThemeResources, extractThemeName, findParentThemes } = require('@vaadin/application-theme-plugin');
 
 const path = require('path');
 const baseDir = path.resolve(__dirname);
@@ -56,7 +51,7 @@ const projectStaticAssetsOutputFolder = require('path').resolve(__dirname, '../V
 
 // Folders in the project which can contain application themes
 const themeProjectFolders = projectStaticAssetsFolders.map((folder) =>
-    path.resolve(folder, 'themes')
+  path.resolve(folder, 'themes')
 );
 
 
@@ -116,13 +111,13 @@ if (devMode) {
   themeName = extractThemeName(flowFrontendThemesFolder);
   const parentThemePaths = findParentThemes(themeName, themeOptions);
   const currentThemeFolders = projectStaticAssetsFolders
-      .map((folder) => path.resolve(folder, "themes", themeName));
+    .map((folder) => path.resolve(folder, "themes", themeName));
   // Watch the components folders for component styles update in both
   // current theme and parent themes. Other folders or CSS files except
   // 'styles.css' should be referenced from `styles.css` anyway, so no need
   // to watch them.
   themeWatchFolders = [...currentThemeFolders, ...parentThemePaths]
-      .map((themeFolder) => path.resolve(themeFolder, "components"));
+    .map((themeFolder) => path.resolve(themeFolder, "components"));
 }
 
 const processThemeResourcesCallback = (logger) => processThemeResources(themeOptions, logger);
@@ -138,7 +133,7 @@ module.exports = {
   context: frontendFolder,
   entry: {
     bundle: fileNameOfTheFlowGeneratedMainEntryPoint,
-    ...(devMode && {gizmo: devmodeGizmoJS})
+    ...(devMode && { gizmo: devmodeGizmoJS })
   },
 
   output: {
@@ -163,17 +158,17 @@ module.exports = {
   devServer: {
     // webpack-dev-server serves ./ ,  webpack-generated,  and java webapp
     contentBase: [mavenOutputFolderForFlowBundledFiles, 'src/main/webapp'],
-    after: function (app, server) {
-      app.get(`/stats.json`, function (req, res) {
+    after: function(app, server) {
+      app.get(`/stats.json`, function(req, res) {
         res.json(stats);
       });
-      app.get(`/stats.hash`, function (req, res) {
+      app.get(`/stats.hash`, function(req, res) {
         res.json(stats.hash.toString());
       });
-      app.get(`/assetsByChunkName`, function (req, res) {
+      app.get(`/assetsByChunkName`, function(req, res) {
         res.json(stats.assetsByChunkName);
       });
-      app.get(`/stop`, function (req, res) {
+      app.get(`/stop`, function(req, res) {
         // eslint-disable-next-line no-console
         console.log("Stopped 'webpack-dev-server'");
         process.exit(0);
@@ -296,13 +291,13 @@ module.exports = {
 
     // Generates the stats file for flow `@Id` binding.
     function (compiler) {
-      compiler.hooks.done.tapAsync('FlowIdPlugin', (compilation, done) => {
-        // trigger live reload via server
-        if (client) {
-          client.write('reload\n');
-        }
-        done();
-      });
+        compiler.hooks.done.tapAsync('FlowIdPlugin', (compilation, done) => {
+          // trigger live reload via server
+          if (client) {
+            client.write('reload\n');
+          }
+          done();
+        });
     },
 
     // Copy webcomponents polyfills. They are not bundled because they
