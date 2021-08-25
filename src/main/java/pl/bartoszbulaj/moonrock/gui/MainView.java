@@ -31,20 +31,39 @@ public class MainView extends VerticalLayout {
 	private final AppConfigurationService appConfigurationService;
 
 	private VerticalLayout emailSenderCredentialLayout;
-	private Label emailCredentialFormTitle;
 	private Label emailValidationError;
 	private TextField emailAddressField;
 	private PasswordField passwordField;
-	private Button saveButton;
 	private Checkbox historyAnalyzerCheckbox;
 	private Checkbox emailSenderCheckbox;
 
 	public MainView(AppConfigurationService appConfigurationService) {
 		this.appConfigurationService = appConfigurationService;
 
-		addEmailSenderCredentialForm();
 		addHistoryAnalyzerCheckbox();
 		addEmailSenderCheckbox();
+
+		addEmailSenderCredentialForm();
+		addApiKeysForm();
+	}
+
+	private void addApiKeysForm() {
+		VerticalLayout apiKeyLayout = new VerticalLayout();
+		PasswordField apiKeyNameValue = new PasswordField("Api Key Name", "api key name");
+		apiKeyNameValue.setWidthFull();
+		PasswordField apiKeySecretValue = new PasswordField("Api Key Secret", "api key secret");
+		apiKeySecretValue.setWidthFull();
+		Button saveButton = new Button("Save", this::saveApiKeys);
+
+		apiKeyLayout.add(apiKeyNameValue, apiKeySecretValue, saveButton);
+		apiKeyLayout.getStyle().set("border", "6px solid black");
+
+		apiKeyLayout.setMaxWidth("50%");
+		add(apiKeyLayout);
+	}
+
+	private void saveApiKeys(ClickEvent<Button> buttonClickEvent) {
+		// TODO call controller to save apiKeys
 	}
 
 	private void addEmailSenderCheckbox() {
@@ -57,16 +76,18 @@ public class MainView extends VerticalLayout {
 	private void addEmailSenderCredentialForm() {
 		emailSenderCredentialLayout = new VerticalLayout();
 
-		emailCredentialFormTitle = new Label("Email Sender Credentials");
+		Label emailCredentialFormTitle = new Label("Email Sender Credentials");
 		emailAddressField = new TextField("Email address", "email address");
 		passwordField = new PasswordField("Password", "password");
-		saveButton = new Button("Save", this::saveEmailCredentials);
+		Button saveButton = new Button("Save", this::saveEmailCredentials);
 		emailValidationError = new Label("Email validation error");
 		emailValidationError.setVisible(false);
 		saveButton.setWidth(passwordField.getWidth());
 
+		emailSenderCredentialLayout.setMaxWidth("50%");
 		emailSenderCredentialLayout.add(emailCredentialFormTitle, emailAddressField, passwordField,
 				emailValidationError, saveButton);
+		emailSenderCredentialLayout.getStyle().set("border", "6px solid black");
 		add(emailSenderCredentialLayout);
 	}
 
