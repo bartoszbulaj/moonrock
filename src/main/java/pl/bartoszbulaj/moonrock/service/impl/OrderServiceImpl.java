@@ -54,7 +54,7 @@ public class OrderServiceImpl implements OrderService {
 			String urlString = authService.createConnectionUrlStringWithFilters(BITMEX_END_POINT, null);
 			HttpURLConnection connection = (HttpURLConnection) new URL(urlString).openConnection();
 			authService.addAuthRequestHeaders(owner, GET_METHOD, urlString, connection);
-			String resultString = connectionService.getHttpRequestResult(connection);
+			String resultString = connectionService.getResultFromHttpRequest(connection);
 			connection.disconnect();
 
 			return orderMapper.mapToOrderDtoList(resultString);
@@ -71,7 +71,7 @@ public class OrderServiceImpl implements OrderService {
 			String urlString = authService.createConnectionUrlStringWithFilters(BITMEX_END_POINT, filters);
 			HttpURLConnection connection = (HttpURLConnection) new URL(urlString).openConnection();
 			authService.addAuthRequestHeaders(owner, GET_METHOD, authService.removeUrlPrefix(urlString), connection);
-			String resultString = connectionService.getHttpRequestResult(connection);
+			String resultString = connectionService.getResultFromHttpRequest(connection);
 			connection.disconnect();
 
 			return orderMapper.mapToOrderDtoList(resultString);
@@ -100,7 +100,7 @@ public class OrderServiceImpl implements OrderService {
 		String urlString = authService.createConnectionUrlStringWithFilters(BITMEX_END_POINT + "/all", null);
 		HttpURLConnection connection = (HttpURLConnection) new URL(urlString).openConnection();
 		authService.addAuthRequestHeaders(owner, DELETE_METHOD, authService.removeUrlPrefix(urlString), connection);
-		String resultString = connectionService.getHttpRequestResult(connection);
+		String resultString = connectionService.getResultFromHttpRequest(connection);
 		connection.disconnect();
 
 		return resultString;

@@ -57,7 +57,7 @@ public class PositionManagerServiceImpl implements PositionManagerService {
 			String urlString = authService.createConnectionUrlStringWithFilters(bitmexEndPoint, filters);
 			HttpURLConnection connection = (HttpURLConnection) new URL(urlString).openConnection();
 			authService.addAuthRequestHeaders(owner, GET_METHOD, authService.removeUrlPrefix(urlString), connection);
-			String resultString = connectionService.getHttpRequestResult(connection);
+			String resultString = connectionService.getResultFromHttpRequest(connection);
 			connection.disconnect();
 
 			this.positionsList = positionMapper.mapToPositionDtoList(resultString);
@@ -84,7 +84,7 @@ public class PositionManagerServiceImpl implements PositionManagerService {
 		HttpURLConnection connection = (HttpURLConnection) new URL(urlStringWithParams).openConnection();
 		authService.addAuthRequestHeaders(owner, POST_METHOD, authService.removeUrlPrefix(urlStringWithParams),
 				connection);
-		String resultString = connectionService.getHttpRequestResult(connection);
+		String resultString = connectionService.getResultFromHttpRequest(connection);
 		connection.disconnect();
 
 		orderService.closeAllOrders(owner, positionDto.getSymbol());
@@ -103,6 +103,18 @@ public class PositionManagerServiceImpl implements PositionManagerService {
 	public void removePositionFromPositionsList(String owner, PositionDto positionDto) {
 		this.positionsList = this.positionsList.stream()
 				.filter(p -> !p.getSymbol().equalsIgnoreCase(positionDto.getSymbol())).collect(Collectors.toList());
+	}
+
+	@Override
+	public boolean buyMarket(String owner, String symbol) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean sellMarket(String owner, String symbol) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	private String negativeQty(String orderQty) {

@@ -15,4 +15,8 @@ public interface PositionManagerService {
 
 	void removePositionFromPositionsList(String owner, PositionDto positionDto);
 
+	boolean buyMarket(String owner, String symbol);
+
+	boolean sellMarket(String owner, String symbol);
+
 }
