@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService {
 			String connectionUrlString = authService.createConnectionUrlStringWithFilters(bitmexEndPoint, null);
 			HttpURLConnection connection = (HttpURLConnection) new URL(connectionUrlString).openConnection();
 			authService.addAuthRequestHeaders(owner, requestMethod, bitmexEndPoint, connection);
-			String resultString = connectionService.getHttpRequestResult(connection);
+			String resultString = connectionService.getResultFromHttpRequest(connection);
 			connection.disconnect();
 
 			String walletResultString = removeWithdrawalLockFieldFromResultString(resultString);
