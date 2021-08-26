@@ -13,7 +13,7 @@ import pl.bartoszbulaj.moonrock.service.ConnectionService;
 public class ConnectionServiceImpl implements ConnectionService {
 
 	@Override
-	public String getHttpRequestResult(HttpURLConnection connection) {
+	public String getResultFromHttpRequest(HttpURLConnection connection) {
 		if (connection == null) {
 			throw new IllegalArgumentException();
 		}

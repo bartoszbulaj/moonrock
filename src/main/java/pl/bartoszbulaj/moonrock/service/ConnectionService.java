@@ -4,5 +4,5 @@ import java.net.HttpURLConnection;
 
 public interface ConnectionService {
 
-	String getHttpRequestResult(HttpURLConnection connection);
+	String getResultFromHttpRequest(HttpURLConnection connection);
 }
