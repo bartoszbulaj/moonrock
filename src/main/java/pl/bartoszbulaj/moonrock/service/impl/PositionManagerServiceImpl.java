@@ -1,17 +1,8 @@
 package pl.bartoszbulaj.moonrock.service.impl;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Component;
-
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import pl.bartoszbulaj.moonrock.dto.PositionDto;
 import pl.bartoszbulaj.moonrock.exception.BusinessException;
 import pl.bartoszbulaj.moonrock.mapper.PositionMapper;
@@ -20,6 +11,14 @@ import pl.bartoszbulaj.moonrock.service.AuthService;
 import pl.bartoszbulaj.moonrock.service.ConnectionService;
 import pl.bartoszbulaj.moonrock.service.OrderService;
 import pl.bartoszbulaj.moonrock.service.PositionManagerService;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -46,7 +45,7 @@ public class PositionManagerServiceImpl implements PositionManagerService {
 	}
 
 	@Override
-	public List<PositionDto> getPositions(String owner) throws IOException {
+	public List<PositionDto> getPositionsList(String owner) throws IOException {
 		if (StringUtils.isBlank(owner) || apiKeyService.getOneByOwner(owner) == null) {
 			throw new IllegalArgumentException("Cant find owner");
 		} else {
@@ -70,7 +69,7 @@ public class PositionManagerServiceImpl implements PositionManagerService {
 		if (positionDto == null) {
 			throw new IllegalArgumentException();
 		}
-		if (!positionDto.getIsOpen().booleanValue()) {
+		if (!positionDto.getIsOpen()) {
 			throw new BusinessException("Position is closed");
 		}
 		String bitmexEndPoint = "/order";

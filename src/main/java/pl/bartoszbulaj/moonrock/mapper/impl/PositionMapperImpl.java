@@ -1,20 +1,19 @@
 package pl.bartoszbulaj.moonrock.mapper.impl;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import pl.bartoszbulaj.moonrock.dto.PositionDto;
 import pl.bartoszbulaj.moonrock.entity.PositionEntity;
 import pl.bartoszbulaj.moonrock.mapper.PositionMapper;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class PositionMapperImpl implements PositionMapper {
@@ -35,10 +34,15 @@ public class PositionMapperImpl implements PositionMapper {
 	}
 
 	@Override
-	public List<PositionDto> mapToPositionDtoList(String jsonString) throws IOException {
+	public List<PositionDto> mapToPositionDtoList(String jsonString) {
 		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		return objectMapper.readValue(jsonString, new TypeReference<List<PositionDto>>() {
-		});
+		try {
+			return objectMapper.readValue(jsonString, new TypeReference<List<PositionDto>>() {
+			});
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return new ArrayList<>();
 	}
 
 }

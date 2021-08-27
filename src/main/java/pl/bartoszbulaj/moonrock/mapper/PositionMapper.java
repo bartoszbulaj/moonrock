@@ -1,10 +1,9 @@
 package pl.bartoszbulaj.moonrock.mapper;
 
-import java.io.IOException;
-import java.util.List;
-
 import pl.bartoszbulaj.moonrock.dto.PositionDto;
 import pl.bartoszbulaj.moonrock.entity.PositionEntity;
+
+import java.util.List;
 
 public interface PositionMapper {
 
@@ -12,5 +11,5 @@ public interface PositionMapper {
 
 	List<PositionDto> mapToPositionDtoList(List<PositionEntity> positionList);
 
-	List<PositionDto> mapToPositionDtoList(String jsonString) throws IOException;
+	List<PositionDto> mapToPositionDtoList(String jsonString);
 }

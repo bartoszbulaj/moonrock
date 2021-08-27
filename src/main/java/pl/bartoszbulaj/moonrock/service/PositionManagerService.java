@@ -1,13 +1,13 @@
 package pl.bartoszbulaj.moonrock.service;
 
+import pl.bartoszbulaj.moonrock.dto.PositionDto;
+
 import java.io.IOException;
 import java.util.List;
 
-import pl.bartoszbulaj.moonrock.dto.PositionDto;
-
 public interface PositionManagerService {
 
-	List<PositionDto> getPositions(String owner) throws IOException;
+	List<PositionDto> getPositionsList(String owner) throws IOException;
 
 	String closePositionWithMarketOrder(PositionDto positionDto, String owner) throws IOException;
 

@@ -1,9 +1,6 @@
 package pl.bartoszbulaj.moonrock.controller;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
-
+import io.micrometer.core.instrument.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,13 +8,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import io.micrometer.core.instrument.util.StringUtils;
 import pl.bartoszbulaj.moonrock.config.AppConfiguration;
 import pl.bartoszbulaj.moonrock.config.BitmexClientConfig;
 import pl.bartoszbulaj.moonrock.dto.PositionDto;
 import pl.bartoszbulaj.moonrock.service.PositionManagerService;
 import pl.bartoszbulaj.moonrock.service.WebsocketManagerService;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/dev")
@@ -67,7 +66,7 @@ public class DevToolsController {
 			throw new IllegalArgumentException();
 		}
 
-		List<PositionDto> positionListFiltered = positionManager.getPositions(owner).stream()
+		List<PositionDto> positionListFiltered = positionManager.getPositionsList(owner).stream()
 				.filter(p -> p.getSymbol().equalsIgnoreCase(symbol)).collect(Collectors.toList());
 		if (!positionListFiltered.isEmpty()) {
 			String result = positionManager.closePositionWithMarketOrder(positionListFiltered.get(0), owner);

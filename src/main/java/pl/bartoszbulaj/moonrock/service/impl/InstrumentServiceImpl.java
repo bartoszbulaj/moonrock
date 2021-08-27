@@ -1,34 +1,31 @@
 package pl.bartoszbulaj.moonrock.service.impl;
 
-import java.io.BufferedReader;
+import io.micrometer.core.instrument.util.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import pl.bartoszbulaj.moonrock.config.BitmexClientConfig;
+import pl.bartoszbulaj.moonrock.dto.InstrumentHistoryDto;
+import pl.bartoszbulaj.moonrock.entity.InstrumentHistoryEntity;
+import pl.bartoszbulaj.moonrock.mapper.InstrumentHistoryMapper;
+import pl.bartoszbulaj.moonrock.repository.InstrumentHistoryRepository;
+import pl.bartoszbulaj.moonrock.service.ConnectionService;
+import pl.bartoszbulaj.moonrock.service.EmailService;
+import pl.bartoszbulaj.moonrock.service.HistoryAnalyzerService;
+import pl.bartoszbulaj.moonrock.service.InstrumentService;
+import pl.bartoszbulaj.moonrock.validator.InstrumentServiceValidator;
+
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import io.micrometer.core.instrument.util.StringUtils;
-import pl.bartoszbulaj.moonrock.config.BitmexClientConfig;
-import pl.bartoszbulaj.moonrock.dto.InstrumentHistoryDto;
-import pl.bartoszbulaj.moonrock.entity.InstrumentHistoryEntity;
-import pl.bartoszbulaj.moonrock.mapper.InstrumentHistoryMapper;
-import pl.bartoszbulaj.moonrock.repository.InstrumentHistoryRepository;
-import pl.bartoszbulaj.moonrock.service.EmailService;
-import pl.bartoszbulaj.moonrock.service.HistoryAnalyzerService;
-import pl.bartoszbulaj.moonrock.service.InstrumentService;
-import pl.bartoszbulaj.moonrock.validator.InstrumentServiceValidator;
 
 @Service
 @Transactional
@@ -39,17 +36,19 @@ public class InstrumentServiceImpl implements InstrumentService {
 	private InstrumentHistoryMapper instrumentHistoryMapper;
 	private HistoryAnalyzerService historyAnalyzerService;
 	private EmailService emailService;
+	private ConnectionService connectionService;
 	private InstrumentServiceValidator validator;
 
 	@Autowired
 	public InstrumentServiceImpl(InstrumentHistoryRepository instrumentHistoryRepository,
-			InstrumentHistoryMapper instrumentHistoryMapper, HistoryAnalyzerService analyzer, EmailService emailService,
-			InstrumentServiceValidator validator) {
+			ConnectionService connectionService, InstrumentHistoryMapper instrumentHistoryMapper,
+			HistoryAnalyzerService analyzer, EmailService emailService, InstrumentServiceValidator validator) {
 		this.instrumentHistoryRepository = instrumentHistoryRepository;
 		this.instrumentHistoryMapper = instrumentHistoryMapper;
 		this.historyAnalyzerService = analyzer;
 		this.emailService = emailService;
 		this.validator = validator;
+		this.connectionService = connectionService;
 	}
 
 	@Override
@@ -64,7 +63,7 @@ public class InstrumentServiceImpl implements InstrumentService {
 			URL instrumentHistoryUrl = new URL(urlString.toString());
 			HttpURLConnection connection = (HttpURLConnection) instrumentHistoryUrl.openConnection();
 			connection.setRequestMethod("GET");
-			String jsonString = getRequestResultString(connection);
+			String jsonString = connectionService.getResultFromHttpRequest(connection);
 			connection.disconnect();
 
 			return instrumentHistoryMapper.mapToInstrumentHistoryDtoList(jsonString, candleSize);
@@ -84,7 +83,7 @@ public class InstrumentServiceImpl implements InstrumentService {
 			URL instrumentHistoryUrl = new URL(urlString.toString());
 			HttpURLConnection connection = (HttpURLConnection) instrumentHistoryUrl.openConnection();
 			connection.setRequestMethod("GET");
-			String jsonString = getRequestResultString(connection);
+			String jsonString = connectionService.getResultFromHttpRequest(connection);
 			connection.disconnect();
 
 			return instrumentHistoryMapper.mapToInstrumentHistoryDtoList(jsonString, instrument);
@@ -168,17 +167,6 @@ public class InstrumentServiceImpl implements InstrumentService {
 		urlString.append("&reverse=").append(reverse);
 		urlString.append("&startTime=").append(getTimestampStringFormattedToUTC5HoursAgo());
 		return urlString;
-	}
-
-	private String getRequestResultString(HttpURLConnection connection) throws IOException {
-		BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-		String inputLine;
-		StringBuilder content = new StringBuilder();
-		while ((inputLine = in.readLine()) != null) {
-			content.append(inputLine);
-		}
-		in.close();
-		return content.toString();
 	}
 
 	private String getTimestampStringFormattedToUTC5HoursAgo() {

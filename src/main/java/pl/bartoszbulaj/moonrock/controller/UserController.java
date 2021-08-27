@@ -1,9 +1,7 @@
 
 package pl.bartoszbulaj.moonrock.controller;
 
-import java.io.IOException;
-import java.util.List;
-
+import io.micrometer.core.instrument.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import io.micrometer.core.instrument.util.StringUtils;
 import pl.bartoszbulaj.moonrock.dto.ApiKeyDto;
 import pl.bartoszbulaj.moonrock.dto.OrderDto;
 import pl.bartoszbulaj.moonrock.dto.PositionDto;
@@ -26,6 +22,9 @@ import pl.bartoszbulaj.moonrock.service.OrderService;
 import pl.bartoszbulaj.moonrock.service.PositionManagerService;
 import pl.bartoszbulaj.moonrock.service.UserService;
 import pl.bartoszbulaj.moonrock.validator.ApiKeyValidator;
+
+import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/user")
@@ -69,7 +68,7 @@ public class UserController {
 			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
 		}
 		try {
-			List<PositionDto> positions = positionManagerService.getPositions(owner);
+			List<PositionDto> positions = positionManagerService.getPositionsList(owner);
 			return new ResponseEntity<>(positions, HttpStatus.OK);
 		} catch (BusinessException e) {
 			e.printStackTrace();
