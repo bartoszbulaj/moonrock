@@ -1,9 +1,10 @@
 package pl.bartoszbulaj.moonrock.service;
 
-import pl.bartoszbulaj.moonrock.dto.PositionDto;
-
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
+
+import pl.bartoszbulaj.moonrock.dto.PositionDto;
 
 public interface PositionManagerService {
 
@@ -15,8 +16,8 @@ public interface PositionManagerService {
 
 	void removePositionFromPositionsList(String owner, PositionDto positionDto);
 
-	boolean buyMarket(String owner, String symbol);
+	String buyMarket(String owner, String symbol, BigDecimal quantity) throws IOException;
 
-	boolean sellMarket(String owner, String symbol);
+	String sellMarket(String owner, String symbol, BigDecimal quantity) throws IOException;
 
 }

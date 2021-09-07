@@ -13,7 +13,7 @@
     <artifactId>moonrock</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>moonrock</name>
-    <description>traiding application</description>
+    <description>trading application</description>
 
     <properties>
         <java.version>1.8</java.version>
