@@ -1,19 +1,10 @@
 package pl.bartoszbulaj.moonrock.service.impl;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
+import io.micrometer.core.instrument.util.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import io.micrometer.core.instrument.util.StringUtils;
-import lombok.extern.slf4j.Slf4j;
 import pl.bartoszbulaj.moonrock.config.BitmexClientConfig;
 import pl.bartoszbulaj.moonrock.dto.OrderDto;
 import pl.bartoszbulaj.moonrock.mapper.OrderMapper;
@@ -21,6 +12,14 @@ import pl.bartoszbulaj.moonrock.service.ApiKeyService;
 import pl.bartoszbulaj.moonrock.service.AuthService;
 import pl.bartoszbulaj.moonrock.service.ConnectionService;
 import pl.bartoszbulaj.moonrock.service.OrderService;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -93,7 +92,7 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public String closeAllOrders(String owner, String symbol) throws IOException {
+	public String cancelAllActiveOrders(String owner, String symbol) throws IOException {
 		if (StringUtils.isBlank(symbol) || StringUtils.isBlank(owner)) {
 			throw new IllegalArgumentException();
 		}

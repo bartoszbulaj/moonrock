@@ -1,9 +1,9 @@
 package pl.bartoszbulaj.moonrock.service;
 
+import pl.bartoszbulaj.moonrock.dto.OrderDto;
+
 import java.io.IOException;
 import java.util.List;
-
-import pl.bartoszbulaj.moonrock.dto.OrderDto;
 
 public interface OrderService {
 
@@ -15,6 +15,6 @@ public interface OrderService {
 
 	OrderDto createOrderCloseWithMarket(String symbol, String orderQty);
 
-	String closeAllOrders(String owner, String symbol) throws IOException;
+	String cancelAllActiveOrders(String owner, String symbol) throws IOException;
 
 }
