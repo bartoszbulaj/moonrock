@@ -19,6 +19,18 @@ public class ApiKeyValidatorImpl implements ApiKeyValidator {
 		return false;
 	}
 
+	@Override
+	public boolean isPublicValid(String publicKey) {
+		// TODO implement validation length etc
+		return false;
+	}
+
+	@Override
+	public boolean isSecretValid(byte[] secretKey) {
+		// TODO implement validation length etc
+		return false;
+	}
+
 	private boolean isPublicValid(ApiKeyDto apiKeyDto) {
 		return !StringUtils.isBlank(apiKeyDto.getApiPublicKey())//
 				&& apiKeyDto.getApiPublicKey().length() == 24;
