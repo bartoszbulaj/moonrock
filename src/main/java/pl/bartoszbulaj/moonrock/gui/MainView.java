@@ -5,7 +5,9 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.BigDecimalField;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
@@ -14,17 +16,21 @@ import lombok.extern.slf4j.Slf4j;
 import pl.bartoszbulaj.moonrock.dto.EmailSenderDto;
 import pl.bartoszbulaj.moonrock.integration.DatabaseIntegration;
 import pl.bartoszbulaj.moonrock.service.AppConfigurationService;
+import pl.bartoszbulaj.moonrock.service.PositionManagerService;
 
 import javax.mail.internet.InternetAddress;
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 
 @Route
-@PageTitle("Hello World")
+@PageTitle("Hello Moonrock")
 @Slf4j
 public class MainView extends VerticalLayout {
 
 	private final AppConfigurationService appConfigurationService;
 	private final DatabaseIntegration databaseIntegration;
+	private final PositionManagerService positionManagerService;
 
 	private Checkbox historyAnalyzerCheckbox;
 	private Checkbox emailSenderCheckbox;
@@ -39,15 +45,60 @@ public class MainView extends VerticalLayout {
 	private PasswordField apiKeySecretValue;
 	private Label apiKeysValidationError;
 
-	public MainView(AppConfigurationService appConfigurationService, DatabaseIntegration databaseIntegration) {
+	private HorizontalLayout buySellLayout;
+	private BigDecimalField quantityField;
+	private Button buyButton;
+	private Button sellButton;
+
+	public MainView(AppConfigurationService appConfigurationService, DatabaseIntegration databaseIntegration,
+			PositionManagerService positionManagerService) {
 		this.appConfigurationService = appConfigurationService;
 		this.databaseIntegration = databaseIntegration;
+		this.positionManagerService = positionManagerService;
 
 		addHistoryAnalyzerCheckbox();
 		addEmailSenderCheckbox();
 
 		addEmailSenderCredentialForm();
 		addApiKeysForm();
+
+		addBuySellButtons();
+
+	}
+
+	private void addBuySellButtons() {
+		// TODO add condition for enabling if apikeys are saved in database
+		buySellLayout = new HorizontalLayout();
+		quantityField = new BigDecimalField();
+		quantityField.setPlaceholder("Quantity");
+		buyButton = new Button("Buy", click -> buyAction(quantityField.getValue()));
+		buyButton.getStyle().set("color", "green");
+		sellButton = new Button("Sell", click -> sellAction(quantityField.getValue()));
+		sellButton.getStyle().set("color", "red");
+		buySellLayout.add(sellButton, quantityField, buyButton);
+		add(buySellLayout);
+	}
+
+	private boolean buyAction(BigDecimal quantity) {
+		try {
+			positionManagerService.buyMarket("admin", "XTBUSD", quantity);
+			quantityField.clear();
+			return true;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	private boolean sellAction(BigDecimal quantity) {
+		try {
+			positionManagerService.sellMarket("admin", "XTBUSD", quantity);
+			quantityField.clear();
+			return true;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	private void addApiKeysForm() {
