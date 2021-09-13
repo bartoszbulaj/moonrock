@@ -1,19 +1,17 @@
 package pl.bartoszbulaj.moonrock.config;
 
-import java.util.Properties;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import lombok.extern.slf4j.Slf4j;
 import pl.bartoszbulaj.moonrock.exception.BusinessException;
 import pl.bartoszbulaj.moonrock.service.AppConfigurationService;
+
+import java.util.Properties;
 
 @Configuration
 @Slf4j
@@ -24,6 +22,7 @@ public class AppConfiguration {
 
 	private boolean historyAnalyzerEnabled;
 	private boolean emailSenderEnabled;
+	private String historyAnalyzerInterval;
 
 	@Bean
 	public ModelMapper modelMapper() {
@@ -84,5 +83,13 @@ public class AppConfiguration {
 
 	public void setEmailSenderEnabled(boolean emailSenderEnabled) {
 		this.emailSenderEnabled = emailSenderEnabled;
+	}
+
+	public void setHistoryAnalyzerInterval(String interval) {
+		this.historyAnalyzerInterval = interval;
+	}
+
+	public String getHistoryAnalyzerInterval() {
+		return this.historyAnalyzerInterval;
 	}
 }

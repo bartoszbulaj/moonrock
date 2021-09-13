@@ -1,8 +1,8 @@
 package pl.bartoszbulaj.moonrock.service;
 
-import javax.mail.MessagingException;
-
 import pl.bartoszbulaj.moonrock.dto.EmailSenderDto;
+
+import javax.mail.MessagingException;
 
 public interface AppConfigurationService {
 
@@ -17,4 +17,9 @@ public interface AppConfigurationService {
 	boolean isHistoryAnalyzerEnabled();
 
 	void setHistoryAnalyzerEnabled(boolean status);
+
+	void setHistoryAnalyzerInterval(String interval);
+
+	String getHistoryAnalyzerInterval();
+
 }

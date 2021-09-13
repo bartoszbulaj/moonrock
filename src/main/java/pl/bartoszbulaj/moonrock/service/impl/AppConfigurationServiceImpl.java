@@ -1,16 +1,11 @@
 package pl.bartoszbulaj.moonrock.service.impl;
 
-import java.util.List;
-
-import javax.mail.MessagingException;
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import lombok.extern.slf4j.Slf4j;
 import pl.bartoszbulaj.moonrock.config.AppConfiguration;
 import pl.bartoszbulaj.moonrock.dto.EmailSenderDto;
 import pl.bartoszbulaj.moonrock.entity.EmailSenderEntity;
@@ -18,6 +13,9 @@ import pl.bartoszbulaj.moonrock.exception.BusinessException;
 import pl.bartoszbulaj.moonrock.mapper.EmailSenderMapper;
 import pl.bartoszbulaj.moonrock.repository.EmailSenderRepository;
 import pl.bartoszbulaj.moonrock.service.AppConfigurationService;
+
+import javax.mail.MessagingException;
+import java.util.List;
 
 @Service
 @Transactional
@@ -76,20 +74,27 @@ public class AppConfigurationServiceImpl implements AppConfigurationService {
 	}
 	@Override
 	public void setHistoryAnalyzerEnabled(boolean status) {
-		AppConfiguration appConfiguration = getAppConfigurationBean();
-		appConfiguration.setHistoryAnalyzerEnabled(status);
+		getAppConfigurationBean().setHistoryAnalyzerEnabled(status);
+	}
+
+	@Override
+	public void setHistoryAnalyzerInterval(String interval) {
+		getAppConfigurationBean().setHistoryAnalyzerInterval(interval);
+	}
+
+	@Override
+	public String getHistoryAnalyzerInterval() {
+		return getAppConfigurationBean().getHistoryAnalyzerInterval();
 	}
 
 	@Override
 	public void setEmailSenderEnabled(boolean status) {
-		AppConfiguration appConfiguration = getAppConfigurationBean();
-		appConfiguration.setEmailSenderEnabled(status);
+		getAppConfigurationBean().setEmailSenderEnabled(status);
 	}
 
 	@Override
 	public boolean isHistoryAnalyzerEnabled() {
-		AppConfiguration appConfiguration = getAppConfigurationBean();
-		return appConfiguration.isHistoryAnalyzerEnabled();
+		return getAppConfigurationBean().isHistoryAnalyzerEnabled();
 	}
 
 	private AppConfiguration getAppConfigurationBean() {

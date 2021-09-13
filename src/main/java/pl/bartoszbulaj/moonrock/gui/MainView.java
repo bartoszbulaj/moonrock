@@ -7,6 +7,7 @@ import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.textfield.BigDecimalField;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
@@ -32,6 +33,7 @@ public class MainView extends VerticalLayout {
 	private final PositionManagerService positionManagerService;
 
 	private Checkbox historyAnalyzerCheckbox;
+	private RadioButtonGroup intervalRadioButtonGroup;
 	private Checkbox emailSenderCheckbox;
 
 	private VerticalLayout emailSenderCredentialLayout;
@@ -55,7 +57,7 @@ public class MainView extends VerticalLayout {
 		this.databaseIntegration = databaseIntegration;
 		this.positionManagerService = positionManagerService;
 
-		addHistoryAnalyzerCheckbox();
+		addHistoryAnalyzerCheckboxAndIntervalRadioButtons();
 		addEmailSenderCheckbox();
 
 		addEmailSenderCredentialForm();
@@ -182,13 +184,21 @@ public class MainView extends VerticalLayout {
 
 	}
 
-	private void addHistoryAnalyzerCheckbox() {
+	private void addHistoryAnalyzerCheckboxAndIntervalRadioButtons() {
+		HorizontalLayout horizontalLayout = new HorizontalLayout();
 		historyAnalyzerCheckbox = new Checkbox("History Analyzer", event -> {
 			historyAnalyzerCheckbox.setValue(event.getValue());
 			appConfigurationService.setHistoryAnalyzerEnabled(event.getValue());
 		});
-		add(historyAnalyzerCheckbox);
 		historyAnalyzerCheckbox.setValue(appConfigurationService.isHistoryAnalyzerEnabled());
+
+		intervalRadioButtonGroup = new RadioButtonGroup<>();
+		intervalRadioButtonGroup.setItems("5m", "15m", "1h", "4h");
+		// TODO read value from appConfiguration
+		intervalRadioButtonGroup.setValue("1h");
+		horizontalLayout.add(historyAnalyzerCheckbox, intervalRadioButtonGroup);
+
+		add(horizontalLayout);
 	}
 
 }
