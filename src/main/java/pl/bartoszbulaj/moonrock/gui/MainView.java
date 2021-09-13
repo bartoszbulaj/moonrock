@@ -28,6 +28,8 @@ import java.nio.charset.StandardCharsets;
 @PageTitle("Moonrock App")
 @Slf4j
 public class MainView extends VerticalLayout {
+	private static final String DEFAULT_INTERVAL = "1h";
+
 	private final AppConfigurationService appConfigurationService;
 	private final DatabaseIntegration databaseIntegration;
 	private final PositionManagerService positionManagerService;
@@ -194,11 +196,18 @@ public class MainView extends VerticalLayout {
 
 		intervalRadioButtonGroup = new RadioButtonGroup<>();
 		intervalRadioButtonGroup.setItems("5m", "15m", "1h", "4h");
-		// TODO read value from appConfiguration
-		intervalRadioButtonGroup.setValue("1h");
+		intervalRadioButtonGroup.setValue(DEFAULT_INTERVAL);
+		appConfigurationService.setHistoryAnalyzerInterval(DEFAULT_INTERVAL);
+		intervalRadioButtonGroup
+				.addValueChangeListener(listener -> intervalRadioChange(listener.getValue().toString()));
+
 		horizontalLayout.add(historyAnalyzerCheckbox, intervalRadioButtonGroup);
 
 		add(horizontalLayout);
+	}
+
+	private void intervalRadioChange(String newInterval) {
+		appConfigurationService.setHistoryAnalyzerInterval(newInterval);
 	}
 
 }

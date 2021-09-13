@@ -91,7 +91,8 @@ public class DevToolsController {
 		String historyAnalyzer = appConfiguration.isHistoryAnalyzerEnabled()
 				? "History Analyzer Enabled"
 				: "History Analyzer Disabled";
-		return new ResponseEntity<>(emailSender + " + " + historyAnalyzer, HttpStatus.OK);
+		String interval = "Interval: " + appConfiguration.getHistoryAnalyzerInterval();
+		return new ResponseEntity<>(emailSender + " + " + historyAnalyzer + " + " + interval, HttpStatus.OK);
 	}
 
 }

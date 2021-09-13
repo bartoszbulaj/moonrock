@@ -1,8 +1,7 @@
 package pl.bartoszbulaj.moonrock.service.impl;
 
 import io.micrometer.core.instrument.util.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +10,7 @@ import pl.bartoszbulaj.moonrock.dto.InstrumentHistoryDto;
 import pl.bartoszbulaj.moonrock.entity.InstrumentHistoryEntity;
 import pl.bartoszbulaj.moonrock.mapper.InstrumentHistoryMapper;
 import pl.bartoszbulaj.moonrock.repository.InstrumentHistoryRepository;
+import pl.bartoszbulaj.moonrock.service.AppConfigurationService;
 import pl.bartoszbulaj.moonrock.service.ConnectionService;
 import pl.bartoszbulaj.moonrock.service.EmailService;
 import pl.bartoszbulaj.moonrock.service.HistoryAnalyzerService;
@@ -29,20 +29,23 @@ import java.util.List;
 
 @Service
 @Transactional
+@Slf4j
 public class HistoryServiceImpl implements HistoryService {
 
-	private static final Logger LOG = LogManager.getLogger(HistoryServiceImpl.class);
-	private InstrumentHistoryRepository instrumentHistoryRepository;
-	private InstrumentHistoryMapper instrumentHistoryMapper;
-	private HistoryAnalyzerService historyAnalyzerService;
-	private EmailService emailService;
-	private ConnectionService connectionService;
-	private InstrumentServiceValidator validator;
+	private final AppConfigurationService appConfigurationService;
+	private final InstrumentHistoryRepository instrumentHistoryRepository;
+	private final InstrumentHistoryMapper instrumentHistoryMapper;
+	private final HistoryAnalyzerService historyAnalyzerService;
+	private final EmailService emailService;
+	private final ConnectionService connectionService;
+	private final InstrumentServiceValidator validator;
 
 	@Autowired
-	public HistoryServiceImpl(InstrumentHistoryRepository instrumentHistoryRepository,
-							  ConnectionService connectionService, InstrumentHistoryMapper instrumentHistoryMapper,
-							  HistoryAnalyzerService analyzer, EmailService emailService, InstrumentServiceValidator validator) {
+	public HistoryServiceImpl(AppConfigurationService appConfigurationService,
+			InstrumentHistoryRepository instrumentHistoryRepository, ConnectionService connectionService,
+			InstrumentHistoryMapper instrumentHistoryMapper, HistoryAnalyzerService analyzer, EmailService emailService,
+			InstrumentServiceValidator validator) {
+		this.appConfigurationService = appConfigurationService;
 		this.instrumentHistoryRepository = instrumentHistoryRepository;
 		this.instrumentHistoryMapper = instrumentHistoryMapper;
 		this.historyAnalyzerService = analyzer;
@@ -74,7 +77,7 @@ public class HistoryServiceImpl implements HistoryService {
 	}
 
 	@Override
-	public boolean analyzeInstrumentHistory() {
+	public boolean analyzeInstrumentHistory() {// TODO remove analyzing from this service
 		boolean isSignal = false;
 
 		for (String instrument : BitmexClientConfig.getActiveInstruments()) {
@@ -104,22 +107,23 @@ public class HistoryServiceImpl implements HistoryService {
 	@Override
 	public List<InstrumentHistoryEntity> saveInstrumentHistory() {
 		List<InstrumentHistoryDto> instrumentHistoryDtoList = new ArrayList<>();
+		String historyAnalyzerInterval = appConfigurationService.getHistoryAnalyzerInterval();
 		for (String instrument : BitmexClientConfig.getActiveInstruments()) {
-			instrumentHistoryDtoList.addAll(getInstrumentHistory("1h", instrument, "5", "false"));
+			instrumentHistoryDtoList.addAll(getInstrumentHistory(historyAnalyzerInterval, instrument, "5", "false"));
 		}
-		LOG.info("[History] saved");
+		log.info("[History] saved");
 		return instrumentHistoryRepository
 				.saveAll(instrumentHistoryMapper.mapToInstrumentHistoryEntityList(instrumentHistoryDtoList));
 	}
 
 	@Override
 	public void deleteInstrumentHistory() {
-		LOG.info("[History] deleted");
+		log.info("[History] deleted");
 		instrumentHistoryRepository.deleteAll();
 	}
 
 	@Override
-	public boolean sendEmailWIthSignal(String emailText) {
+	public boolean sendEmailWIthSignal(String emailText) {// TODO remove sending email from this service
 		if (StringUtils.isBlank(emailText)) {
 			return false;
 		}
