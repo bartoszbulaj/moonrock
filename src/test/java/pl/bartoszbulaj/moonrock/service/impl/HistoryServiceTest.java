@@ -1,28 +1,27 @@
 package pl.bartoszbulaj.moonrock.service.impl;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.List;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
-
 import pl.bartoszbulaj.moonrock.dto.InstrumentHistoryDto;
 import pl.bartoszbulaj.moonrock.entity.InstrumentHistoryEntity;
 import pl.bartoszbulaj.moonrock.repository.InstrumentHistoryRepository;
-import pl.bartoszbulaj.moonrock.service.InstrumentService;
+import pl.bartoszbulaj.moonrock.service.HistoryService;
+
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @Transactional
-public class InstrumentServiceTest {
+public class HistoryServiceTest {
 
 	@Autowired
-	private InstrumentService instrumentService;
+	private HistoryService historyService;
 	@Autowired
 	private InstrumentHistoryRepository instrumentHistoryRepository;
 
@@ -31,7 +30,7 @@ public class InstrumentServiceTest {
 		// given
 		instrumentHistoryRepository.save(new InstrumentHistoryEntity());
 		// when
-		instrumentService.deleteInstrumentHistory();
+		historyService.deleteInstrumentHistory();
 		// then
 		assertEquals(0, instrumentHistoryRepository.findAll().size());
 	}
@@ -45,8 +44,7 @@ public class InstrumentServiceTest {
 		String reverse = "false";
 		int expectedListSize = 5;
 		// when
-		List<InstrumentHistoryDto> result = instrumentService.getInstrumentHistory(candleSize, instrument, count,
-				reverse);
+		List<InstrumentHistoryDto> result = historyService.getInstrumentHistory(candleSize, instrument, count, reverse);
 		// then
 		assertEquals(expectedListSize, result.size());
 		assertEquals(instrument, result.get(0).getSymbol());
@@ -62,8 +60,7 @@ public class InstrumentServiceTest {
 		String reverse = "false";
 		int expectedListSize = 0;
 		// when
-		List<InstrumentHistoryDto> result = instrumentService.getInstrumentHistory(candleSize, instrument, count,
-				reverse);
+		List<InstrumentHistoryDto> result = historyService.getInstrumentHistory(candleSize, instrument, count, reverse);
 		// then
 		assertEquals(expectedListSize, result.size());
 	}
@@ -77,8 +74,7 @@ public class InstrumentServiceTest {
 		String reverse = "false";
 		int expectedListSize = 0;
 		// when
-		List<InstrumentHistoryDto> result = instrumentService.getInstrumentHistory(candleSize, instrument, count,
-				reverse);
+		List<InstrumentHistoryDto> result = historyService.getInstrumentHistory(candleSize, instrument, count, reverse);
 		// then
 		assertEquals(expectedListSize, result.size());
 	}
@@ -92,42 +88,7 @@ public class InstrumentServiceTest {
 		String reverse = "false";
 		int expectedListSize = 0;
 		// when
-		List<InstrumentHistoryDto> result = instrumentService.getInstrumentHistory(candleSize, instrument, count,
-				reverse);
-		// then
-		assertEquals(expectedListSize, result.size());
-	}
-
-	@Test
-	public void shouldReturnEmptyListWhenInstrumentSymbolIsNotValid() {
-		// given
-		String instrument = "112233";
-		int expectedListSize = 0;
-		// when
-		List<InstrumentHistoryDto> result = instrumentService.getInstrumentHistory(instrument);
-		// then
-		assertEquals(expectedListSize, result.size());
-	}
-
-	@Test
-	public void shouldReturnListWith5ItemsWhenInstrumentSymbolIsValid() {
-		// given
-		String instrument = "ethusd";
-		int expectedListSize = 5;
-		// when
-		List<InstrumentHistoryDto> result = instrumentService.getInstrumentHistory(instrument);
-		// then
-		assertEquals(expectedListSize, result.size());
-		assertEquals("ETHUSD", result.get(0).getSymbol());
-	}
-
-	@Test
-	public void shouldReturnEmptyListWhenInstrumentSymbolIsNull() {
-		// given
-		String instrument = null;
-		int expectedListSize = 0;
-		// when
-		List<InstrumentHistoryDto> result = instrumentService.getInstrumentHistory(instrument);
+		List<InstrumentHistoryDto> result = historyService.getInstrumentHistory(candleSize, instrument, count, reverse);
 		// then
 		assertEquals(expectedListSize, result.size());
 	}
@@ -138,7 +99,7 @@ public class InstrumentServiceTest {
 		String emailText = "";
 		boolean expected = false;
 		// when
-		boolean result = instrumentService.sendEmailWIthSignal(emailText);
+		boolean result = historyService.sendEmailWIthSignal(emailText);
 		// then
 		assertEquals(expected, result);
 	}
@@ -149,7 +110,7 @@ public class InstrumentServiceTest {
 		String emailText = null;
 		boolean expected = false;
 		// when
-		boolean result = instrumentService.sendEmailWIthSignal(emailText);
+		boolean result = historyService.sendEmailWIthSignal(emailText);
 		// then
 		assertEquals(expected, result);
 	}

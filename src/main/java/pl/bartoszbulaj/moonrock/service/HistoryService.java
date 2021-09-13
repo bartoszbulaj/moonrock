@@ -1,11 +1,11 @@
 package pl.bartoszbulaj.moonrock.service;
 
-import java.util.List;
-
 import pl.bartoszbulaj.moonrock.dto.InstrumentHistoryDto;
 import pl.bartoszbulaj.moonrock.entity.InstrumentHistoryEntity;
 
-public interface InstrumentService {
+import java.util.List;
+
+public interface HistoryService {
 
 	List<InstrumentHistoryDto> getInstrumentHistory(String candleSize, String intrument, String count, String reverse);
 
@@ -16,8 +16,6 @@ public interface InstrumentService {
 	void deleteInstrumentHistory();
 
 	List<InstrumentHistoryEntity> saveInstrumentHistory();
-
-	List<InstrumentHistoryDto> getInstrumentHistory(String instrument);
 
 	boolean sendEmailWIthSignal(String emailText);
 }

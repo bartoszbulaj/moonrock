@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import pl.bartoszbulaj.moonrock.service.AppConfigurationService;
-import pl.bartoszbulaj.moonrock.service.InstrumentService;
+import pl.bartoszbulaj.moonrock.service.HistoryService;
 import pl.bartoszbulaj.moonrock.service.SchedulerService;
 import pl.bartoszbulaj.moonrock.service.WebsocketManagerService;
 
@@ -14,7 +14,7 @@ import pl.bartoszbulaj.moonrock.service.WebsocketManagerService;
 @Transactional
 public class SchedulerServiceImpl implements SchedulerService {
 
-	private InstrumentService instrumentService;
+	private HistoryService historyService;
 	private AppConfigurationService appConfigurationService;
 	private WebsocketManagerService websocketManagerService;
 
@@ -22,9 +22,9 @@ public class SchedulerServiceImpl implements SchedulerService {
 	private boolean emailSenderActive;
 
 	@Autowired
-	public SchedulerServiceImpl(InstrumentService instrumentService, AppConfigurationService appConfigurationService,
-			WebsocketManagerService websocketManagerService) {
-		this.instrumentService = instrumentService;
+	public SchedulerServiceImpl(HistoryService historyService, AppConfigurationService appConfigurationService,
+                                WebsocketManagerService websocketManagerService) {
+		this.historyService = historyService;
 		this.appConfigurationService = appConfigurationService;
 		this.websocketManagerService = websocketManagerService;
 		this.heartbeatActive = false;
@@ -44,7 +44,7 @@ public class SchedulerServiceImpl implements SchedulerService {
 	@Scheduled(cron = "5 0 * * * *")
 	public void deleteHistory() {
 		if (appConfigurationService.isHistoryAnalyzerEnabled()) {
-			instrumentService.deleteInstrumentHistory();
+			historyService.deleteInstrumentHistory();
 		}
 	}
 
@@ -52,7 +52,7 @@ public class SchedulerServiceImpl implements SchedulerService {
 	@Scheduled(cron = "35 0 * * * *")
 	public void saveHistory() {
 		if (appConfigurationService.isHistoryAnalyzerEnabled()) {
-			instrumentService.saveInstrumentHistory();
+			historyService.saveInstrumentHistory();
 		}
 	}
 
@@ -61,10 +61,10 @@ public class SchedulerServiceImpl implements SchedulerService {
 	public void analyzeHistory() {
 		boolean isSignal = false;
 		if (appConfigurationService.isHistoryAnalyzerEnabled()) {
-			isSignal = instrumentService.analyzeInstrumentHistory();
+			isSignal = historyService.analyzeInstrumentHistory();
 		}
 		if (emailSenderActive && isSignal) {
-			instrumentService.sendEmailWithSignals();
+			historyService.sendEmailWithSignals();
 		}
 	}
 

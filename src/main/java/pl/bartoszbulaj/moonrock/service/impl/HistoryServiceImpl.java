@@ -14,7 +14,7 @@ import pl.bartoszbulaj.moonrock.repository.InstrumentHistoryRepository;
 import pl.bartoszbulaj.moonrock.service.ConnectionService;
 import pl.bartoszbulaj.moonrock.service.EmailService;
 import pl.bartoszbulaj.moonrock.service.HistoryAnalyzerService;
-import pl.bartoszbulaj.moonrock.service.InstrumentService;
+import pl.bartoszbulaj.moonrock.service.HistoryService;
 import pl.bartoszbulaj.moonrock.validator.InstrumentServiceValidator;
 
 import java.io.IOException;
@@ -29,9 +29,9 @@ import java.util.List;
 
 @Service
 @Transactional
-public class InstrumentServiceImpl implements InstrumentService {
+public class HistoryServiceImpl implements HistoryService {
 
-	private static final Logger LOG = LogManager.getLogger(InstrumentServiceImpl.class);
+	private static final Logger LOG = LogManager.getLogger(HistoryServiceImpl.class);
 	private InstrumentHistoryRepository instrumentHistoryRepository;
 	private InstrumentHistoryMapper instrumentHistoryMapper;
 	private HistoryAnalyzerService historyAnalyzerService;
@@ -40,9 +40,9 @@ public class InstrumentServiceImpl implements InstrumentService {
 	private InstrumentServiceValidator validator;
 
 	@Autowired
-	public InstrumentServiceImpl(InstrumentHistoryRepository instrumentHistoryRepository,
-			ConnectionService connectionService, InstrumentHistoryMapper instrumentHistoryMapper,
-			HistoryAnalyzerService analyzer, EmailService emailService, InstrumentServiceValidator validator) {
+	public HistoryServiceImpl(InstrumentHistoryRepository instrumentHistoryRepository,
+							  ConnectionService connectionService, InstrumentHistoryMapper instrumentHistoryMapper,
+							  HistoryAnalyzerService analyzer, EmailService emailService, InstrumentServiceValidator validator) {
 		this.instrumentHistoryRepository = instrumentHistoryRepository;
 		this.instrumentHistoryMapper = instrumentHistoryMapper;
 		this.historyAnalyzerService = analyzer;
@@ -67,26 +67,6 @@ public class InstrumentServiceImpl implements InstrumentService {
 			connection.disconnect();
 
 			return instrumentHistoryMapper.mapToInstrumentHistoryDtoList(jsonString, candleSize);
-		} catch (IOException e) {
-			e.printStackTrace();
-			return Collections.emptyList();
-		}
-	}
-
-	@Override
-	public List<InstrumentHistoryDto> getInstrumentHistory(String instrument) {
-		if (!validator.isInstrumentSymbolValid(instrument)) {
-			return Collections.emptyList();
-		}
-		try {
-			StringBuilder urlString = createUrlString("1h", instrument.toUpperCase(), "5", "false");
-			URL instrumentHistoryUrl = new URL(urlString.toString());
-			HttpURLConnection connection = (HttpURLConnection) instrumentHistoryUrl.openConnection();
-			connection.setRequestMethod("GET");
-			String jsonString = connectionService.getResultFromHttpRequest(connection);
-			connection.disconnect();
-
-			return instrumentHistoryMapper.mapToInstrumentHistoryDtoList(jsonString, instrument);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return Collections.emptyList();
@@ -125,16 +105,16 @@ public class InstrumentServiceImpl implements InstrumentService {
 	public List<InstrumentHistoryEntity> saveInstrumentHistory() {
 		List<InstrumentHistoryDto> instrumentHistoryDtoList = new ArrayList<>();
 		for (String instrument : BitmexClientConfig.getActiveInstruments()) {
-			instrumentHistoryDtoList.addAll(getInstrumentHistory(instrument));
+			instrumentHistoryDtoList.addAll(getInstrumentHistory("1h", instrument, "5", "false"));
 		}
-		LOG.info("[History] is saved");
+		LOG.info("[History] saved");
 		return instrumentHistoryRepository
 				.saveAll(instrumentHistoryMapper.mapToInstrumentHistoryEntityList(instrumentHistoryDtoList));
 	}
 
 	@Override
 	public void deleteInstrumentHistory() {
-		LOG.info("[History] is deleted");
+		LOG.info("[History] deleted");
 		instrumentHistoryRepository.deleteAll();
 	}
 
