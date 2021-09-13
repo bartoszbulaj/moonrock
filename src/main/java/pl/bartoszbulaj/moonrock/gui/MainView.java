@@ -23,11 +23,10 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 
-@Route
-@PageTitle("Hello Moonrock")
+@Route("/")
+@PageTitle("Moonrock App")
 @Slf4j
 public class MainView extends VerticalLayout {
-
 	private final AppConfigurationService appConfigurationService;
 	private final DatabaseIntegration databaseIntegration;
 	private final PositionManagerService positionManagerService;
@@ -119,17 +118,23 @@ public class MainView extends VerticalLayout {
 	}
 
 	private void saveApiKeys(ClickEvent<Button> buttonClickEvent) {
-		// TODO refactor argument "owner"
-		boolean success = databaseIntegration.saveApiKeys("admin", apiKeyNameValue.getValue(),
-				apiKeySecretValue.getValue().getBytes(StandardCharsets.UTF_8));
-		// TODO add validation for apikeys, for example length
-		if (success) {
-			apiKeyLayout.setVisible(false);
-			apiKeysValidationError.setVisible(false);
+		if (validateApiKeysForm()) {
+			// TODO refactor argument "owner"
+			boolean success = databaseIntegration.saveApiKeys("admin", apiKeyNameValue.getValue(),
+					apiKeySecretValue.getValue().getBytes(StandardCharsets.UTF_8));
+			if (success) {
+				apiKeyLayout.setVisible(false);
+				apiKeysValidationError.setVisible(false);
+			} else {
+				apiKeysValidationError.setVisible(true);
+			}
 		} else {
 			apiKeysValidationError.setVisible(true);
 		}
+	}
 
+	private boolean validateApiKeysForm() {
+		return apiKeyNameValue.getValue().length() == 24 && apiKeySecretValue.getValue().length() == 48;
 	}
 
 	private void addEmailSenderCheckbox() {
