@@ -8,7 +8,7 @@ import org.springframework.web.client.RestTemplate;
 import pl.bartoszbulaj.moonrock.simulator.mapper.CandleMapper;
 import pl.bartoszbulaj.moonrock.simulator.model.Candle;
 import pl.bartoszbulaj.moonrock.simulator.model.CandleOHLC;
-import pl.bartoszbulaj.moonrock.simulator.service.HistoryService;
+import pl.bartoszbulaj.moonrock.simulator.service.SimulatorHistoryService;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -18,12 +18,12 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
-public class HistoryServiceImpl implements HistoryService {
+public class SimulatorHistoryServiceImpl implements SimulatorHistoryService {
 
 	private final RestTemplate restTemplate;
 	private final CandleMapper candleMapper;
 
-	public HistoryServiceImpl(RestTemplate restTemplate, CandleMapper candleMapper) {
+	public SimulatorHistoryServiceImpl(RestTemplate restTemplate, CandleMapper candleMapper) {
 		this.restTemplate = restTemplate;
 		this.candleMapper = candleMapper;
 	}

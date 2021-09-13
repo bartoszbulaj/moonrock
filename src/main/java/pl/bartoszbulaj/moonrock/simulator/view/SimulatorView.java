@@ -6,7 +6,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import pl.bartoszbulaj.moonrock.simulator.model.Candle;
-import pl.bartoszbulaj.moonrock.simulator.service.HistoryService;
+import pl.bartoszbulaj.moonrock.simulator.service.SimulatorHistoryService;
 
 import java.util.List;
 
@@ -14,10 +14,10 @@ import java.util.List;
 @PageTitle("Moonrock simulator")
 public class SimulatorView extends VerticalLayout {
 
-	private final HistoryService historyService;
+	private final SimulatorHistoryService simulatorHistoryService;
 
-	SimulatorView(HistoryService historyService) {
-		this.historyService = historyService;
+	SimulatorView(SimulatorHistoryService historyService) {
+		this.simulatorHistoryService = historyService;
 
 		List<Candle> historyCandleList = historyService.getHistoryCandleList("1h", "XBTUSD", "15", "false");
 		// DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd

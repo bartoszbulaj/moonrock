@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
 import pl.bartoszbulaj.moonrock.simulator.mapper.CandleMapper;
-import pl.bartoszbulaj.moonrock.simulator.service.impl.HistoryServiceImpl;
+import pl.bartoszbulaj.moonrock.simulator.service.impl.SimulatorHistoryServiceImpl;
 
 @Configuration
 public class BeansConfiguration {
@@ -16,7 +16,7 @@ public class BeansConfiguration {
 	}
 
 	@Bean
-	public HistoryServiceImpl historyService(RestTemplate restTemplate, CandleMapper candleMapper) {
-		return new HistoryServiceImpl(restTemplate, candleMapper);
+	public SimulatorHistoryServiceImpl simulatorHistoryService(RestTemplate restTemplate, CandleMapper candleMapper) {
+		return new SimulatorHistoryServiceImpl(restTemplate, candleMapper);
 	}
 }
