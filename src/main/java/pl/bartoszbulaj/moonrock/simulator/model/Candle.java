@@ -1,10 +1,10 @@
 package pl.bartoszbulaj.moonrock.simulator.model;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Candle {
 
-	public LocalDate timestamp;
+	public LocalDateTime timestamp;
 	public String symbol;
 	public double open;
 	public int high;
@@ -18,11 +18,11 @@ public class Candle {
 	public double homeNotional;
 	public int foreignNotional;
 
-	public LocalDate getTimestamp() {
+	public LocalDateTime getTimestamp() {
 		return timestamp;
 	}
 
-	public void setTimestamp(LocalDate timestamp) {
+	public void setTimestamp(LocalDateTime timestamp) {
 		this.timestamp = timestamp;
 	}
 

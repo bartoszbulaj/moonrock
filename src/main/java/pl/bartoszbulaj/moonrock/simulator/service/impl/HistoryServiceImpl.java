@@ -60,13 +60,13 @@ public class HistoryServiceImpl implements HistoryService {
 		urlString.append("&symbol=").append(symbol);
 		urlString.append("&count=").append(count);
 		urlString.append("&reverse=").append(reverse);
-		urlString.append("&startTime=").append(getTimestampStringFormattedToUTC5HoursAgo());
+		urlString.append("&startTime=").append(getTimestampStringFormattedToUtcGivenHoursAgo(count));
 		return urlString;
 	}
 
-	private String getTimestampStringFormattedToUTC5HoursAgo() {
+	private String getTimestampStringFormattedToUtcGivenHoursAgo(String count) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		return LocalDateTime.now(ZoneOffset.UTC).minusHours(5).format(formatter).replace(" ", "T");
+		return LocalDateTime.now(ZoneOffset.UTC).minusHours(Long.parseLong(count)).format(formatter).replace(" ", "T");
 	}
 
 }

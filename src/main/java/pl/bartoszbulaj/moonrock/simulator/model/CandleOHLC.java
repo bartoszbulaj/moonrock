@@ -1,21 +1,21 @@
 package pl.bartoszbulaj.moonrock.simulator.model;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class CandleOHLC {
 
-	public LocalDate timestamp;
+	public LocalDateTime timestamp;
 	public String symbol;
 	public double open;
 	public int high;
 	public int low;
 	public double close;
 
-	public LocalDate getTimestamp() {
+	public LocalDateTime getTimestamp() {
 		return timestamp;
 	}
 
-	public void setTimestamp(LocalDate timestamp) {
+	public void setTimestamp(LocalDateTime timestamp) {
 		this.timestamp = timestamp;
 	}
 
