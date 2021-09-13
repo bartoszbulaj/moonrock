@@ -1,14 +1,13 @@
 package pl.bartoszbulaj.moonrock.service.impl;
 
-import java.util.List;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import pl.bartoszbulaj.moonrock.dto.InstrumentHistoryDto;
 import pl.bartoszbulaj.moonrock.service.HistoryAnalyzerService;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -18,24 +17,27 @@ public class HistoryAnalyzerServiceImpl implements HistoryAnalyzerService {
 
 	@Override
 	public String checkForSignal(List<InstrumentHistoryDto> instrumentHistoryDtoList) {
-		if (instrumentHistoryDtoList == null) {
+		if (instrumentHistoryDtoList == null || instrumentHistoryDtoList.isEmpty()) {
 			return "";
 		}
-		String signal = "";
-		if (!instrumentHistoryDtoList.isEmpty()) {
-			LOG.info("[Analyzer] Searching for {} signal.", instrumentHistoryDtoList.get(0).getSymbol());
-			if (isSignalToBuy(instrumentHistoryDtoList)) {
-				signal += "Buy";
-				LOG.info("[Signal] {} signal to {} {}", instrumentHistoryDtoList.get(0).getCandleSize(), signal,
-						instrumentHistoryDtoList.get(0).getSymbol());
-			}
-			if (isSignalToSell(instrumentHistoryDtoList)) {
-				signal += "Sell";
-				LOG.info("[Signal] {} signal to {} {}", instrumentHistoryDtoList.get(0).getCandleSize(), signal,
-						instrumentHistoryDtoList.get(0).getSymbol());
-			}
+		StringBuilder signal = new StringBuilder();
+
+		LOG.info("[Analyzer] Searching for {} signal.", instrumentHistoryDtoList.get(0).getSymbol());
+		if (isSignalToBuy(instrumentHistoryDtoList)) {
+			signal.append("Buy");
+			logSignalInformation(signal, instrumentHistoryDtoList);
 		}
-		return signal;
+		if (isSignalToSell(instrumentHistoryDtoList)) {
+			signal.append("Sell");
+			logSignalInformation(signal, instrumentHistoryDtoList);
+		}
+
+		return signal.toString();
+	}
+
+	private void logSignalInformation(StringBuilder signal, List<InstrumentHistoryDto> instrumentHistoryDtoList) {
+		LOG.info("[Signal] {} signal to {} {}", instrumentHistoryDtoList.get(0).getCandleSize(), signal,
+				instrumentHistoryDtoList.get(0).getSymbol());
 	}
 
 	private boolean isSignalToBuy(List<InstrumentHistoryDto> instrumentHistoryDtoList) {
