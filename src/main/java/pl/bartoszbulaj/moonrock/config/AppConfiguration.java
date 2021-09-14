@@ -18,7 +18,7 @@ import java.util.Properties;
 public class AppConfiguration {
 
 	@Autowired
-	private AppConfigurationService emailSenderService;
+	private AppConfigurationService appConfigurationService;
 
 	private boolean historyAnalyzerEnabled;
 	private boolean emailSenderEnabled;
@@ -62,11 +62,11 @@ public class AppConfiguration {
 	}
 
 	private String getEmailAddressFromDb() {
-		return emailSenderService.getEmailSenderCredentials().getEmailAddress();
+		return appConfigurationService.getEmailSenderCredentials().getEmailAddress();
 	}
 
 	private String getEmailPasswordFromDb() {
-		return emailSenderService.getEmailSenderCredentials().getEmailPassword();
+		return appConfigurationService.getEmailSenderCredentials().getEmailPassword();
 	}
 
 	public boolean isHistoryAnalyzerEnabled() {
