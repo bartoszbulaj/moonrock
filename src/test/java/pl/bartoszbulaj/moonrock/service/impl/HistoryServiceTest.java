@@ -35,8 +35,8 @@ public class HistoryServiceTest {
 		assertEquals(0, instrumentHistoryRepository.findAll().size());
 	}
 
-	@Test
-	public void shouldReturnInstrumentHistoryListFromGivenArguments() {
+	@Test(expected = IllegalArgumentException.class)
+	public void shouldThrowIAEFromGivenArguments() {
 		// given
 		String candleSize = "1h";
 		String instrument = "XBTUSD";
@@ -44,15 +44,13 @@ public class HistoryServiceTest {
 		String reverse = "false";
 		int expectedListSize = 5;
 		// when
-		List<InstrumentHistoryDto> result = historyService.collectHistoryForGivenInstrument(candleSize, instrument, count, reverse);
-		// then
-		assertEquals(expectedListSize, result.size());
-		assertEquals(instrument, result.get(0).getSymbol());
-		assertEquals(candleSize, result.get(0).getCandleSize());
+		List<InstrumentHistoryDto> result = historyService.collectHistoryForGivenInstrument(candleSize, instrument,
+				count, reverse);
+
 	}
 
-	@Test
-	public void shouldReturnEmptyListWhenArgumentIsNull() {
+	@Test(expected = IllegalArgumentException.class)
+	public void shouldThrowIAEWhenArgumentIsNull() {
 		// given
 		String candleSize = "1h";
 		String instrument = "xbtusd";
@@ -60,13 +58,13 @@ public class HistoryServiceTest {
 		String reverse = "false";
 		int expectedListSize = 0;
 		// when
-		List<InstrumentHistoryDto> result = historyService.collectHistoryForGivenInstrument(candleSize, instrument, count, reverse);
-		// then
-		assertEquals(expectedListSize, result.size());
+		List<InstrumentHistoryDto> result = historyService.collectHistoryForGivenInstrument(candleSize, instrument,
+				count, reverse);
+
 	}
 
-	@Test
-	public void shouldReturnEmptyListWhenArgumentIsEmpty() {
+	@Test(expected = IllegalArgumentException.class)
+	public void shouldThrowIAEWhenCountArgumentIsEmpty() {
 		// given
 		String candleSize = "1h";
 		String instrument = "xbtusd";
@@ -74,12 +72,12 @@ public class HistoryServiceTest {
 		String reverse = "false";
 		int expectedListSize = 0;
 		// when
-		List<InstrumentHistoryDto> result = historyService.collectHistoryForGivenInstrument(candleSize, instrument, count, reverse);
-		// then
-		assertEquals(expectedListSize, result.size());
+		List<InstrumentHistoryDto> result = historyService.collectHistoryForGivenInstrument(candleSize, instrument,
+				count, reverse);
+
 	}
 
-	@Test
+	@Test(expected = IllegalArgumentException.class)
 	public void shouldReturnEmptyListWhenSymbolIsIncorrect() {
 		// given
 		String candleSize = "1h";
@@ -88,9 +86,9 @@ public class HistoryServiceTest {
 		String reverse = "false";
 		int expectedListSize = 0;
 		// when
-		List<InstrumentHistoryDto> result = historyService.collectHistoryForGivenInstrument(candleSize, instrument, count, reverse);
-		// then
-		assertEquals(expectedListSize, result.size());
+		List<InstrumentHistoryDto> result = historyService.collectHistoryForGivenInstrument(candleSize, instrument,
+				count, reverse);
+
 	}
 
 	@Test

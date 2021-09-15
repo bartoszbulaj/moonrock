@@ -1,19 +1,18 @@
 package pl.bartoszbulaj.moonrock.service.impl;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
-
 import pl.bartoszbulaj.moonrock.dto.InstrumentHistoryDto;
 import pl.bartoszbulaj.moonrock.service.HistoryAnalyzerService;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -43,11 +42,13 @@ public class HistoryAnalyzerServiceTest {
 				1D, "1h");
 		instrumentHistoryDto5 = new InstrumentHistoryDto(5L, "", "XBT", 130D, 150D, 30D, 50D, 1D, 1D, 1D, 1D, 1D, 1D,
 				1D, "1h");
-		instrumentHistoryDtoList.add(instrumentHistoryDto1);
-		instrumentHistoryDtoList.add(instrumentHistoryDto2);
-		instrumentHistoryDtoList.add(instrumentHistoryDto3);
-		instrumentHistoryDtoList.add(instrumentHistoryDto4);
+
 		instrumentHistoryDtoList.add(instrumentHistoryDto5);
+		instrumentHistoryDtoList.add(instrumentHistoryDto4);
+		instrumentHistoryDtoList.add(instrumentHistoryDto3);
+		instrumentHistoryDtoList.add(instrumentHistoryDto2);
+		instrumentHistoryDtoList.add(instrumentHistoryDto1);
+
 		// when
 		String result = historyAnalyzerService.checkForSignal(instrumentHistoryDtoList);
 		// then
@@ -67,11 +68,11 @@ public class HistoryAnalyzerServiceTest {
 				1D, "1h");
 		instrumentHistoryDto5 = new InstrumentHistoryDto(5L, "", "XBT", 120D, 160D, 30D, 150D, 1D, 1D, 1D, 1D, 1D, 1D,
 				1D, "1h");
-		instrumentHistoryDtoList.add(instrumentHistoryDto1);
-		instrumentHistoryDtoList.add(instrumentHistoryDto2);
-		instrumentHistoryDtoList.add(instrumentHistoryDto3);
-		instrumentHistoryDtoList.add(instrumentHistoryDto4);
 		instrumentHistoryDtoList.add(instrumentHistoryDto5);
+		instrumentHistoryDtoList.add(instrumentHistoryDto4);
+		instrumentHistoryDtoList.add(instrumentHistoryDto3);
+		instrumentHistoryDtoList.add(instrumentHistoryDto2);
+		instrumentHistoryDtoList.add(instrumentHistoryDto1);
 		// when
 		String result = historyAnalyzerService.checkForSignal(instrumentHistoryDtoList);
 		// then
