@@ -16,15 +16,10 @@ public class SimulatorView extends VerticalLayout {
 
 	private final SimulatorHistoryService simulatorHistoryService;
 
-	SimulatorView(SimulatorHistoryService historyService) {
-		this.simulatorHistoryService = historyService;
+	SimulatorView(SimulatorHistoryService simulatorHistoryService) {
+		this.simulatorHistoryService = simulatorHistoryService;
 
-		List<Candle> historyCandleList = historyService.getHistoryCandleList("1h", "XBTUSD", "15", "false");
-		// DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd
-		// HH:mm:ss");
-		// historyCandleList
-		// .forEach(candle ->
-		// candle.setTimestamp(candle).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")));
+		List<Candle> historyCandleList = simulatorHistoryService.getHistoryCandleList("1h", "XBTUSD", "15", "false");
 
 		Grid<Candle> gridCandleList = new Grid<>(Candle.class);
 		gridCandleList.setItems(historyCandleList);
