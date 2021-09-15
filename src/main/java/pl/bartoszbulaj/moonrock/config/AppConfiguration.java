@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import pl.bartoszbulaj.moonrock.exception.BusinessException;
 import pl.bartoszbulaj.moonrock.service.AppConfigurationService;
 
@@ -22,7 +24,7 @@ public class AppConfiguration {
 
 	private boolean historyAnalyzerEnabled;
 	private boolean emailSenderEnabled;
-	private String historyAnalyzerInterval;
+	private String historyAnalyzerInterval = "5m";
 
 	@Bean
 	public ModelMapper modelMapper() {
@@ -32,6 +34,15 @@ public class AppConfiguration {
 	@Bean
 	public ObjectMapper objectMapper() {
 		return new ObjectMapper();
+	}
+
+	@Bean
+	public TaskScheduler taskScheduler() {
+		ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
+		taskScheduler.setThreadNamePrefix("ThreadPoolTaskScheduler");
+		taskScheduler.setPoolSize(15);
+		taskScheduler.initialize();
+		return taskScheduler;
 	}
 
 	@Bean(name = "javaMailSender")
