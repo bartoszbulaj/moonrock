@@ -18,6 +18,7 @@ import pl.bartoszbulaj.moonrock.dto.EmailSenderDto;
 import pl.bartoszbulaj.moonrock.integration.DatabaseIntegration;
 import pl.bartoszbulaj.moonrock.service.AppConfigurationService;
 import pl.bartoszbulaj.moonrock.service.PositionManagerService;
+import pl.bartoszbulaj.moonrock.service.SchedulerService;
 
 import javax.mail.internet.InternetAddress;
 import java.io.IOException;
@@ -28,11 +29,11 @@ import java.nio.charset.StandardCharsets;
 @PageTitle("Moonrock App")
 @Slf4j
 public class MainView extends VerticalLayout {
-	private static final String DEFAULT_INTERVAL = "1h";
 
 	private final AppConfigurationService appConfigurationService;
 	private final DatabaseIntegration databaseIntegration;
 	private final PositionManagerService positionManagerService;
+	private final SchedulerService schedulerService;
 
 	private Checkbox historyAnalyzerCheckbox;
 	private RadioButtonGroup intervalRadioButtonGroup;
@@ -54,10 +55,11 @@ public class MainView extends VerticalLayout {
 	private Button sellButton;
 
 	public MainView(AppConfigurationService appConfigurationService, DatabaseIntegration databaseIntegration,
-			PositionManagerService positionManagerService) {
+			PositionManagerService positionManagerService, SchedulerService schedulerService) {
 		this.appConfigurationService = appConfigurationService;
 		this.databaseIntegration = databaseIntegration;
 		this.positionManagerService = positionManagerService;
+		this.schedulerService = schedulerService;
 
 		addHistoryAnalyzerCheckboxAndIntervalRadioButtons();
 		addEmailSenderCheckbox();
@@ -195,9 +197,9 @@ public class MainView extends VerticalLayout {
 		historyAnalyzerCheckbox.setValue(appConfigurationService.isHistoryAnalyzerEnabled());
 
 		intervalRadioButtonGroup = new RadioButtonGroup<>();
-		intervalRadioButtonGroup.setItems("5m", "15m", "1h", "4h");
-		intervalRadioButtonGroup.setValue(DEFAULT_INTERVAL);
-		appConfigurationService.setHistoryAnalyzerInterval(DEFAULT_INTERVAL);
+		intervalRadioButtonGroup.setItems("5m", "15m", "1h"); // 4h removed due to problems with calculation
+		intervalRadioButtonGroup.setValue(appConfigurationService.getHistoryAnalyzerInterval());
+
 		intervalRadioButtonGroup
 				.addValueChangeListener(listener -> intervalRadioChange(listener.getValue().toString()));
 
@@ -208,6 +210,8 @@ public class MainView extends VerticalLayout {
 
 	private void intervalRadioChange(String newInterval) {
 		appConfigurationService.setHistoryAnalyzerInterval(newInterval);
+		schedulerService.deleteTasks();
+		schedulerService.configTasks(newInterval);
 	}
 
 }

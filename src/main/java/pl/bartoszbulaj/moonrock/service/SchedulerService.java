@@ -2,11 +2,13 @@ package pl.bartoszbulaj.moonrock.service;
 
 public interface SchedulerService {
 
-	void deleteHistory();
+	Runnable deleteHistory();
 
-	void saveHistory();
+	Runnable saveHistory();
 
-	void analyzeHistory();
+	Runnable analyzeHistory();
+
+	Runnable sendHeartbeat();
 
 	boolean isHeartbeatActive();
 
@@ -14,5 +16,7 @@ public interface SchedulerService {
 
 	void disableHeartbeat();
 
-	void sendHeartbeat();
+	void configTasks(String interval);
+
+	void deleteTasks();
 }

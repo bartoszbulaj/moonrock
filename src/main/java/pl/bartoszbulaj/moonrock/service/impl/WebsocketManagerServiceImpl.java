@@ -1,17 +1,16 @@
 package pl.bartoszbulaj.moonrock.service.impl;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import pl.bartoszbulaj.moonrock.service.SchedulerService;
 import pl.bartoszbulaj.moonrock.service.WebsocketManagerService;
 import pl.bartoszbulaj.moonrock.websocket.InstrumentWebsocket;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -25,7 +24,7 @@ public class WebsocketManagerServiceImpl implements WebsocketManagerService {
 		this.context = context;
 		this.websocketSet = new HashSet<>();
 	}
-
+	// TODO add button to run websockets on GUI
 	@Override
 	public void addAllWebsockets(List<String> instrumentList) {
 		this.websocketSet.clear();
