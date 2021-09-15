@@ -7,7 +7,8 @@ import java.util.List;
 
 public interface HistoryService {
 
-	List<InstrumentHistoryDto> getInstrumentHistory(String candleSize, String intrument, String count, String reverse);
+	List<InstrumentHistoryDto> collectHistoryForGivenInstrument(String instrument, String candleSize, String count,
+			String reverse);
 
 	boolean analyzeInstrumentHistory();
 
@@ -17,5 +18,5 @@ public interface HistoryService {
 
 	List<InstrumentHistoryEntity> saveInstrumentHistory();
 
-	boolean sendEmailWIthSignal(String emailText);
+	boolean sendEmailWithGivenMessage(String emailText);
 }

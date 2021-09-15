@@ -20,9 +20,6 @@ import pl.bartoszbulaj.moonrock.validator.InstrumentServiceValidator;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -55,8 +52,8 @@ public class HistoryServiceImpl implements HistoryService {
 	}
 
 	@Override
-	public List<InstrumentHistoryDto> getInstrumentHistory(String candleSize, String instrument, String count,
-			String reverse) {
+	public List<InstrumentHistoryDto> collectHistoryForGivenInstrument(String instrument, String candleSize,
+			String count, String reverse) {
 		if (!validator.isAllArgumentsValid(candleSize, instrument, count, reverse)) {
 			return Collections.emptyList();
 		}
@@ -101,15 +98,15 @@ public class HistoryServiceImpl implements HistoryService {
 				emailText.append(emailService.createEmailText(instrument, signalDirection));
 			}
 		}
-		sendEmailWIthSignal(emailText.toString());
+		sendEmailWithGivenMessage(emailText.toString());
 	}
 
 	@Override
 	public List<InstrumentHistoryEntity> saveInstrumentHistory() {
 		List<InstrumentHistoryDto> instrumentHistoryDtoList = new ArrayList<>();
-		String historyAnalyzerInterval = appConfigurationService.getHistoryAnalyzerInterval();
+		String candleSize = appConfigurationService.getHistoryAnalyzerInterval();
 		for (String instrument : BitmexClientConfig.getActiveInstruments()) {
-			instrumentHistoryDtoList.addAll(getInstrumentHistory(historyAnalyzerInterval, instrument, "5", "false"));
+			instrumentHistoryDtoList.addAll(collectHistoryForGivenInstrument(instrument, candleSize, "5", "true"));
 		}
 		log.info("[History] saved");
 		return instrumentHistoryRepository
@@ -123,7 +120,7 @@ public class HistoryServiceImpl implements HistoryService {
 	}
 
 	@Override
-	public boolean sendEmailWIthSignal(String emailText) {// TODO remove sending email from this service
+	public boolean sendEmailWithGivenMessage(String emailText) {// TODO remove sending email from this service
 		if (StringUtils.isBlank(emailText)) {
 			return false;
 		}
@@ -149,13 +146,6 @@ public class HistoryServiceImpl implements HistoryService {
 		urlString.append("&symbol=").append(symbol);
 		urlString.append("&count=").append(count);
 		urlString.append("&reverse=").append(reverse);
-		urlString.append("&startTime=").append(getTimestampStringFormattedToUTC5HoursAgo());
 		return urlString;
 	}
-
-	private String getTimestampStringFormattedToUTC5HoursAgo() {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		return LocalDateTime.now(ZoneOffset.UTC).minusHours(5).format(formatter).replace(" ", "T");
-	}
-
 }
