@@ -44,7 +44,7 @@ public class HistoryServiceTest {
 		String reverse = "false";
 		int expectedListSize = 5;
 		// when
-		List<InstrumentHistoryDto> result = historyService.getInstrumentHistory(candleSize, instrument, count, reverse);
+		List<InstrumentHistoryDto> result = historyService.collectHistoryForGivenInstrument(candleSize, instrument, count, reverse);
 		// then
 		assertEquals(expectedListSize, result.size());
 		assertEquals(instrument, result.get(0).getSymbol());
@@ -60,7 +60,7 @@ public class HistoryServiceTest {
 		String reverse = "false";
 		int expectedListSize = 0;
 		// when
-		List<InstrumentHistoryDto> result = historyService.getInstrumentHistory(candleSize, instrument, count, reverse);
+		List<InstrumentHistoryDto> result = historyService.collectHistoryForGivenInstrument(candleSize, instrument, count, reverse);
 		// then
 		assertEquals(expectedListSize, result.size());
 	}
@@ -74,7 +74,7 @@ public class HistoryServiceTest {
 		String reverse = "false";
 		int expectedListSize = 0;
 		// when
-		List<InstrumentHistoryDto> result = historyService.getInstrumentHistory(candleSize, instrument, count, reverse);
+		List<InstrumentHistoryDto> result = historyService.collectHistoryForGivenInstrument(candleSize, instrument, count, reverse);
 		// then
 		assertEquals(expectedListSize, result.size());
 	}
@@ -88,7 +88,7 @@ public class HistoryServiceTest {
 		String reverse = "false";
 		int expectedListSize = 0;
 		// when
-		List<InstrumentHistoryDto> result = historyService.getInstrumentHistory(candleSize, instrument, count, reverse);
+		List<InstrumentHistoryDto> result = historyService.collectHistoryForGivenInstrument(candleSize, instrument, count, reverse);
 		// then
 		assertEquals(expectedListSize, result.size());
 	}
@@ -99,7 +99,7 @@ public class HistoryServiceTest {
 		String emailText = "";
 		boolean expected = false;
 		// when
-		boolean result = historyService.sendEmailWIthSignal(emailText);
+		boolean result = historyService.sendEmailWithGivenMessage(emailText);
 		// then
 		assertEquals(expected, result);
 	}
@@ -110,7 +110,7 @@ public class HistoryServiceTest {
 		String emailText = null;
 		boolean expected = false;
 		// when
-		boolean result = historyService.sendEmailWIthSignal(emailText);
+		boolean result = historyService.sendEmailWithGivenMessage(emailText);
 		// then
 		assertEquals(expected, result);
 	}
