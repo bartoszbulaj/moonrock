@@ -2,7 +2,6 @@ package pl.bartoszbulaj.moonrock.validator.impl;
 
 import org.springframework.stereotype.Component;
 
-import io.micrometer.core.instrument.util.StringUtils;
 import pl.bartoszbulaj.moonrock.config.BitmexClientConfig;
 import pl.bartoszbulaj.moonrock.validator.InstrumentServiceValidator;
 
@@ -17,34 +16,32 @@ public class InstrumentServiceValidatorImpl implements InstrumentServiceValidato
 
 	@Override
 	public boolean isInstrumentSymbolValid(String instrumentSymbol) {
-		if (StringUtils.isBlank(instrumentSymbol)) {
-			return false;
-		} else {
-			return BitmexClientConfig.getActiveInstruments().contains(instrumentSymbol.toUpperCase());
+		if (BitmexClientConfig.getActiveInstruments().contains(instrumentSymbol.toUpperCase())) {
+			return true;
 		}
+		throw new IllegalArgumentException(instrumentSymbol);
 	}
 
 	private boolean isCandleSizeValid(String candleSize) {
-		if (StringUtils.isBlank(candleSize)) {
-			return false;
-		} else {
-			return candleSize.equalsIgnoreCase("1h") || candleSize.equalsIgnoreCase("5m");
+		if (candleSize.equalsIgnoreCase("1h") || candleSize.equalsIgnoreCase("5m")
+				|| candleSize.equalsIgnoreCase("15m")) {
+			return true;
 		}
+		throw new IllegalArgumentException(candleSize);
 	}
 
 	private boolean isReverseStringValid(String reverse) {
-		if (StringUtils.isBlank(reverse)) {
-			return false;
+		if (reverse.equalsIgnoreCase("true") || reverse.equalsIgnoreCase("false")) {
+			return true;
 		}
-		return (reverse.equalsIgnoreCase("true") || reverse.equalsIgnoreCase("false"));
+		throw new IllegalArgumentException(reverse);
 	}
 
 	private boolean isCountValid(String count) {
-		if (StringUtils.isBlank(count)) {
-			return false;
-		} else {
-			return count.equalsIgnoreCase("5");
+		if (count.equalsIgnoreCase("5")) {
+			return true;
 		}
+		throw new IllegalArgumentException(count);
 	}
 
 }
