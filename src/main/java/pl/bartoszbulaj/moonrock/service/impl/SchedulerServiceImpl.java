@@ -136,8 +136,7 @@ public class SchedulerServiceImpl implements SchedulerService {
 		ScheduledFuture<?> schedule1 = taskScheduler.schedule(deleteHistory(), new CronTrigger("5" + cronSufix));
 		ScheduledFuture<?> schedule2 = taskScheduler.schedule(saveHistory(), new CronTrigger("15" + cronSufix));
 		ScheduledFuture<?> schedule3 = taskScheduler.schedule(analyzeHistory(), new CronTrigger("25" + cronSufix));
-		log.info(interval + " nowy interval*************** cron: " + interval.replace("m", "") + cronSufix
-				+ " **********");
+
 		taskSet.add(schedule1);
 		taskSet.add(schedule2);
 		taskSet.add(schedule3);

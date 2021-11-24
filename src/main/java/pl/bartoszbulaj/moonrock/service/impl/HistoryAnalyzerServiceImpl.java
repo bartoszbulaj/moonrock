@@ -22,7 +22,6 @@ public class HistoryAnalyzerServiceImpl implements HistoryAnalyzerService {
 		}
 		StringBuilder signal = new StringBuilder();
 
-		LOG.info("[Analyzer] Searching for {} signal.", instrumentHistoryDtoList.get(0).getSymbol());
 		if (isSignalToBuy(instrumentHistoryDtoList)) {
 			signal.append("Buy");
 			logSignalInformation(signal, instrumentHistoryDtoList);

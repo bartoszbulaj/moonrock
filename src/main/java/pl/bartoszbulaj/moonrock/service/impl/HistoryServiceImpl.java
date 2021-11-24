@@ -67,9 +67,7 @@ public class HistoryServiceImpl implements HistoryService {
 				connection.disconnect();
 				List<InstrumentHistoryDto> instrumentHistoryDtoList = instrumentHistoryMapper
 						.mapToInstrumentHistoryDtoList(jsonString, "15");
-				List<InstrumentHistoryDto> instrumentHistoryDtoM15List = mergeCandleListToSizeM15(
-						instrumentHistoryDtoList);
-				return instrumentHistoryDtoM15List;
+				return mergeCandleListToSizeM15(instrumentHistoryDtoList);
 			}
 			StringBuilder urlString = createUrlString(candleSize, instrument.toUpperCase(), count, reverse);
 			URL instrumentHistoryUrl = new URL(urlString.toString());
@@ -121,8 +119,8 @@ public class HistoryServiceImpl implements HistoryService {
 
 	@Override
 	public boolean analyzeInstrumentHistory() {// TODO remove analyzing from this service
+		log.info("[Analyzer] Searching for signals.");
 		boolean isSignal = false;
-
 		for (String instrument : BitmexClientConfig.getActiveInstruments()) {
 			List<InstrumentHistoryDto> instrumentHistoryDtoList = loadInstrumentHistoryFromRepository(instrument);
 
@@ -131,6 +129,7 @@ public class HistoryServiceImpl implements HistoryService {
 				isSignal = true;
 			}
 		}
+		log.info("[Analyzer] End of analysis.");
 		return isSignal;
 	}
 
@@ -153,19 +152,18 @@ public class HistoryServiceImpl implements HistoryService {
 		String candleSize = appConfigurationService.getHistoryAnalyzerInterval();
 		for (String instrument : BitmexClientConfig.getActiveInstruments()) {
 			instrumentHistoryDtoList.addAll(collectHistoryForGivenInstrument(instrument, candleSize, "5", "true"));
-			log.info(instrumentHistoryDtoList.toString());
 		}
 		if (instrumentHistoryDtoList.isEmpty()) {
 			throw new IllegalStateException("No result from method collectHistoryForGivenInstrument");
 		}
-		log.info("[History] saved");
+		log.info("[History] Saved");
 		return instrumentHistoryRepository
 				.saveAll(instrumentHistoryMapper.mapToInstrumentHistoryEntityList(instrumentHistoryDtoList));
 	}
 
 	@Override
 	public void deleteInstrumentHistory() {
-		log.info("[History] deleted");
+		log.info("[History] Deleted");
 		instrumentHistoryRepository.deleteAll();
 	}
 
