@@ -1,11 +1,16 @@
 package pl.bartoszbulaj.moonrock.simulator.mapper;
 
+import org.jfree.data.xy.DefaultHighLowDataset;
 import pl.bartoszbulaj.moonrock.simulator.model.Candle;
 import pl.bartoszbulaj.moonrock.simulator.model.CandleOHLC;
 
+import java.util.List;
+
 public interface CandleMapper {
 
-	public Candle map(CandleOHLC candleOHLC);
+	Candle map(CandleOHLC candleOHLC);
 
-	public CandleOHLC mapToOhlc(Candle candle);
+	CandleOHLC mapToOhlc(Candle candle);
+
+	DefaultHighLowDataset mapToDefaultHighLowDataset(List<Candle> candleList);
 }
