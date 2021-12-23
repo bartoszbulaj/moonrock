@@ -23,12 +23,11 @@ import java.util.concurrent.ScheduledFuture;
 @Slf4j
 public class SchedulerServiceImpl implements SchedulerService {
 
-	private HistoryService historyService;
-	private AppConfigurationService appConfigurationService;
-	private WebsocketManagerService websocketManagerService;
-	private ApplicationContext context;
-	private TaskScheduler taskScheduler;
-	private Set<ScheduledFuture<?>> taskSet = new HashSet<>();
+	private final HistoryService historyService;
+	private final AppConfigurationService appConfigurationService;
+	private final WebsocketManagerService websocketManagerService;
+	private final TaskScheduler taskScheduler;
+	private final Set<ScheduledFuture<?>> taskSet = new HashSet<>();
 
 	private boolean heartbeatActive;
 	private boolean emailSenderActive;
@@ -39,7 +38,6 @@ public class SchedulerServiceImpl implements SchedulerService {
 		this.historyService = historyService;
 		this.appConfigurationService = appConfigurationService;
 		this.websocketManagerService = websocketManagerService;
-		this.context = context;
 		this.taskScheduler = taskScheduler;
 		this.heartbeatActive = false;
 
@@ -59,52 +57,40 @@ public class SchedulerServiceImpl implements SchedulerService {
 
 	@Override
 	public Runnable deleteHistory() {
-		return new Runnable() {
-			@Override
-			public void run() {
-				if (appConfigurationService.isHistoryAnalyzerEnabled()) {
-					historyService.deleteInstrumentHistory();
-				}
+		return () -> {
+			if (appConfigurationService.isHistoryAnalyzerEnabled()) {
+				historyService.deleteInstrumentHistory();
 			}
 		};
 	}
 
 	@Override
 	public Runnable saveHistory() {
-		return new Runnable() {
-			@Override
-			public void run() {
-				if (appConfigurationService.isHistoryAnalyzerEnabled()) {
-					historyService.saveInstrumentHistory();
-				}
+		return () -> {
+			if (appConfigurationService.isHistoryAnalyzerEnabled()) {
+				historyService.saveInstrumentHistory();
 			}
 		};
 	}
 
 	@Override
 	public Runnable analyzeHistory() {
-		return new Runnable() {
-			@Override
-			public void run() {
-				boolean isSignal = false;
-				if (appConfigurationService.isHistoryAnalyzerEnabled()) {
-					isSignal = historyService.analyzeInstrumentHistory();
-				}
-				if (emailSenderActive && isSignal) {
-					historyService.sendEmailWithSignals();
-				}
+		return () -> {
+			boolean isSignal = false;
+			if (appConfigurationService.isHistoryAnalyzerEnabled()) {
+				isSignal = historyService.analyzeInstrumentHistory();
+			}
+			if (emailSenderActive && isSignal) {
+				historyService.sendEmailWithSignals();
 			}
 		};
 	}
 
 	@Override
 	public Runnable sendHeartbeat() {
-		return new Runnable() {
-			@Override
-			public void run() {
-				if (heartbeatActive) {
-					websocketManagerService.pingServer();
-				}
+		return () -> {
+			if (heartbeatActive) {
+				websocketManagerService.pingServer();
 			}
 		};
 	}
@@ -132,10 +118,10 @@ public class SchedulerServiceImpl implements SchedulerService {
 		intervalDictionary.put("1h", " 0 * * * *");
 		intervalDictionary.put("4h", " 0 */4 * * *");
 
-		String cronSufix = intervalDictionary.get(interval);
-		ScheduledFuture<?> schedule1 = taskScheduler.schedule(deleteHistory(), new CronTrigger("5" + cronSufix));
-		ScheduledFuture<?> schedule2 = taskScheduler.schedule(saveHistory(), new CronTrigger("15" + cronSufix));
-		ScheduledFuture<?> schedule3 = taskScheduler.schedule(analyzeHistory(), new CronTrigger("25" + cronSufix));
+		String cronSuffix = intervalDictionary.get(interval);
+		ScheduledFuture<?> schedule1 = taskScheduler.schedule(deleteHistory(), new CronTrigger("5" + cronSuffix));
+		ScheduledFuture<?> schedule2 = taskScheduler.schedule(saveHistory(), new CronTrigger("15" + cronSuffix));
+		ScheduledFuture<?> schedule3 = taskScheduler.schedule(analyzeHistory(), new CronTrigger("25" + cronSuffix));
 
 		taskSet.add(schedule1);
 		taskSet.add(schedule2);
