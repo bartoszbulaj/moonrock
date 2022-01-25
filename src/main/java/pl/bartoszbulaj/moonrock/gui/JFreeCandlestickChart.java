@@ -1,12 +1,5 @@
 package pl.bartoszbulaj.moonrock.gui;
 
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
-import javax.swing.*;
-
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -20,11 +13,16 @@ import org.jfree.data.Range;
 import org.jfree.data.xy.DefaultHighLowDataset;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import pl.bartoszbulaj.moonrock.service.HistoryService;
 import pl.bartoszbulaj.moonrock.simulator.mapper.CandleMapper;
 import pl.bartoszbulaj.moonrock.simulator.model.Candle;
 import pl.bartoszbulaj.moonrock.simulator.service.SimulatorChartAnalyzerService;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 @Component
 public class JFreeCandlestickChart extends JFrame {
@@ -42,8 +40,8 @@ public class JFreeCandlestickChart extends JFrame {
 		this.candleMapper = candleMapper;
 		this.historyService = historyService;
 
-
-		List<Candle> historyCandleList = historyService.collectCandleHistoryForGivenInstrument(XBTUSD, "5m", "150", "false");
+		List<Candle> historyCandleList = historyService.collectCandleHistoryForGivenInstrument(XBTUSD, "5m", "150",
+				"false");
 		final DefaultHighLowDataset dataset = candleMapper.mapToDefaultHighLowDataset(historyCandleList);
 		double lowestLow = getLowestLow(dataset);
 		double highestHigh = getHighestHigh(dataset);
@@ -85,15 +83,13 @@ public class JFreeCandlestickChart extends JFrame {
 	}
 
 	public static void addPointer(Number datasetItemTimestamp, double price, XYPlot plot, boolean isBuyOrder) {
-		final XYPointerAnnotation pointer = new XYPointerAnnotation("", datasetItemTimestamp.doubleValue(), price, Math.PI);
+		final XYPointerAnnotation pointer = new XYPointerAnnotation("", datasetItemTimestamp.doubleValue(), price,
+				Math.PI);
 		pointer.setBaseRadius(8.0);
 		pointer.setTipRadius(5.0);
 		pointer.setArrowWidth(10);
 		pointer.setArrowLength(10);
-		pointer.setArrowPaint(
-				isBuyOrder ?
-						new Color(0xFF00FF00, true) :
-						new Color(0xFFFF960C, true));
+		pointer.setArrowPaint(isBuyOrder ? new Color(0xFF00FF00, true) : new Color(0xFFFF960C, true));
 		plot.addAnnotation(pointer);
 	}
 
