@@ -38,10 +38,12 @@ public class InstrumentServiceValidatorImpl implements InstrumentServiceValidato
 	}
 
 	private boolean isCountValid(String count) {
-		if (count.equalsIgnoreCase("5")) {
+		try {
+			Integer.parseInt(count);
 			return true;
+		} catch(NumberFormatException e){
+			return false;
 		}
-		throw new IllegalArgumentException(count);
 	}
 
 }
