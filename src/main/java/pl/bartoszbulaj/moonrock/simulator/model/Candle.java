@@ -1,28 +1,26 @@
 package pl.bartoszbulaj.moonrock.simulator.model;
 
-import java.time.LocalDateTime;
-
 public class Candle {
 
-	public LocalDateTime timestamp;
+	public String timestamp;
 	public String symbol;
 	public double open;
-	public int high;
-	public int low;
+	public double high;
+	public double low;
 	public double close;
 	public int trades;
-	public int volume;
+	public double volume;
 	public double vwap;
 	public int lastSize;
 	public long turnover;
 	public double homeNotional;
 	public int foreignNotional;
 
-	public LocalDateTime getTimestamp() {
+	public String getTimestamp() {
 		return timestamp;
 	}
 
-	public void setTimestamp(LocalDateTime timestamp) {
+	public void setTimestamp(String timestamp) {
 		this.timestamp = timestamp;
 	}
 
@@ -42,19 +40,19 @@ public class Candle {
 		this.open = open;
 	}
 
-	public int getHigh() {
+	public double getHigh() {
 		return high;
 	}
 
-	public void setHigh(int high) {
+	public void setHigh(double high) {
 		this.high = high;
 	}
 
-	public int getLow() {
+	public double getLow() {
 		return low;
 	}
 
-	public void setLow(int low) {
+	public void setLow(double low) {
 		this.low = low;
 	}
 
@@ -74,11 +72,11 @@ public class Candle {
 		this.trades = trades;
 	}
 
-	public int getVolume() {
+	public double getVolume() {
 		return volume;
 	}
 
-	public void setVolume(int volume) {
+	public void setVolume(double volume) {
 		this.volume = volume;
 	}
 
