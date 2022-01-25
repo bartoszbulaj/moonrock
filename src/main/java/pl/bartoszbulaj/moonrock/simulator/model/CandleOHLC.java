@@ -1,21 +1,41 @@
 package pl.bartoszbulaj.moonrock.simulator.model;
 
-import java.time.LocalDateTime;
-
 public class CandleOHLC {
 
-	public LocalDateTime timestamp;
+	public String timestamp;
 	public String symbol;
 	public double open;
-	public int high;
-	public int low;
+	public double high;
+	public double low;
 	public double close;
+	public double volume;
 
-	public LocalDateTime getTimestamp() {
+	public CandleOHLC() {
+	}
+
+	public CandleOHLC(String timestamp, String symbol, double open, double high, double low, double close, double volume) {
+		this.timestamp = timestamp;
+		this.symbol = symbol;
+		this.open = open;
+		this.high = high;
+		this.low = low;
+		this.close = close;
+		this.volume = volume;
+	}
+
+	public double getVolume() {
+		return volume;
+	}
+
+	public void setVolume(double volume) {
+		this.volume = volume;
+	}
+
+	public String getTimestamp() {
 		return timestamp;
 	}
 
-	public void setTimestamp(LocalDateTime timestamp) {
+	public void setTimestamp(String timestamp) {
 		this.timestamp = timestamp;
 	}
 
@@ -35,19 +55,19 @@ public class CandleOHLC {
 		this.open = open;
 	}
 
-	public int getHigh() {
+	public double getHigh() {
 		return high;
 	}
 
-	public void setHigh(int high) {
+	public void setHigh(double high) {
 		this.high = high;
 	}
 
-	public int getLow() {
+	public double getLow() {
 		return low;
 	}
 
-	public void setLow(int low) {
+	public void setLow(double low) {
 		this.low = low;
 	}
 
