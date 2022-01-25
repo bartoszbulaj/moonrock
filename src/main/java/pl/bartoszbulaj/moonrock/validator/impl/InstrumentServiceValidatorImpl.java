@@ -9,7 +9,7 @@ import pl.bartoszbulaj.moonrock.validator.InstrumentServiceValidator;
 public class InstrumentServiceValidatorImpl implements InstrumentServiceValidator {
 
 	@Override
-	public boolean isAllArgumentsValid(String candleSize, String instrumentSymbol, String count, String reverse) {
+	public boolean isAllArgumentsValid(String instrumentSymbol, String candleSize, String count, String reverse) {
 		return isInstrumentSymbolValid(instrumentSymbol) && isCandleSizeValid(candleSize)
 				&& isReverseStringValid(reverse) && isCountValid(count);
 	}

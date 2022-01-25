@@ -1,5 +1,12 @@
 package pl.bartoszbulaj.moonrock.gui;
 
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+import javax.swing.*;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -13,31 +20,24 @@ import org.jfree.data.Range;
 import org.jfree.data.xy.DefaultHighLowDataset;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import pl.bartoszbulaj.moonrock.service.HistoryService;
 import pl.bartoszbulaj.moonrock.simulator.mapper.CandleMapper;
 import pl.bartoszbulaj.moonrock.simulator.model.Candle;
 import pl.bartoszbulaj.moonrock.simulator.service.SimulatorChartAnalyzerService;
-import pl.bartoszbulaj.moonrock.simulator.service.SimulatorHistoryService;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 
 @Component
 public class JFreeCandlestickChart extends JFrame {
 
 	public static final String XBTUSD = "XBTUSD";
-	private final SimulatorHistoryService simulatorHistoryService;
 	private final SimulatorChartAnalyzerService simulatorChartAnalyzerService;
 	private final CandleMapper candleMapper;
 	private final HistoryService historyService;
 
 	@Autowired
-	public JFreeCandlestickChart(SimulatorHistoryService simulatorHistoryService, SimulatorChartAnalyzerService simulatorChartAnalyzerService, CandleMapper candleMapper, HistoryService historyService) {
+	public JFreeCandlestickChart(SimulatorChartAnalyzerService simulatorChartAnalyzerService, CandleMapper candleMapper,
+			HistoryService historyService) {
 		super("JFreeChart");
-		this.simulatorHistoryService = simulatorHistoryService;
 		this.simulatorChartAnalyzerService = simulatorChartAnalyzerService;
 		this.candleMapper = candleMapper;
 		this.historyService = historyService;
