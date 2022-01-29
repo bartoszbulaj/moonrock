@@ -5,14 +5,15 @@ import org.jfree.data.xy.DefaultHighLowDataset;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
-import pl.bartoszbulaj.moonrock.gui.JFreeCandlestickChart;
+import pl.bartoszbulaj.moonrock.config.CryptoPair;
+import pl.bartoszbulaj.moonrock.gui.CandlestickChartFrame;
 import pl.bartoszbulaj.moonrock.simulator.service.SimulatorChartAnalyzerService;
 
 @Slf4j
 @Component
 public class SimulatorChartAnalyzerServiceImpl implements SimulatorChartAnalyzerService {
 
-	private static final int series = JFreeCandlestickChart.XBTUSD.hashCode();
+	private static final int series = CryptoPair.XBTUSD.hashCode();
 	private static final double PERCENT_IN_SWING = 0.3;
 
 	@Override
@@ -35,7 +36,7 @@ public class SimulatorChartAnalyzerServiceImpl implements SimulatorChartAnalyzer
 
 		if (first && second && third && fourth
 				&& (percentInSwing(getOpenPrice(dataset, i - 3), getClosePrice(dataset, i - 1)) > PERCENT_IN_SWING)) {
-			JFreeCandlestickChart.addPointer(dataset.getX(series, i), dataset.getCloseValue(series, i),
+			CandlestickChartFrame.addPointer(dataset.getX(series, i), dataset.getCloseValue(series, i),
 					chart.getXYPlot(), false);
 		}
 	}
@@ -48,7 +49,7 @@ public class SimulatorChartAnalyzerServiceImpl implements SimulatorChartAnalyzer
 
 		if (first && second && third && fourth
 				&& (percentInSwing(getOpenPrice(dataset, i - 3), getClosePrice(dataset, i - 1)) > PERCENT_IN_SWING)) {
-			JFreeCandlestickChart.addPointer(dataset.getX(series, i), dataset.getCloseValue(series, i),
+			CandlestickChartFrame.addPointer(dataset.getX(series, i), dataset.getCloseValue(series, i),
 					chart.getXYPlot(), true);
 		}
 	}

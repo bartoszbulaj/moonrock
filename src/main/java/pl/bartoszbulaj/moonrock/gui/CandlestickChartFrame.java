@@ -13,6 +13,8 @@ import org.jfree.data.Range;
 import org.jfree.data.xy.DefaultHighLowDataset;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import pl.bartoszbulaj.moonrock.config.CandleSize;
+import pl.bartoszbulaj.moonrock.config.CryptoPair;
 import pl.bartoszbulaj.moonrock.service.HistoryService;
 import pl.bartoszbulaj.moonrock.simulator.mapper.CandleMapper;
 import pl.bartoszbulaj.moonrock.simulator.model.Candle;
@@ -25,22 +27,24 @@ import java.util.Comparator;
 import java.util.List;
 
 @Component
-public class JFreeCandlestickChart extends JFrame {
+public class CandlestickChartFrame extends JFrame {
 
-	public static final String XBTUSD = "XBTUSD";
+	public static final String J_FREE_CHART = "JFreeChart";
+	public static final String COUNT = "150";
+
 	private final SimulatorChartAnalyzerService simulatorChartAnalyzerService;
 	private final CandleMapper candleMapper;
 	private final HistoryService historyService;
 
 	@Autowired
-	public JFreeCandlestickChart(SimulatorChartAnalyzerService simulatorChartAnalyzerService, CandleMapper candleMapper,
-			HistoryService historyService) {
-		super("JFreeChart");
+	public CandlestickChartFrame(SimulatorChartAnalyzerService simulatorChartAnalyzerService, CandleMapper candleMapper,
+								 HistoryService historyService) {
+		super(J_FREE_CHART);
 		this.simulatorChartAnalyzerService = simulatorChartAnalyzerService;
 		this.candleMapper = candleMapper;
 		this.historyService = historyService;
 
-		List<Candle> historyCandleList = historyService.collectCandleHistoryForGivenInstrument(XBTUSD, "5m", "150",
+		List<Candle> historyCandleList = historyService.collectCandleHistoryForGivenInstrument(CryptoPair.XBTUSD, CandleSize.CANDLE_SIZE_5M, COUNT,
 				"false");
 		final DefaultHighLowDataset dataset = candleMapper.mapToDefaultHighLowDataset(historyCandleList);
 		double lowestLow = getLowestLow(dataset);

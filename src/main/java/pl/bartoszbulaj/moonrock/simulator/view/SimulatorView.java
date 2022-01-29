@@ -1,19 +1,18 @@
 package pl.bartoszbulaj.moonrock.simulator.view;
 
-import java.util.List;
-
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-
-import pl.bartoszbulaj.moonrock.gui.JFreeCandlestickChart;
+import pl.bartoszbulaj.moonrock.gui.CandlestickChartFrame;
 import pl.bartoszbulaj.moonrock.service.HistoryService;
 import pl.bartoszbulaj.moonrock.simulator.mapper.CandleMapper;
 import pl.bartoszbulaj.moonrock.simulator.model.Candle;
 import pl.bartoszbulaj.moonrock.simulator.service.SimulatorChartAnalyzerService;
+
+import java.util.List;
 
 @Route("/simulator")
 @PageTitle("Moonrock simulator")
@@ -48,8 +47,8 @@ public class SimulatorView extends VerticalLayout {
 	}
 
 	public void create() {
-		JFreeCandlestickChart jfreeCandlestickChart = new JFreeCandlestickChart(simulatorChartAnalyzerService,
+		CandlestickChartFrame candlestickChartFrame = new CandlestickChartFrame(simulatorChartAnalyzerService,
 				candleMapper, historyService);
-		jfreeCandlestickChart.showChart();
+		candlestickChartFrame.showChart();
 	}
 }
