@@ -1,5 +1,16 @@
 package pl.bartoszbulaj.moonrock.service.impl;
 
+import io.micrometer.core.instrument.util.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import pl.bartoszbulaj.moonrock.service.CryptographicService;
+
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.security.GeneralSecurityException;
@@ -10,19 +21,6 @@ import java.security.spec.KeySpec;
 import java.util.Base64;
 import java.util.Map;
 import java.util.UUID;
-
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.GCMParameterSpec;
-import javax.crypto.spec.PBEKeySpec;
-import javax.crypto.spec.SecretKeySpec;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import io.micrometer.core.instrument.util.StringUtils;
-import pl.bartoszbulaj.moonrock.service.CryptographicService;
 
 @Service
 @Transactional
@@ -76,6 +74,8 @@ public class CryptographicServiceImpl implements CryptographicService {
 
 	private SecretKey getAESSuperSecretKey(byte[] salt)
 			throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
+		// TODO test api endpoint with getting wallet balance,
+		// maybe env creation should be at app start?
 		String moonrockSecretKey = createSuperSecretEnvironmentVariable();
 		if (StringUtils.isBlank(moonrockSecretKey)) {
 			throw new IOException("Cant find ENV VARIABLE");
@@ -89,8 +89,7 @@ public class CryptographicServiceImpl implements CryptographicService {
 	private String createSuperSecretEnvironmentVariable() {
 		ProcessBuilder processBuilder = new ProcessBuilder();
 		Map<String, String> env = processBuilder.environment();
-		env.put(MOONROCK_SECRET_KEY, UUID.randomUUID().toString());
-		return System.getenv(MOONROCK_SECRET_KEY);
+		return env.put(MOONROCK_SECRET_KEY, UUID.randomUUID().toString());
 	}
 
 }

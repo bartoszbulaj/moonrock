@@ -88,6 +88,16 @@ public class AppConfigurationServiceImpl implements AppConfigurationService {
 	}
 
 	@Override
+	public boolean isApiKeysSaved() {
+		return getAppConfigurationBean().isApiKeysSaved();
+	}
+
+	@Override
+	public void setApiKeysSaved(boolean value) {
+		getAppConfigurationBean().setApiKeysSaved(value);
+	}
+
+	@Override
 	public void setEmailSenderEnabled(boolean status) {
 		getAppConfigurationBean().setEmailSenderEnabled(status);
 	}

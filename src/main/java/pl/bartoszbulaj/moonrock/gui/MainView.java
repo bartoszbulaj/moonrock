@@ -38,6 +38,7 @@ public class MainView extends VerticalLayout {
 	private Checkbox historyAnalyzerCheckbox;
 	private RadioButtonGroup intervalRadioButtonGroup;
 	private Checkbox emailSenderCheckbox;
+	private Checkbox apiKeysSavedCheckbox;
 
 	private VerticalLayout emailSenderCredentialLayout;
 	private Label emailValidationError;
@@ -48,8 +49,9 @@ public class MainView extends VerticalLayout {
 	private PasswordField apiKeyNameValue;
 	private PasswordField apiKeySecretValue;
 	private Label apiKeysValidationError;
+	private Label savingError;
 
-	private HorizontalLayout buySellLayout;
+	private HorizontalLayout buySellButtonsLayout;
 	private BigDecimalField quantityField;
 	private Button buyButton;
 	private Button sellButton;
@@ -63,25 +65,29 @@ public class MainView extends VerticalLayout {
 
 		addHistoryAnalyzerCheckboxAndIntervalRadioButtons();
 		addEmailSenderCheckbox();
+		addApiKeysSavedCheckbox();
 
 		addEmailSenderCredentialForm();
 		addApiKeysForm();
 
 		addBuySellButtons();
 
+		buySellButtonsLayout.setVisible(appConfigurationService.isApiKeysSaved());
+		apiKeyLayout.setVisible(!appConfigurationService.isApiKeysSaved());
 	}
 
 	private void addBuySellButtons() {
 		// TODO add condition for enabling if apikeys are saved in database
-		buySellLayout = new HorizontalLayout();
+		buySellButtonsLayout = new HorizontalLayout();
 		quantityField = new BigDecimalField();
 		quantityField.setPlaceholder("Quantity");
 		buyButton = new Button("Buy", click -> buyAction(quantityField.getValue()));
 		buyButton.getStyle().set("color", "green");
 		sellButton = new Button("Sell", click -> sellAction(quantityField.getValue()));
 		sellButton.getStyle().set("color", "red");
-		buySellLayout.add(sellButton, quantityField, buyButton);
-		add(buySellLayout);
+		buySellButtonsLayout.add(sellButton, quantityField, buyButton);
+
+		add(buySellButtonsLayout);
 	}
 
 	private boolean buyAction(BigDecimal quantity) {
@@ -114,6 +120,8 @@ public class MainView extends VerticalLayout {
 		apiKeySecretValue.setWidthFull();
 		apiKeysValidationError = new Label("ApiKeys validation error");
 		apiKeysValidationError.setVisible(false);
+		savingError = new Label("Saving error");
+		savingError.setVisible(false);
 		Button saveButton = new Button("Save", this::saveApiKeys);
 
 		apiKeyLayout.add(apiKeyNameValue, apiKeySecretValue, saveButton, apiKeysValidationError);
@@ -125,14 +133,19 @@ public class MainView extends VerticalLayout {
 
 	private void saveApiKeys(ClickEvent<Button> buttonClickEvent) {
 		if (validateApiKeysForm()) {
+			apiKeysValidationError.setVisible(false);
 			// TODO refactor argument "owner"
-			boolean success = databaseIntegration.saveApiKeys("admin", apiKeyNameValue.getValue(),
+			boolean saveSuccess = databaseIntegration.saveApiKeys("admin", apiKeyNameValue.getValue(),
 					apiKeySecretValue.getValue().getBytes(StandardCharsets.UTF_8));
-			if (success) {
+			if (saveSuccess) {
 				apiKeyLayout.setVisible(false);
 				apiKeysValidationError.setVisible(false);
+				savingError.setVisible(false);
+
+				apiKeysSavedCheckbox.setValue(true);
+				buySellButtonsLayout.setVisible(true);
 			} else {
-				apiKeysValidationError.setVisible(true);
+				savingError.setVisible(true);
 			}
 		} else {
 			apiKeysValidationError.setVisible(true);
@@ -148,6 +161,13 @@ public class MainView extends VerticalLayout {
 		emailSenderCheckbox.setEnabled(false);
 		emailSenderCheckbox.setValue(appConfigurationService.isAnyEmailSender());
 		add(emailSenderCheckbox);
+	}
+
+	private void addApiKeysSavedCheckbox() {
+		apiKeysSavedCheckbox = new Checkbox("Api Keys Saved");
+		apiKeysSavedCheckbox.setEnabled(false);
+		apiKeysSavedCheckbox.setValue(appConfigurationService.isApiKeysSaved());
+		add(apiKeysSavedCheckbox);
 	}
 
 	private void addEmailSenderCredentialForm() {

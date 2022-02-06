@@ -22,4 +22,8 @@ public interface AppConfigurationService {
 
 	String getHistoryAnalyzerInterval();
 
+	boolean isApiKeysSaved();
+
+	void setApiKeysSaved(boolean value);
+
 }

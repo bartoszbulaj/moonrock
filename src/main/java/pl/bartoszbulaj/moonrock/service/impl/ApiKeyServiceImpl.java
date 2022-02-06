@@ -11,6 +11,7 @@ import pl.bartoszbulaj.moonrock.exception.BusinessException;
 import pl.bartoszbulaj.moonrock.mapper.ApiKeyMapper;
 import pl.bartoszbulaj.moonrock.repository.ApiKeyRepository;
 import pl.bartoszbulaj.moonrock.service.ApiKeyService;
+import pl.bartoszbulaj.moonrock.service.AppConfigurationService;
 import pl.bartoszbulaj.moonrock.service.CryptographicService;
 
 @Service
@@ -20,13 +21,15 @@ public class ApiKeyServiceImpl implements ApiKeyService {
 	private ApiKeyRepository apiKeyRepository;
 	private ApiKeyMapper apiKeyMapper;
 	private CryptographicService cryptographicService;
+	private AppConfigurationService appConfigurationService;
 
 	@Autowired
 	public ApiKeyServiceImpl(ApiKeyRepository apiKeyRepository, ApiKeyMapper apiKeyMapper,
-			CryptographicService cryptographicService) {
+			CryptographicService cryptographicService, AppConfigurationService appConfigurationService) {
 		this.apiKeyRepository = apiKeyRepository;
 		this.apiKeyMapper = apiKeyMapper;
 		this.cryptographicService = cryptographicService;
+		this.appConfigurationService = appConfigurationService;
 	}
 
 	@Override
@@ -44,6 +47,7 @@ public class ApiKeyServiceImpl implements ApiKeyService {
 		try {
 			ApiKeyEntity apiKeyEntity = new ApiKeyEntity(owner, apiPublicKey,
 					cryptographicService.encryptPassword(apiSecretKey));
+			appConfigurationService.setApiKeysSaved(true);
 			return apiKeyRepository.save(apiKeyEntity);
 		} catch (Exception e) {
 			e.printStackTrace();

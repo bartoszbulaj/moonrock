@@ -6,6 +6,8 @@ import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import pl.bartoszbulaj.moonrock.config.CandleSize;
+import pl.bartoszbulaj.moonrock.config.CryptoPair;
 import pl.bartoszbulaj.moonrock.gui.CandlestickChartFrame;
 import pl.bartoszbulaj.moonrock.service.HistoryService;
 import pl.bartoszbulaj.moonrock.simulator.mapper.CandleMapper;
@@ -18,6 +20,8 @@ import java.util.List;
 @PageTitle("Moonrock simulator")
 public class SimulatorView extends VerticalLayout {
 
+	public static final String NUMBER_OF_CANDLES = "15";
+	public static final String REVERSE_FALSE = "false";
 	private final SimulatorChartAnalyzerService simulatorChartAnalyzerService;
 	private final CandleMapper candleMapper;
 	private final HistoryService historyService;
@@ -30,9 +34,8 @@ public class SimulatorView extends VerticalLayout {
 		this.historyService = historyService;
 
 		Grid<Candle> gridCandleList = new Grid<>(Candle.class);
-
-		List<Candle> historyCandleList = historyService.collectCandleHistoryForGivenInstrument("XBTUSD", "15m", "15",
-				"false");
+		List<Candle> historyCandleList = historyService.collectCandleHistoryForGivenInstrument(CryptoPair.XBTUSD, CandleSize.CANDLE_SIZE_15M, NUMBER_OF_CANDLES,
+				REVERSE_FALSE);
 		gridCandleList.setItems(historyCandleList); // TODO remove this gui table test
 		gridCandleList.removeColumnByKey("lastSize");
 		gridCandleList.removeColumnByKey("foreignNotional");

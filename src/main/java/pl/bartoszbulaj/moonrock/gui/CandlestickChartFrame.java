@@ -1,5 +1,6 @@
 package pl.bartoszbulaj.moonrock.gui;
 
+import org.apache.logging.log4j.util.Strings;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -28,9 +29,14 @@ import java.util.List;
 
 @Component
 public class CandlestickChartFrame extends JFrame {
+	// TODO make this as parameter from gui
+	private static final String instrument = CryptoPair.XBTUSD;
+	private static final String COUNT = "150";
 
 	public static final String J_FREE_CHART = "JFreeChart";
-	public static final String COUNT = "150";
+	public static final String REVERSE_FALSE = "false";
+	public static final String VALUE = "Value ($)";
+	public static final String TIME_LINE = "Time line";
 
 	private final SimulatorChartAnalyzerService simulatorChartAnalyzerService;
 	private final CandleMapper candleMapper;
@@ -38,19 +44,19 @@ public class CandlestickChartFrame extends JFrame {
 
 	@Autowired
 	public CandlestickChartFrame(SimulatorChartAnalyzerService simulatorChartAnalyzerService, CandleMapper candleMapper,
-								 HistoryService historyService) {
+			HistoryService historyService) {
 		super(J_FREE_CHART);
 		this.simulatorChartAnalyzerService = simulatorChartAnalyzerService;
 		this.candleMapper = candleMapper;
 		this.historyService = historyService;
 
-		List<Candle> historyCandleList = historyService.collectCandleHistoryForGivenInstrument(CryptoPair.XBTUSD, CandleSize.CANDLE_SIZE_5M, COUNT,
-				"false");
+		List<Candle> historyCandleList = historyService.collectCandleHistoryForGivenInstrument(instrument,
+				CandleSize.CANDLE_SIZE_5M, COUNT, REVERSE_FALSE);
 		final DefaultHighLowDataset dataset = candleMapper.mapToDefaultHighLowDataset(historyCandleList);
 		double lowestLow = getLowestLow(dataset);
 		double highestHigh = getHighestHigh(dataset);
 
-		final JFreeChart chart = createChart(dataset);
+		final JFreeChart chart = createChart(dataset, instrument);
 		Range range = new Range(lowestLow * 0.99D, highestHigh * 1.01D);
 
 		CustomCandlestickRenderer customCandlestickRenderer = new CustomCandlestickRenderer();
@@ -87,8 +93,8 @@ public class CandlestickChartFrame extends JFrame {
 	}
 
 	public static void addPointer(Number datasetItemTimestamp, double price, XYPlot plot, boolean isBuyOrder) {
-		final XYPointerAnnotation pointer = new XYPointerAnnotation("", datasetItemTimestamp.doubleValue(), price,
-				Math.PI);
+		final XYPointerAnnotation pointer = new XYPointerAnnotation(Strings.EMPTY, datasetItemTimestamp.doubleValue(),
+				price, Math.PI);
 		pointer.setBaseRadius(8.0);
 		pointer.setTipRadius(5.0);
 		pointer.setArrowWidth(10);
@@ -97,8 +103,8 @@ public class CandlestickChartFrame extends JFrame {
 		plot.addAnnotation(pointer);
 	}
 
-	private JFreeChart createChart(final DefaultHighLowDataset dataset) {
-		return ChartFactory.createCandlestickChart("Candlestick Chart", "Time", "Value", dataset, true);
+	private JFreeChart createChart(final DefaultHighLowDataset dataset, String instrument) {
+		return ChartFactory.createCandlestickChart(instrument, TIME_LINE, VALUE, dataset, true);
 	}
 
 	public void showChart() {
