@@ -26,4 +26,7 @@ public interface AppConfigurationService {
 
 	void setApiKeysSaved(boolean value);
 
+	String getEnvKey();
+
+	void initEnvKey();
 }

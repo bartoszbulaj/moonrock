@@ -22,9 +22,11 @@ import java.util.List;
 @Slf4j
 public class AppConfigurationServiceImpl implements AppConfigurationService {
 
-	private EmailSenderRepository emailSenderRepository;
-	private EmailSenderMapper emailSenderMapper;
-	private ApplicationContext context;
+	private final EmailSenderRepository emailSenderRepository;
+	private final EmailSenderMapper emailSenderMapper;
+	private final ApplicationContext context;
+
+	private static final String MOONROCK_ENV_KEY = "MOONROCK_ENV_KEY";
 
 	@Autowired
 	public AppConfigurationServiceImpl(EmailSenderRepository emailSenderRepository, EmailSenderMapper emailSenderMapper,
@@ -32,6 +34,7 @@ public class AppConfigurationServiceImpl implements AppConfigurationService {
 		this.emailSenderRepository = emailSenderRepository;
 		this.emailSenderMapper = emailSenderMapper;
 		this.context = context;
+		initEnvKey();
 	}
 
 	@Override
@@ -95,6 +98,21 @@ public class AppConfigurationServiceImpl implements AppConfigurationService {
 	@Override
 	public void setApiKeysSaved(boolean value) {
 		getAppConfigurationBean().setApiKeysSaved(value);
+	}
+
+	@Override
+	public String getEnvKey() {
+		return getAppConfigurationBean().getEnvKey();
+	}
+
+	@Override
+	public void initEnvKey() {
+		String envKey = System.getenv(MOONROCK_ENV_KEY);
+		if (envKey == null) {
+			// Application need environment variable to run
+			throw new RuntimeException("Cannot find instance of MOONROCK_ENV_KEY");
+		}
+		getAppConfigurationBean().setEnvKey(envKey);
 	}
 
 	@Override

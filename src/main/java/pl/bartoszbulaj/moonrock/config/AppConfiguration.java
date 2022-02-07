@@ -26,6 +26,7 @@ public class AppConfiguration {
 	private boolean emailSenderEnabled;
 	private boolean apiKeysSaved;
 	private String historyAnalyzerInterval = CandleSize.CANDLE_SIZE_5M;
+	private String envKey;
 
 	@Bean
 	public ModelMapper modelMapper() {
@@ -111,5 +112,13 @@ public class AppConfiguration {
 
 	public void setApiKeysSaved(boolean apiKeysSaved) {
 		this.apiKeysSaved = apiKeysSaved;
+	}
+
+	public String getEnvKey() {
+		return envKey;
+	}
+
+	public void setEnvKey(String envKey) {
+		this.envKey = envKey;
 	}
 }

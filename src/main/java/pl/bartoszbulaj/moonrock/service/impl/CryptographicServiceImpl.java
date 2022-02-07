@@ -1,8 +1,10 @@
 package pl.bartoszbulaj.moonrock.service.impl;
 
 import io.micrometer.core.instrument.util.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.bartoszbulaj.moonrock.service.AppConfigurationService;
 import pl.bartoszbulaj.moonrock.service.CryptographicService;
 
 import javax.crypto.Cipher;
@@ -19,8 +21,6 @@ import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.Base64;
-import java.util.Map;
-import java.util.UUID;
 
 @Service
 @Transactional
@@ -31,7 +31,14 @@ public class CryptographicServiceImpl implements CryptographicService {
 	private static final int IV_LENGTH_BYTE = 12;
 	private static final int SALT_LENGTH_BYTE = 16;
 	private static final int ITERATIONS = 65536;
-	private static final String MOONROCK_SECRET_KEY = "MOONROCK_SECRET_KEY";
+
+
+	private final AppConfigurationService appConfigurationService;
+
+	@Autowired
+	public CryptographicServiceImpl(AppConfigurationService appConfigurationService) {
+		this.appConfigurationService = appConfigurationService;
+	}
 
 	@Override
 	public String encryptPassword(byte[] password) throws GeneralSecurityException, IOException {
@@ -74,22 +81,14 @@ public class CryptographicServiceImpl implements CryptographicService {
 
 	private SecretKey getAESSuperSecretKey(byte[] salt)
 			throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
-		// TODO test api endpoint with getting wallet balance,
-		// maybe env creation should be at app start?
-		String moonrockSecretKey = createSuperSecretEnvironmentVariable();
-		if (StringUtils.isBlank(moonrockSecretKey)) {
-			throw new IOException("Cant find ENV VARIABLE");
+		String moonrockEnvKey = appConfigurationService.getEnvKey();
+		if (StringUtils.isBlank(moonrockEnvKey)) {
+			throw new IOException("Can not find ENV_KEY");
 		} else {
 			SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-			KeySpec spec = new PBEKeySpec(moonrockSecretKey.toCharArray(), salt, ITERATIONS, 256);
+			KeySpec spec = new PBEKeySpec(moonrockEnvKey.toCharArray(), salt, ITERATIONS, 256);
 			return new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
 		}
-	}
-
-	private String createSuperSecretEnvironmentVariable() {
-		ProcessBuilder processBuilder = new ProcessBuilder();
-		Map<String, String> env = processBuilder.environment();
-		return env.put(MOONROCK_SECRET_KEY, UUID.randomUUID().toString());
 	}
 
 }
