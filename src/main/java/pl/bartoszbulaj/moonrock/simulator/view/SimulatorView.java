@@ -1,6 +1,5 @@
 package pl.bartoszbulaj.moonrock.simulator.view;
 
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -8,7 +7,6 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import pl.bartoszbulaj.moonrock.config.CandleSize;
 import pl.bartoszbulaj.moonrock.config.CryptoPair;
-import pl.bartoszbulaj.moonrock.gui.CandlestickChartFrame;
 import pl.bartoszbulaj.moonrock.service.HistoryService;
 import pl.bartoszbulaj.moonrock.simulator.mapper.CandleMapper;
 import pl.bartoszbulaj.moonrock.simulator.model.Candle;
@@ -44,14 +42,5 @@ public class SimulatorView extends VerticalLayout {
 		gridCandleList.removeColumnByKey("homeNotional");
 		gridCandleList.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
 		add(gridCandleList);
-
-		Button showChartButton = new Button("Show Chart", click -> create());
-		add(showChartButton);
-	}
-
-	public void create() {
-		CandlestickChartFrame candlestickChartFrame = new CandlestickChartFrame(simulatorChartAnalyzerService,
-				candleMapper, historyService);
-		candlestickChartFrame.showChart();
 	}
 }

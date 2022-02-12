@@ -3,6 +3,7 @@ package pl.bartoszbulaj.moonrock.gui;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -17,13 +18,17 @@ import lombok.extern.slf4j.Slf4j;
 import pl.bartoszbulaj.moonrock.dto.EmailSenderDto;
 import pl.bartoszbulaj.moonrock.integration.DatabaseIntegration;
 import pl.bartoszbulaj.moonrock.service.AppConfigurationService;
+import pl.bartoszbulaj.moonrock.service.HistoryService;
 import pl.bartoszbulaj.moonrock.service.PositionManagerService;
 import pl.bartoszbulaj.moonrock.service.SchedulerService;
+import pl.bartoszbulaj.moonrock.simulator.mapper.CandleMapper;
+import pl.bartoszbulaj.moonrock.simulator.service.SimulatorChartAnalyzerService;
 
 import javax.mail.internet.InternetAddress;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @Route("/")
 @PageTitle("Moonrock App")
@@ -34,6 +39,9 @@ public class MainView extends VerticalLayout {
 	private final DatabaseIntegration databaseIntegration;
 	private final PositionManagerService positionManagerService;
 	private final SchedulerService schedulerService;
+	private final SimulatorChartAnalyzerService simulatorChartAnalyzerService;
+	private final CandleMapper candleMapper;
+	private final HistoryService historyService;
 
 	private Checkbox historyAnalyzerCheckbox;
 	private RadioButtonGroup intervalRadioButtonGroup;
@@ -56,13 +64,23 @@ public class MainView extends VerticalLayout {
 	private Button buyButton;
 	private Button sellButton;
 
+	private HorizontalLayout simulatorLayout;
+	Button showChartButton;
+	ComboBox<String> cryptoPairComboBox;
+
 	public MainView(AppConfigurationService appConfigurationService, DatabaseIntegration databaseIntegration,
-			PositionManagerService positionManagerService, SchedulerService schedulerService) {
+			PositionManagerService positionManagerService, SchedulerService schedulerService,
+			SimulatorChartAnalyzerService simulatorChartAnalyzerService, CandleMapper candleMapper,
+			HistoryService historyService) {
 		this.appConfigurationService = appConfigurationService;
 		this.databaseIntegration = databaseIntegration;
 		this.positionManagerService = positionManagerService;
 		this.schedulerService = schedulerService;
+		this.simulatorChartAnalyzerService = simulatorChartAnalyzerService;
+		this.candleMapper = candleMapper;
+		this.historyService = historyService;
 
+		addSimulatorLayout();
 		addHistoryAnalyzerCheckboxAndIntervalRadioButtons();
 		addEmailSenderCheckbox();
 		addApiKeysSavedCheckbox();
@@ -74,6 +92,32 @@ public class MainView extends VerticalLayout {
 
 		buySellButtonsLayout.setVisible(appConfigurationService.isApiKeysSaved());
 		apiKeyLayout.setVisible(!appConfigurationService.isApiKeysSaved());
+	}
+
+	private void addSimulatorLayout() {
+		this.cryptoPairComboBox = new ComboBox<>();
+		cryptoPairComboBox.setPlaceholder("CryptoPair");
+		List<String> instrumentsList = appConfigurationService.getInstrumentsList();
+		cryptoPairComboBox.setItems(instrumentsList);
+		cryptoPairComboBox.setValue(instrumentsList.get(0));
+		cryptoPairComboBox.setAllowCustomValue(false);
+		cryptoPairComboBox.addValueChangeListener(listener -> cryptoPairValueChangeListener(listener.getValue()));
+
+		this.showChartButton = new Button("Show Chart", click -> createChart());
+
+		simulatorLayout = new HorizontalLayout();
+		simulatorLayout.add(cryptoPairComboBox, showChartButton);
+		add(simulatorLayout);
+	}
+
+	private void cryptoPairValueChangeListener(String cryptoPair) {
+		appConfigurationService.setCryptoPairForSimulator(cryptoPair);
+	}
+
+	public void createChart() {
+		CandlestickChartFrame candlestickChartFrame = new CandlestickChartFrame(appConfigurationService,
+				simulatorChartAnalyzerService, candleMapper, historyService);
+		candlestickChartFrame.showChart();
 	}
 
 	private void addBuySellButtons() {

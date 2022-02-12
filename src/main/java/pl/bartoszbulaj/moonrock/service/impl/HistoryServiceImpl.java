@@ -1,22 +1,10 @@
 package pl.bartoszbulaj.moonrock.service.impl;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
+import io.micrometer.core.instrument.util.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import io.micrometer.core.instrument.util.StringUtils;
-import lombok.extern.slf4j.Slf4j;
 import pl.bartoszbulaj.moonrock.config.BitmexClientConfig;
 import pl.bartoszbulaj.moonrock.dto.InstrumentHistoryDto;
 import pl.bartoszbulaj.moonrock.entity.InstrumentHistoryEntity;
@@ -30,6 +18,17 @@ import pl.bartoszbulaj.moonrock.service.HistoryService;
 import pl.bartoszbulaj.moonrock.simulator.model.Candle;
 import pl.bartoszbulaj.moonrock.simulator.model.CandleOHLC;
 import pl.bartoszbulaj.moonrock.validator.InstrumentServiceValidator;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 @Service
 @Transactional
@@ -77,7 +76,7 @@ public class HistoryServiceImpl implements HistoryService {
 				String jsonString = connectionService.getResultFromHttpRequest(connection);
 				connection.disconnect();
 				List<InstrumentHistoryDto> instrumentHistoryDtoList = instrumentHistoryMapper
-						.mapToInstrumentHistoryDtoList(jsonString, "15");
+						.mapToInstrumentHistoryDtoList(jsonString, M15);
 				return mergeCandleListToSizeM15(instrumentHistoryDtoList);
 			}
 			StringBuilder urlString = createUrlString(candleSize, instrument.toUpperCase(), count, reverse);
@@ -118,15 +117,15 @@ public class HistoryServiceImpl implements HistoryService {
 			}
 			InstrumentHistoryDto m15Candle = new InstrumentHistoryDto();
 			m15Candle.setCandleSize(M15);
-			m15Candle.setOpen(m5CandleList.get(2).getOpen());
+			m15Candle.setOpen(m5CandleList.get(0).getOpen());
 			m15Candle.setHigh(m5CandleList.stream().map(InstrumentHistoryDto::getHigh).max(Comparator.naturalOrder())
 					.orElse(null));
 			m15Candle.setLow(m5CandleList.stream().map(InstrumentHistoryDto::getLow).min(Comparator.naturalOrder())
 					.orElse(null));
-			m15Candle.setClose(m5CandleList.get(0).getClose());
-			m15Candle.setLastSize(m5CandleList.get(0).getLastSize());
-			m15Candle.setSymbol(m5CandleList.get(0).getSymbol());
-			m15Candle.setTimestamp(m5CandleList.get(0).getTimestamp());
+			m15Candle.setClose(m5CandleList.get(2).getClose());
+			m15Candle.setLastSize(m5CandleList.get(2).getLastSize());
+			m15Candle.setSymbol(m5CandleList.get(2).getSymbol());
+			m15Candle.setTimestamp(m5CandleList.get(2).getTimestamp());
 			m15Candle.setTrades(
 					m5CandleList.stream().map(InstrumentHistoryDto::getTrades).mapToDouble(Double::doubleValue).sum());
 			m15Candle.setTurnover(m5CandleList.stream().map(InstrumentHistoryDto::getTurnover)
@@ -144,7 +143,7 @@ public class HistoryServiceImpl implements HistoryService {
 
 	@Override
 	public boolean analyzeInstrumentHistory() {// TODO remove analyzing from this service
-		log.info("[Analyzer] Searching for signals.");
+		log.info("[Analyzer] Searching for signals. {} interval", appConfigurationService.getHistoryAnalyzerInterval());
 		boolean isSignal = false;
 		for (String instrument : BitmexClientConfig.getActiveInstruments()) {
 			List<InstrumentHistoryDto> instrumentHistoryDtoList = loadInstrumentHistoryFromRepository(instrument);
@@ -220,12 +219,26 @@ public class HistoryServiceImpl implements HistoryService {
 		urlString.append("&symbol=").append(symbol);
 		urlString.append("&count=").append(count);
 		urlString.append("&reverse=").append(reverse);
-		urlString.append("&startTime=").append(getTimestampStringFormattedToUtcGivenHoursAgo(count));
+		urlString.append("&startTime=").append(countStartTimeForGivenArguments(candleSize, count));
 		return urlString;
 	}
 
-	private String getTimestampStringFormattedToUtcGivenHoursAgo(String count) {
+	private String countStartTimeForGivenArguments(String candleSize, String count) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		return LocalDateTime.now(ZoneOffset.UTC).minusHours(Long.parseLong(count)).format(formatter).replace(" ", "T");
+		LocalDateTime time;
+		switch (candleSize) {
+			case "5m":
+				time = LocalDateTime.now(ZoneOffset.UTC).minusMinutes(Long.parseLong(count)*5);
+				break;
+			case "15m":
+				time = LocalDateTime.now(ZoneOffset.UTC).minusMinutes(Long.parseLong(count)*15);
+				break;
+			case "1h":
+				time = LocalDateTime.now(ZoneOffset.UTC).minusHours(Long.parseLong(count));
+				break;
+			default:
+				throw new RuntimeException("Cannot resolve candle size.");
+		}
+		return time.format(formatter).replace(" ", "T");
 	}
 }
