@@ -13,6 +13,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import pl.bartoszbulaj.moonrock.exception.BusinessException;
 import pl.bartoszbulaj.moonrock.service.AppConfigurationService;
 
+import java.util.List;
 import java.util.Properties;
 
 @Configuration
@@ -27,6 +28,24 @@ public class AppConfiguration {
 	private boolean apiKeysSaved;
 	private String historyAnalyzerInterval = CandleSize.CANDLE_SIZE_5M;
 	private String envKey;
+	private String cryptoPairForSimulator = BitmexClientConfig.getActiveInstruments().get(0);
+	private List<String> instrumentsList = BitmexClientConfig.getActiveInstruments();
+
+	public AppConfigurationService getAppConfigurationService() {
+		return appConfigurationService;
+	}
+
+	public void setAppConfigurationService(AppConfigurationService appConfigurationService) {
+		this.appConfigurationService = appConfigurationService;
+	}
+
+	public List<String> getInstrumentsList() {
+		return instrumentsList;
+	}
+
+	public void setInstrumentsList(List<String> instrumentsList) {
+		this.instrumentsList = instrumentsList;
+	}
 
 	@Bean
 	public ModelMapper modelMapper() {
@@ -120,5 +139,13 @@ public class AppConfiguration {
 
 	public void setEnvKey(String envKey) {
 		this.envKey = envKey;
+	}
+
+	public String getCryptoPairForSimulator() {
+		return cryptoPairForSimulator;
+	}
+
+	public void setCryptoPairForSimulator(String cryptoPairForSimulator) {
+		this.cryptoPairForSimulator = cryptoPairForSimulator;
 	}
 }

@@ -3,6 +3,7 @@ package pl.bartoszbulaj.moonrock.service;
 import pl.bartoszbulaj.moonrock.dto.EmailSenderDto;
 
 import javax.mail.MessagingException;
+import java.util.List;
 
 public interface AppConfigurationService {
 
@@ -29,4 +30,11 @@ public interface AppConfigurationService {
 	String getEnvKey();
 
 	void initEnvKey();
+
+    String getCryptoPairForSimulator();
+
+	void setCryptoPairForSimulator(String value);
+
+	List<String> getInstrumentsList();
+
 }

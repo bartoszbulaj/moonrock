@@ -116,6 +116,21 @@ public class AppConfigurationServiceImpl implements AppConfigurationService {
 	}
 
 	@Override
+	public String getCryptoPairForSimulator() {
+		return getAppConfigurationBean().getCryptoPairForSimulator();
+	}
+
+	@Override
+	public void setCryptoPairForSimulator(String value) {
+		getAppConfigurationBean().setCryptoPairForSimulator(value);
+	}
+
+	@Override
+	public List<String> getInstrumentsList() {
+		return getAppConfigurationBean().getInstrumentsList();
+	}
+
+	@Override
 	public void setEmailSenderEnabled(boolean status) {
 		getAppConfigurationBean().setEmailSenderEnabled(status);
 	}
